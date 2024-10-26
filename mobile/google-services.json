@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "968375474223",
+    "project_id": "legitnik-41be9",
+    "storage_bucket": "legitnik-41be9.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:968375474223:android:6ab03345b8ad11490f8eda",
+        "android_client_info": {
+          "package_name": "com.jakubmeysner.legitnik"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA_pdP6ArqM-kw8B57pN7g0ICZr1GT72Jw"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
