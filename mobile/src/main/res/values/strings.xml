@@ -2,4 +2,9 @@
     <string name="app_name">Legitnik</string>
     <string name="navigation_bar_parking">Parking</string>
     <string name="navigation_bar_settings">Settings</string>
+    <string name="parking_address">Address</string>
+    <string name="parking_free_places">Free parking spots</string>
+    <string name="parking_history">History</string>
+    <string name="map">Map</string>
+    <string name="parking_navigate">Navigate</string>
 </resources>
