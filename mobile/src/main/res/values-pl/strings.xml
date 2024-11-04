@@ -1,4 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">Legitnik</string>
+    <string name="navigation_bar_parking">Parking</string>
+    <string name="navigation_bar_settings">Ustawienia</string>
 </resources>
