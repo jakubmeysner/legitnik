@@ -5,6 +5,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Place
 import androidx.compose.material.icons.filled.Settings
+import androidx.compose.material.icons.outlined.Place
+import androidx.compose.material.icons.outlined.Settings
 import androidx.compose.material3.Icon
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
@@ -26,11 +28,26 @@ import com.jakubmeysner.legitnik.ui.parking.parkingDestination
 import com.jakubmeysner.legitnik.ui.settings.Settings
 import com.jakubmeysner.legitnik.ui.settings.settingsDestination
 
-data class TopLevelRoute<T : Any>(val nameResourceId: Int, val route: T, val icon: ImageVector)
+data class TopLevelRoute<T : Any>(
+    val route: T,
+    val nameResourceId: Int,
+    val selectedIcon: ImageVector,
+    val notSelectedIcon: ImageVector,
+)
 
 val topLevelRoutes = listOf(
-    TopLevelRoute(R.string.navigation_bar_parking, Parking, Icons.Default.Place),
-    TopLevelRoute(R.string.navigation_bar_settings, Settings, Icons.Default.Settings)
+    TopLevelRoute(
+        Parking,
+        R.string.navigation_bar_parking,
+        Icons.Default.Place,
+        Icons.Outlined.Place
+    ),
+    TopLevelRoute(
+        Settings,
+        R.string.navigation_bar_settings,
+        Icons.Default.Settings,
+        Icons.Outlined.Settings
+    )
 )
 
 @SuppressLint("RestrictedApi")
@@ -45,17 +62,22 @@ fun MyNavHost() {
                 val currentDestination = navBackStackEntry?.destination
 
                 topLevelRoutes.forEach { topLevelRoute ->
+                    val selected = currentDestination?.hierarchy?.any {
+                        it.hasRoute(topLevelRoute.route::class)
+                    } == true
+
                     NavigationBarItem(
                         icon = {
                             Icon(
-                                topLevelRoute.icon,
+                                if (selected) topLevelRoute.selectedIcon
+                                else topLevelRoute.notSelectedIcon,
                                 contentDescription = stringResource(topLevelRoute.nameResourceId)
                             )
                         },
                         label = {
                             Text(stringResource(topLevelRoute.nameResourceId))
                         },
-                        selected = currentDestination?.hierarchy?.any { it.hasRoute(topLevelRoute.route::class) } == true,
+                        selected = selected,
                         onClick = {
                             navController.navigate(topLevelRoute.route) {
                                 popUpTo(navController.graph.findStartDestination().id) {
