@@ -6,7 +6,6 @@ import androidx.hilt.navigation.compose.hiltViewModel
 
 @Composable
 fun ParkingLotDetailsScreen(
-    id: String,
     viewModel: ParkingLotDetailsViewModel = hiltViewModel(),
 ) {
     Text("Parking Lot Details")
