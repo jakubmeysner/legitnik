@@ -3,8 +3,10 @@ package com.jakubmeysner.legitnik
 import android.annotation.SuppressLint
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.Place
 import androidx.compose.material.icons.filled.Settings
+import androidx.compose.material.icons.outlined.CheckCircle
 import androidx.compose.material.icons.outlined.Place
 import androidx.compose.material.icons.outlined.Settings
 import androidx.compose.material3.Icon
@@ -25,6 +27,8 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.jakubmeysner.legitnik.ui.parking.Parking
 import com.jakubmeysner.legitnik.ui.parking.parkingDestination
+import com.jakubmeysner.legitnik.ui.sdcatcardreader.SDCATCardReader
+import com.jakubmeysner.legitnik.ui.sdcatcardreader.sdcatCardReaderDestination
 import com.jakubmeysner.legitnik.ui.settings.Settings
 import com.jakubmeysner.legitnik.ui.settings.settingsDestination
 
@@ -41,6 +45,12 @@ val topLevelRoutes = listOf(
         R.string.navigation_bar_parking,
         Icons.Default.Place,
         Icons.Outlined.Place
+    ),
+    TopLevelRoute(
+        SDCATCardReader,
+        R.string.navigation_bar_sdcat_card_reader,
+        Icons.Default.CheckCircle,
+        Icons.Outlined.CheckCircle
     ),
     TopLevelRoute(
         Settings,
@@ -99,6 +109,7 @@ fun MyNavHost() {
             modifier = Modifier.padding(innerPadding)
         ) {
             parkingDestination()
+            sdcatCardReaderDestination()
             settingsDestination()
         }
     }
