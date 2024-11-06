@@ -7,4 +7,5 @@
     <string name="parking_history">History</string>
     <string name="map">Map</string>
     <string name="parking_navigate">Navigate</string>
+    <string name="parking_image_description">Parking image</string>
 </resources>
