@@ -39,7 +39,8 @@ class ParkingLotListViewModel @Inject constructor(
                 _uiState.update { currentUiState ->
                     currentUiState.copy(
                         loading = false,
-                        parkingLots = parkingLots
+                        parkingLots = parkingLots,
+                        error = false,
                     )
                 }
 
