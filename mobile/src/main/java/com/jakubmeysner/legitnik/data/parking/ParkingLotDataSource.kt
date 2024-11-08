@@ -1,6 +1,9 @@
 package com.jakubmeysner.legitnik.data.parking
 
+import android.util.Log
 import com.google.gson.annotations.SerializedName
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 
@@ -35,6 +38,7 @@ data class ParkingLotApiModel(
 data class ParkingLot(
     val id: String,
     val freePlaces: Int,
+    val name: String,
     val symbol: String,
     val photo: String,
     val address: String,
@@ -46,18 +50,29 @@ interface ParkingLotDataSource {
         List<ParkingLot>
 }
 
-class ParkingLotRemoteDataSource @Inject constructor(private val parkingLotApi: ParkingLotApiService) :
+class ParkingLotRemoteDataSource @Inject constructor(
+    private val parkingLotApi: ParkingLotApi,
+    private val ioDispatcher: CoroutineDispatcher
+) :
     ParkingLotDataSource {
     override suspend fun getParkingLots(): List<ParkingLot> {
-        val parkingList = parkingLotApi.getParkingLots().parkingLots
-        return parkingList.map {
-            ParkingLot(
-                it.id,
-                it.freePlaces,
-                it.symbol,
-                it.photo,
-                it.address
-            )
+        return withContext(ioDispatcher) {
+            Log.d("parkingDataSource", "Trying to fetch data")
+            val parkingList = parkingLotApi.getParkingLots().parkingLots
+            Log.d("parkingDataSource", "Parking data fetched")
+            val result = parkingList.map {
+                ParkingLot(
+                    it.id,
+                    it.freePlaces,
+                    it.name,
+                    it.symbol,
+                    it.photo,
+                    it.address
+                )
+            }
+            Log.d("parkingDataSource", "result = $result")
+            result
         }
+
     }
 }
