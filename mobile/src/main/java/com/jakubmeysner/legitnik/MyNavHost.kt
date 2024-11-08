@@ -24,6 +24,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.jakubmeysner.legitnik.ui.parking.Parking
+import com.jakubmeysner.legitnik.ui.parking.details.navigateToParkingLotDetails
 import com.jakubmeysner.legitnik.ui.parking.parkingDestination
 import com.jakubmeysner.legitnik.ui.settings.Settings
 import com.jakubmeysner.legitnik.ui.settings.settingsDestination
@@ -98,7 +99,7 @@ fun MyNavHost() {
             startDestination = Parking,
             modifier = Modifier.padding(innerPadding)
         ) {
-            parkingDestination()
+            parkingDestination(onNavigateToParkingLotDetails = navController::navigateToParkingLotDetails)
             settingsDestination()
         }
     }

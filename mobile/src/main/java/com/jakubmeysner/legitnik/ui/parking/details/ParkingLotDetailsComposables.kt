@@ -15,7 +15,7 @@ import com.jakubmeysner.legitnik.ui.theme.LegitnikTheme
 
 @Composable
 fun ParkingGeneralCard(
-    shortName: String,
+    symbol: String,
     name: String,
     address: String,
     freePlaces: Int,
@@ -26,15 +26,15 @@ fun ParkingGeneralCard(
             .fillMaxWidth()
             .padding(16.dp)
     ) {
-        Text(text = shortName)
+        Text(text = symbol)
         Text(text = name)
         AsyncImage(
             model = imageLink,
-            contentDescription = stringResource(R.string.parking_details_image_description)
+            contentDescription = stringResource(R.string.parking_lot_details_image_description)
         )
-        Text(text = stringResource(R.string.parking_details_address))
+        Text(text = stringResource(R.string.parking_lot_details_address))
         Text(text = address)
-        Text(text = stringResource(R.string.parking_details_free_places))
+        Text(text = stringResource(R.string.parking_lot_details_free_places))
         Text(text = freePlaces.toString())
     }
 }

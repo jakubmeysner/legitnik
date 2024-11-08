@@ -7,8 +7,8 @@ import kotlinx.serialization.Serializable
 @Serializable
 object ParkingLotList
 
-fun NavGraphBuilder.parkingLotListDestination() {
+fun NavGraphBuilder.parkingLotListDestination(onNavigateToParkingLotDetails: (id: String) -> Unit) {
     composable<ParkingLotList> {
-        ParkingLotListScreen()
+        ParkingLotListScreen(onNavigateToParkingLotDetails = onNavigateToParkingLotDetails)
     }
 }

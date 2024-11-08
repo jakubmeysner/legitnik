@@ -4,7 +4,7 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.jakubmeysner.legitnik.data.parking.ParkingLot
-import com.jakubmeysner.legitnik.data.parking.ParkingRepository
+import com.jakubmeysner.legitnik.data.parking.ParkingLotRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -22,7 +22,7 @@ data class ParkingLotUiState(
 @HiltViewModel
 class ParkingLotListViewModel @Inject constructor(
     private val savedStateHandle: SavedStateHandle,
-    private val parkingRepository: ParkingRepository
+    private val parkingLotRepository: ParkingLotRepository
 ) : ViewModel() {
     private val _uiState = MutableStateFlow(ParkingLotUiState())
     val uiState = _uiState.asStateFlow()
@@ -35,7 +35,7 @@ class ParkingLotListViewModel @Inject constructor(
         viewModelScope.launch {
             try {
                 _uiState.update { currentUiState -> currentUiState.copy(loading = true) }
-                val parkingLots = parkingRepository.getParkingLots()
+                val parkingLots = parkingLotRepository.getParkingLots()
                 _uiState.update { currentUiState ->
                     currentUiState.copy(
                         loading = false,

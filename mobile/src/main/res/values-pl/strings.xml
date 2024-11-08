@@ -3,10 +3,10 @@
     <string name="app_name">Legitnik</string>
     <string name="navigation_bar_parking">Parking</string>
     <string name="navigation_bar_settings">Ustawienia</string>
-    <string name="parking_details_address">Adres</string>
-    <string name="parking_details_free_places">Liczba wolnych miejsc</string>
-    <string name="parking_details_history">Historia</string>
-    <string name="parking_details_map">Mapa</string>
-    <string name="parking_details_navigate">Nawiguj</string>
-    <string name="parking_details_image_description">Zdjęcie parkingu</string>
+    <string name="parking_lot_details_address">Adres</string>
+    <string name="parking_lot_details_free_places">Liczba wolnych miejsc</string>
+    <string name="parking_lot_details_history">Historia</string>
+    <string name="parking_lot_details_map">Mapa</string>
+    <string name="parking_lot_details_navigate">Nawiguj</string>
+    <string name="parking_lot_details_image_description">Zdjęcie parkingu</string>
 </resources>

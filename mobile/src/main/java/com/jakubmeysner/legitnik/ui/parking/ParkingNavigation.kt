@@ -10,9 +10,9 @@ import kotlinx.serialization.Serializable
 @Serializable
 object Parking
 
-fun NavGraphBuilder.parkingDestination() {
+fun NavGraphBuilder.parkingDestination(onNavigateToParkingLotDetails: (id: String) -> Unit) {
     navigation<Parking>(startDestination = ParkingLotList) {
-        parkingLotListDestination()
+        parkingLotListDestination(onNavigateToParkingLotDetails = onNavigateToParkingLotDetails)
         parkingLotDetailsDestination()
     }
 }
