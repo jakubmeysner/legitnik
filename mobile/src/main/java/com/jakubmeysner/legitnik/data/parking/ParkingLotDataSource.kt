@@ -54,12 +54,12 @@ class ParkingLotRemoteDataSource @Inject constructor(
     private val parkingLotApi: ParkingLotApi,
     private val ioDispatcher: CoroutineDispatcher
 ) :
-    ParkingLotDataSource {
+    ParkingLotDataSource, LoggingInterface {
     override suspend fun getParkingLots(): List<ParkingLot> {
         return withContext(ioDispatcher) {
-            Log.d("parkingDataSource", "Trying to fetch data")
+            Log.d(TAG, "Trying to fetch data")
             val parkingList = parkingLotApi.getParkingLots().parkingLots
-            Log.d("parkingDataSource", "Parking data fetched")
+            Log.d(TAG, "Parking data fetched")
             val result = parkingList.map {
                 ParkingLot(
                     it.id,
@@ -70,7 +70,7 @@ class ParkingLotRemoteDataSource @Inject constructor(
                     it.address
                 )
             }
-            Log.d("parkingDataSource", "result = $result")
+            Log.d(TAG, "result = $result")
             result
         }
 

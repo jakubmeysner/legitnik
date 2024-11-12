@@ -5,6 +5,7 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.toRoute
+import com.jakubmeysner.legitnik.data.parking.LoggingInterface
 import com.jakubmeysner.legitnik.data.parking.ParkingLot
 import com.jakubmeysner.legitnik.data.parking.ParkingLotRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -13,7 +14,6 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
-
 
 data class ParkingLotDetailsUiState(
     val parkingLotDetails: ParkingLot? = null,
@@ -25,15 +25,16 @@ data class ParkingLotDetailsUiState(
 class ParkingLotDetailsViewModel @Inject constructor(
     private val savedStateHandle: SavedStateHandle,
     private val parkingLotRepository: ParkingLotRepository
-) : ViewModel() {
+) : ViewModel(), LoggingInterface {
     private val route = savedStateHandle.toRoute<ParkingLotDetails>()
+
     private val _uiState = MutableStateFlow(ParkingLotDetailsUiState())
     val uiState = _uiState.asStateFlow()
 
 
     init {
         loadParkingLotDetails()
-        Log.d("parkingDetailsVM", "id = ${route.id}")
+        Log.d(TAG, "id = ${route.id}")
     }
 
     private fun loadParkingLotDetails() {
