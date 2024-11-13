@@ -96,7 +96,7 @@ fun MyNavHost() {
                             Icon(
                                 if (selected) topLevelRoute.selectedIcon.getImageVector()
                                 else topLevelRoute.notSelectedIcon.getImageVector(),
-                                contentDescription = stringResource(topLevelRoute.nameResourceId)
+                                contentDescription = null
                             )
                         },
                         label = {
