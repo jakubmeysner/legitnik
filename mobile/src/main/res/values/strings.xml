@@ -5,4 +5,8 @@
     <string name="navigation_bar_sdcat_card_reader">Card Reader</string>
     <string name="sdcat_card_reader_interface_nfc">NFC</string>
     <string name="sdcat_card_reader_interface_usb">USB</string>
+    <string name="sdcat_card_reader_interface_nfc_unavailable">NFC is unavailable on this device!</string>
+    <string name="sdcat_card_reader_interface_usb_unavailable">USB is unavailable on this device!</string>
+    <string name="sdcat_card_reader_interface_nfc_prompt">Tap a Student/Doctoral Candidate/Academic Teacher Card with your device to scan it…</string>
+    <string name="sdcat_card_reader_interface_nfc_prompt_disclaimer">WARNING: Only some cards support reading data using NFC - others require using a USB reader</string>
 </resources>

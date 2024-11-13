@@ -1,5 +1,6 @@
 package com.jakubmeysner.legitnik.ui.sdcatcardreader
 
+import android.nfc.Tag
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -44,6 +45,8 @@ class SDCATCardReaderViewModel @Inject constructor(
     fun selectInterface(inter: SDCATCardReaderInterface) {
         savedStateHandle[SELECTED_INTERFACE_KEY] = inter
     }
+
+    fun onTagDiscovered(tag: Tag) {}
 
     companion object {
         private const val SELECTED_INTERFACE_KEY = "selectedInterface"
