@@ -3,4 +3,11 @@
     <string name="app_name">Legitnik</string>
     <string name="navigation_bar_parking">Parking</string>
     <string name="navigation_bar_settings">Ustawienia</string>
+    <string name="navigation_bar_sdcat_card_reader">Czytnik EL</string>
+    <string name="sdcat_card_reader_interface_nfc">NFC</string>
+    <string name="sdcat_card_reader_interface_usb">USB</string>
+    <string name="sdcat_card_reader_interface_nfc_unavailable">NFC jest niedostępne na tym urządzeniu!</string>
+    <string name="sdcat_card_reader_interface_usb_unavailable">USB jest niedostępne na tym urządzeniu!</string>
+    <string name="sdcat_card_reader_interface_nfc_prompt">Zbliż Elektroniczną Legitymację Studencką/Doktoranta/Nauczyciela Akademickiego do urządzenia aby ją zeskanować…</string>
+    <string name="sdcat_card_reader_interface_nfc_prompt_disclaimer">UWAGA: Tylko część legitymacji wspiera odczyt danych za pomocą NFC - w przypadku pozostałych konieczne jest użycie czytnika USB</string>
 </resources>
