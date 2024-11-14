@@ -9,7 +9,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.compose.LifecycleResumeEffect
 import com.jakubmeysner.legitnik.R
-import com.jakubmeysner.legitnik.findActivity
+import com.jakubmeysner.legitnik.util.findActivity
 
 @Composable
 fun SDCATCardReaderInterfaceNfc(onTagDiscovered: (tag: Tag) -> Unit) {

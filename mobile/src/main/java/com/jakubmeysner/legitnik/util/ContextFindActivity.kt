@@ -1,4 +1,4 @@
-package com.jakubmeysner.legitnik
+package com.jakubmeysner.legitnik.util
 
 import android.app.Activity
 import android.content.Context
