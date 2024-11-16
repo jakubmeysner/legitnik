@@ -1,11 +1,12 @@
 package com.jakubmeysner.legitnik.ui.parking.details
 
-import android.util.Log
+import androidx.annotation.StringRes
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.toRoute
-import com.jakubmeysner.legitnik.data.parking.LoggingInterface
+import com.jakubmeysner.legitnik.R
+import com.jakubmeysner.legitnik.data.parking.ClassSimpleNameLoggingTag
 import com.jakubmeysner.legitnik.data.parking.ParkingLot
 import com.jakubmeysner.legitnik.data.parking.ParkingLotRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -25,8 +26,10 @@ data class ParkingLotDetailsUiState(
 class ParkingLotDetailsViewModel @Inject constructor(
     private val savedStateHandle: SavedStateHandle,
     private val parkingLotRepository: ParkingLotRepository
-) : ViewModel(), LoggingInterface {
+) : ViewModel(), ClassSimpleNameLoggingTag {
     private val route = savedStateHandle.toRoute<ParkingLotDetails>()
+    private val _messageIds: MutableStateFlow<List<Int>> = MutableStateFlow(emptyList())
+    val messageIds = _messageIds.asStateFlow()
 
     private val _uiState = MutableStateFlow(ParkingLotDetailsUiState())
     val uiState = _uiState.asStateFlow()
@@ -34,7 +37,6 @@ class ParkingLotDetailsViewModel @Inject constructor(
 
     init {
         loadParkingLotDetails()
-        Log.d(TAG, "id = ${route.id}")
     }
 
     private fun loadParkingLotDetails() {
@@ -49,6 +51,10 @@ class ParkingLotDetailsViewModel @Inject constructor(
                         error = parkingLotDetails == null,
                     )
                 }
+                //violated separation of concerns?
+                if (parkingLotDetails == null) {
+                    showViewModelMessage(R.string.parking_lot_details_data_unavailable_message)
+                }
 
             } catch (e: Exception) {
                 _uiState.update { currentUiState ->
@@ -57,7 +63,27 @@ class ParkingLotDetailsViewModel @Inject constructor(
                         loading = false
                     )
                 }
+                showViewModelMessage(R.string.parking_lot_details_error_message)
             }
+        }
+    }
+
+    private fun showViewModelMessage(messageId: Int) {
+        _messageIds.update { currentMessageIds ->
+            currentMessageIds + messageId
+        }
+    }
+
+    //function to set message in reaction of user interaction
+    fun showUserMessage(@StringRes messageId: Int) {
+        _messageIds.update { currentMessageIds ->
+            currentMessageIds + messageId
+        }
+    }
+
+    fun removeShownMessage(@StringRes messageId: Int) {
+        _messageIds.update { currentMessageIds ->
+            currentMessageIds.filter { it != messageId }
         }
     }
 }

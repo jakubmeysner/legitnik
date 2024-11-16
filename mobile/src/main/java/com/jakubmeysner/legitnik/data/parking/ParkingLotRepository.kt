@@ -21,7 +21,7 @@ class ParkingLotRepositoryImpl @Inject constructor(
     private val parkingLotRemoteDataSource: ParkingLotDataSource,
     private val externalScope: CoroutineScope
 ) :
-    ParkingLotRepository, LoggingInterface {
+    ParkingLotRepository, ClassSimpleNameLoggingTag {
     private val cachedParkingLotsMutex = Mutex()
     private var cachedParkingLots: List<ParkingLot>? = null
 
@@ -35,7 +35,7 @@ class ParkingLotRepositoryImpl @Inject constructor(
                 // Thread-safe write to latestParkingLots.
                 cachedParkingLotsMutex.withLock {
                     cachedParkingLots = networkResult
-                    Log.d(TAG, "Inside mutex: $networkResult")
+                    Log.d(tag, "Inside mutex: $networkResult")
                 }
             }
         }.await()

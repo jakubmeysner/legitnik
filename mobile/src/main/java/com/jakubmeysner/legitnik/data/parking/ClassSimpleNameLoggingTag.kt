@@ -1,6 +1,6 @@
 package com.jakubmeysner.legitnik.data.parking
 
-interface LoggingInterface {
-    val TAG: String
+interface ClassSimpleNameLoggingTag {
+    val tag: String
         get() = this::class.simpleName.toString()
 }
