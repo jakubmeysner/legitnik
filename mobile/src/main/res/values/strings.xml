@@ -8,4 +8,6 @@
     <string name="parking_lot_details_map">Map</string>
     <string name="parking_lot_details_navigate">Navigate</string>
     <string name="parking_lot_details_image_description">Parking image</string>
+    <string name="parking_lot_details_error_message">Error occured! Displayed data might be outdated</string>
+    <string name="parking_lot_details_data_unavailable_message">Data about parking lot details is unavailable. Try again later</string>
 </resources>

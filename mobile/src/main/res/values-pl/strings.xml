@@ -9,4 +9,6 @@
     <string name="parking_lot_details_map">Mapa</string>
     <string name="parking_lot_details_navigate">Nawiguj</string>
     <string name="parking_lot_details_image_description">Zdjęcie parkingu</string>
+    <string name="parking_lot_details_error_message">Wystąpił błąd! Obecne dane mogą być nieaktualne</string>
+    <string name="parking_lot_details_data_unavailable_message">Dane dotyczące tego parkingu są niedostępne. Spróbuj ponownie później</string>
 </resources>
