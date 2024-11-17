@@ -10,4 +10,5 @@
     <string name="sdcat_card_reader_interface_usb_unavailable">USB jest niedostępne na tym urządzeniu!</string>
     <string name="sdcat_card_reader_interface_nfc_prompt">Zbliż Elektroniczną Legitymację Studencką/Doktoranta/Nauczyciela Akademickiego do urządzenia aby ją zeskanować…</string>
     <string name="sdcat_card_reader_interface_nfc_prompt_disclaimer">UWAGA: Tylko część legitymacji wspiera odczyt danych za pomocą NFC - w przypadku pozostałych konieczne jest użycie czytnika USB</string>
+    <string name="sdcat_card_reader_snackbar_nfc_unsupported_card">Ta karta nie jest wspierana! Jeżeli jest to ELS/ELD/ELNA, spróbuj użyć czytnika USB.</string>
 </resources>
