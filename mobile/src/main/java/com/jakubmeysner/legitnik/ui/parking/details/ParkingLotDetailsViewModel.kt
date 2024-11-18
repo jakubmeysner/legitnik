@@ -19,7 +19,8 @@ import javax.inject.Inject
 data class ParkingLotDetailsUiState(
     val parkingLotDetails: ParkingLot? = null,
     val loading: Boolean = false,
-    val error: Boolean = false
+    val error: Boolean = false,
+    val messageIds: List<Int> = emptyList(),
 )
 
 @HiltViewModel
@@ -28,8 +29,6 @@ class ParkingLotDetailsViewModel @Inject constructor(
     private val parkingLotRepository: ParkingLotRepository
 ) : ViewModel(), ClassSimpleNameLoggingTag {
     private val route = savedStateHandle.toRoute<ParkingLotDetails>()
-    private val _messageIds: MutableStateFlow<List<Int>> = MutableStateFlow(emptyList())
-    val messageIds = _messageIds.asStateFlow()
 
     private val _uiState = MutableStateFlow(ParkingLotDetailsUiState())
     val uiState = _uiState.asStateFlow()
@@ -69,21 +68,27 @@ class ParkingLotDetailsViewModel @Inject constructor(
     }
 
     private fun showViewModelMessage(messageId: Int) {
-        _messageIds.update { currentMessageIds ->
-            currentMessageIds + messageId
+        _uiState.update { currentUiState ->
+            currentUiState.copy(
+                messageIds = currentUiState.messageIds + messageId
+            )
         }
     }
 
     //function to set message in reaction of user interaction
     fun showUserMessage(@StringRes messageId: Int) {
-        _messageIds.update { currentMessageIds ->
-            currentMessageIds + messageId
+        _uiState.update { currentUiState ->
+            currentUiState.copy(
+                messageIds = currentUiState.messageIds + messageId
+            )
         }
     }
 
     fun removeShownMessage(@StringRes messageId: Int) {
-        _messageIds.update { currentMessageIds ->
-            currentMessageIds.filter { it != messageId }
+        _uiState.update { currentUiState ->
+            currentUiState.copy(
+                messageIds = currentUiState.messageIds.filter { it != messageId }
+            )
         }
     }
 }

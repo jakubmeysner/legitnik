@@ -1,5 +1,7 @@
 package com.jakubmeysner.legitnik.ui.parking.details
 
+import androidx.compose.material3.SnackbarResult
+import androidx.compose.material3.SnackbarVisuals
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
@@ -8,9 +10,9 @@ import kotlinx.serialization.Serializable
 @Serializable
 data class ParkingLotDetails(val id: String)
 
-fun NavGraphBuilder.parkingLotDetailsDestination() {
+fun NavGraphBuilder.parkingLotDetailsDestination(onShowSnackbar: suspend (visuals: SnackbarVisuals) -> SnackbarResult) {
     composable<ParkingLotDetails> {
-        ParkingLotDetailsScreen()
+        ParkingLotDetailsScreen(onShowSnackbar = onShowSnackbar)
     }
 }
 

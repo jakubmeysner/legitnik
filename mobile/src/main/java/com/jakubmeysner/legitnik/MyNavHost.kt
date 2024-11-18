@@ -143,7 +143,10 @@ fun MyNavHost() {
                 fadeOut(animationSpec = tween(300))
             }
         ) {
-            parkingDestination(onNavigateToParkingLotDetails = navController::navigateToParkingLotDetails)
+            parkingDestination(
+                onNavigateToParkingLotDetails = navController::navigateToParkingLotDetails,
+                onShowSnackbar = onShowSnackbar
+            )
             sdcatCardReaderDestination(onShowSnackbar = onShowSnackbar)
             settingsDestination()
         }
