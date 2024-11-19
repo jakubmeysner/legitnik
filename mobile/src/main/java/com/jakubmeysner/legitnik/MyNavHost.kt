@@ -33,6 +33,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.jakubmeysner.legitnik.ui.parking.Parking
+import com.jakubmeysner.legitnik.ui.parking.details.navigateToParkingLotDetails
 import com.jakubmeysner.legitnik.ui.parking.parkingDestination
 import com.jakubmeysner.legitnik.ui.sdcatcardreader.SDCATCardReader
 import com.jakubmeysner.legitnik.ui.sdcatcardreader.sdcatCardReaderDestination
@@ -142,7 +143,10 @@ fun MyNavHost() {
                 fadeOut(animationSpec = tween(300))
             }
         ) {
-            parkingDestination()
+            parkingDestination(
+                onNavigateToParkingLotDetails = navController::navigateToParkingLotDetails,
+                onShowSnackbar = onShowSnackbar
+            )
             sdcatCardReaderDestination(onShowSnackbar = onShowSnackbar)
             settingsDestination()
         }
