@@ -11,7 +11,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.Icon
@@ -19,7 +18,6 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.stringResource
@@ -35,37 +33,52 @@ fun ParkingLotDetailsGeneralCard(
     name: String,
     address: String,
     freePlaces: Int,
-    imageLink: String
+    imageLink: String,
 ) {
     Card {
         Column(
             modifier = Modifier
-                .padding(horizontal = 16.dp, vertical = 16.dp)
+                .padding(vertical = 16.dp)
                 .fillMaxWidth()
         ) {
-            Text(text = symbol, style = Typography.titleLarge)
-            Text(text = name, style = Typography.bodyLarge)
+            Text(
+                text = symbol,
+                style = Typography.titleLarge,
+                modifier = Modifier.padding(horizontal = 16.dp)
+            )
+            Text(
+                text = name,
+                style = Typography.bodyLarge,
+                modifier = Modifier.padding(horizontal = 16.dp)
+            )
 
             AsyncImage(
                 model = imageLink,
                 contentDescription = stringResource(R.string.parking_lot_details_image_description),
                 modifier = Modifier
                     .padding(vertical = 16.dp)
-                    .clip(RoundedCornerShape(16.dp))
                     .fillMaxWidth(),
                 contentScale = ContentScale.Crop
             )
 
             Text(
                 text = stringResource(R.string.parking_lot_details_address),
-                style = Typography.labelLarge
+                style = Typography.labelLarge, modifier = Modifier.padding(horizontal = 16.dp)
             )
-            Text(text = address, style = Typography.bodyMedium)
+            Text(
+                text = address,
+                style = Typography.bodyMedium,
+                modifier = Modifier.padding(horizontal = 16.dp)
+            )
             Text(
                 text = stringResource(R.string.parking_lot_details_free_places),
-                style = Typography.labelLarge
+                style = Typography.labelLarge, modifier = Modifier.padding(horizontal = 16.dp)
             )
-            Text(text = freePlaces.toString(), style = Typography.bodyMedium)
+            Text(
+                text = freePlaces.toString(),
+                style = Typography.bodyMedium,
+                modifier = Modifier.padding(horizontal = 16.dp)
+            )
         }
     }
 }
