@@ -25,8 +25,9 @@ fun ParkingLotDetailsScreen(
     onShowSnackbar: suspend (visuals: SnackbarVisuals) -> SnackbarResult,
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+    val parkingLotDetails = uiState.parkingLotDetails
 
-    if (uiState.parkingLotDetails == null) {
+    if (parkingLotDetails == null) {
         ParkingLotDetailsDataUnavailable()
     } else {
         Column(
@@ -37,11 +38,11 @@ fun ParkingLotDetailsScreen(
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
             ParkingLotDetailsGeneralCard(
-                uiState.parkingLotDetails!!.symbol,
-                uiState.parkingLotDetails!!.name,
-                uiState.parkingLotDetails!!.address,
-                uiState.parkingLotDetails!!.freePlaces,
-                "https://iparking.pwr.edu.pl${uiState.parkingLotDetails!!.photo}"
+                parkingLotDetails.symbol,
+                parkingLotDetails.name,
+                parkingLotDetails.address,
+                parkingLotDetails.freePlaces,
+                "https://iparking.pwr.edu.pl${parkingLotDetails.photo}"
             )
         }
     }
