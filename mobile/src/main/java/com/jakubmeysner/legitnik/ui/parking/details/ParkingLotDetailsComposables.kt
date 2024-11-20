@@ -7,10 +7,12 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.Icon
@@ -18,14 +20,23 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
+import com.google.android.gms.maps.model.CameraPosition
+import com.google.android.gms.maps.model.LatLng
+import com.google.maps.android.compose.GoogleMap
+import com.google.maps.android.compose.Marker
+import com.google.maps.android.compose.rememberCameraPositionState
+import com.google.maps.android.compose.rememberMarkerState
 import com.jakubmeysner.legitnik.R
 import com.jakubmeysner.legitnik.ui.theme.Typography
+import com.jakubmeysner.legitnik.util.navigateInMaps
 
 @Composable
 fun ParkingLotDetailsGeneralCard(
@@ -84,7 +95,8 @@ fun ParkingLotDetailsGeneralCard(
 }
 
 @Composable
-fun ParkingLotDetailsHistoryCard() {
+fun ParkingLotDetailsHistoryCard(latitude: Double, longitude: Double, name: String) {
+    val context = LocalContext.current
     Card {
         Column(
             modifier = Modifier
@@ -108,13 +120,30 @@ fun ParkingLotDetailsHistoryCard() {
                 style = Typography.labelLarge
             )
 
-//            Image(
-//                painter = painterResource(R.drawable.google_maps),
-//                contentDescription = null,
-//                modifier = Modifier.fillMaxWidth()
-//            )
+            val parkingGeo = LatLng(latitude, longitude)
+            val parkingMarkerState = rememberMarkerState(position = parkingGeo)
+            val cameraPosition = rememberCameraPositionState {
+                position = CameraPosition.fromLatLngZoom(parkingGeo, 12f)
+            }
+            GoogleMap(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(200.dp)
+                    .clip(RoundedCornerShape(16.dp)),
+                cameraPositionState = cameraPosition,
+            ) {
+                Marker(state = parkingMarkerState, title = name)
+            }
 
-            Button(onClick = {}, modifier = Modifier.align(Alignment.CenterHorizontally)) {
+
+            Button(onClick = {
+                context.startActivity(
+                    navigateInMaps(
+                        latitude,
+                        longitude
+                    )
+                )
+            }, modifier = Modifier.align(Alignment.CenterHorizontally)) {
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.Center
@@ -127,8 +156,7 @@ fun ParkingLotDetailsHistoryCard() {
                     Spacer(modifier = Modifier.width(4.dp))
                     Text(
                         text = stringResource(R.string.parking_lot_details_navigate),
-
-                        )
+                    )
                 }
             }
         }
