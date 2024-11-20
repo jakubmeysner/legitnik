@@ -44,8 +44,15 @@ fun ParkingLotDetailsScreen(
                 parkingLotDetails.freePlaces,
                 "https://iparking.pwr.edu.pl${parkingLotDetails.photo}"
             )
+
+            ParkingLotDetailsMapCard(
+                parkingLotDetails.latitude,
+                parkingLotDetails.longitude,
+                parkingLotDetails.name
+            )
         }
     }
+
     if (uiState.messageIds.isNotEmpty()) {
         val messageId = uiState.messageIds.first()
         val message = stringResource(id = messageId)
