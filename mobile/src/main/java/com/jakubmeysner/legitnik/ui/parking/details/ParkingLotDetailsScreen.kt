@@ -45,7 +45,7 @@ fun ParkingLotDetailsScreen(
                 "https://iparking.pwr.edu.pl${parkingLotDetails.photo}"
             )
 
-            ParkingLotDetailsHistoryCard(
+            ParkingLotDetailsMapCard(
                 parkingLotDetails.latitude,
                 parkingLotDetails.longitude,
                 parkingLotDetails.name

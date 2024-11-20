@@ -12,7 +12,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.Icon
@@ -21,13 +20,13 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.unit.dp
+import androidx.core.net.toUri
 import coil3.compose.AsyncImage
 import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
@@ -36,8 +35,7 @@ import com.google.maps.android.compose.Marker
 import com.google.maps.android.compose.rememberCameraPositionState
 import com.google.maps.android.compose.rememberMarkerState
 import com.jakubmeysner.legitnik.R
-import com.jakubmeysner.legitnik.ui.theme.Typography
-import com.jakubmeysner.legitnik.util.navigateInMaps
+import com.jakubmeysner.legitnik.util.showMap
 
 @Composable
 fun ParkingLotDetailsGeneralCard(
@@ -97,8 +95,7 @@ fun ParkingLotDetailsGeneralCard(
 }
 
 @Composable
-fun ParkingLotDetailsHistoryCard(latitude: Double, longitude: Double, name: String) {
-    val context = LocalContext.current
+fun ParkingLotDetailsHistoryCard() {
     Card {
         Column(
             modifier = Modifier
@@ -109,7 +106,7 @@ fun ParkingLotDetailsHistoryCard(latitude: Double, longitude: Double, name: Stri
         ) {
             Text(
                 text = stringResource(R.string.parking_lot_details_history),
-                style = Typography.labelLarge
+                style = MaterialTheme.typography.labelLarge
             )
 //            Image(
 //                painter = painterResource(R.drawable.stonks),
@@ -117,21 +114,36 @@ fun ParkingLotDetailsHistoryCard(latitude: Double, longitude: Double, name: Stri
 //                modifier = Modifier.fillMaxWidth()
 //            )
 
+
+        }
+    }
+}
+
+@Composable
+fun ParkingLotDetailsMapCard(latitude: Double, longitude: Double, name: String) {
+    val context = LocalContext.current
+    val parkingGeo = LatLng(latitude, longitude)
+    val parkingMarkerState = rememberMarkerState(position = parkingGeo)
+    val cameraPosition = rememberCameraPositionState {
+        position = CameraPosition.fromLatLngZoom(parkingGeo, 12f)
+    }
+
+    Card {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(vertical = 16.dp),
+            verticalArrangement = Arrangement.spacedBy(16.dp)
+        ) {
             Text(
                 text = stringResource(R.string.parking_lot_details_map),
-                style = Typography.labelLarge
+                style = MaterialTheme.typography.titleLarge,
+                modifier = Modifier.padding(horizontal = 16.dp)
             )
-
-            val parkingGeo = LatLng(latitude, longitude)
-            val parkingMarkerState = rememberMarkerState(position = parkingGeo)
-            val cameraPosition = rememberCameraPositionState {
-                position = CameraPosition.fromLatLngZoom(parkingGeo, 12f)
-            }
             GoogleMap(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(200.dp)
-                    .clip(RoundedCornerShape(16.dp)),
+                    .height(300.dp),
                 cameraPositionState = cameraPosition,
             ) {
                 Marker(state = parkingMarkerState, title = name)
@@ -139,12 +151,11 @@ fun ParkingLotDetailsHistoryCard(latitude: Double, longitude: Double, name: Stri
 
 
             Button(onClick = {
-                context.startActivity(
-                    navigateInMaps(
-                        latitude,
-                        longitude
-                    )
+
+                showMap(
+                    "geo:0,0?q=$latitude,$longitude($name)".toUri(), context
                 )
+
             }, modifier = Modifier.align(Alignment.CenterHorizontally)) {
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
