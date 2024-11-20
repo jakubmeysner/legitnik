@@ -18,7 +18,6 @@ data class ParkingLotUiState(
     val error: Boolean = false
 )
 
-
 @HiltViewModel
 class ParkingLotListViewModel @Inject constructor(
     private val savedStateHandle: SavedStateHandle,
@@ -31,19 +30,20 @@ class ParkingLotListViewModel @Inject constructor(
         loadParkingLots()
     }
 
-    private fun loadParkingLots() {
+    fun loadParkingLots(forceRefresh: Boolean = false) {
         viewModelScope.launch {
             try {
-                _uiState.update { currentUiState -> currentUiState.copy(loading = true) }
-                val parkingLots = parkingLotRepository.getParkingLots()
+                _uiState.update { currentUiState ->
+                    currentUiState.copy(loading = true, error = false)
+                }
+                val parkingLots = parkingLotRepository.getParkingLots(forceRefresh)
                 _uiState.update { currentUiState ->
                     currentUiState.copy(
                         loading = false,
                         parkingLots = parkingLots,
-                        error = false,
+                        error = false
                     )
                 }
-
             } catch (e: Exception) {
                 _uiState.update { currentUiState ->
                     currentUiState.copy(
@@ -55,5 +55,3 @@ class ParkingLotListViewModel @Inject constructor(
         }
     }
 }
-
-
