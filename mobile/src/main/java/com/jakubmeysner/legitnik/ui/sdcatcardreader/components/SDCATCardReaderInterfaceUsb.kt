@@ -1,14 +1,22 @@
 package com.jakubmeysner.legitnik.ui.sdcatcardreader.components
 
 import android.content.pm.PackageManager
+import android.hardware.usb.UsbDevice
+import android.hardware.usb.UsbManager
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import com.jakubmeysner.legitnik.R
 
 @Composable
-fun SDCATCardReaderInterfaceUsb() {
+fun SDCATCardReaderInterfaceUsb(
+    visible: Boolean,
+    createReader: (usbManager: UsbManager) -> Unit,
+    selectedUsbDevice: UsbDevice?,
+    selectUsbDevice: (usbDevice: UsbDevice?) -> Unit,
+) {
     val context = LocalContext.current
 
     val hasUsbFeature = remember(context) {
@@ -16,8 +24,29 @@ fun SDCATCardReaderInterfaceUsb() {
     }
 
     if (!hasUsbFeature) {
-        SDCATCardReaderInterfaceUnavailable(
-            stringResource(R.string.sdcat_card_reader_interface_usb_unavailable)
-        )
+        if (visible) {
+            SDCATCardReaderInterfaceUnavailable(
+                stringResource(R.string.sdcat_card_reader_interface_usb_unavailable)
+            )
+        }
+    } else {
+        val manager = remember(context) { context.getSystemService(UsbManager::class.java) }
+
+        LaunchedEffect(manager) {
+            createReader(manager)
+        }
+
+        if (visible) {
+            SDCATCardReaderInterfaceUsbDeviceSelect(
+                selectedUsbDevice = selectedUsbDevice,
+                selectUsbDevice = selectUsbDevice,
+            )
+
+            if (selectedUsbDevice == null) {
+                SDCATCardReaderInterfaceUsbDeviceSelectPrompt()
+            } else {
+                SDCATCardReaderInterfaceUsbInsertCardPrompt()
+            }
+        }
     }
 }
