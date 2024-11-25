@@ -80,6 +80,8 @@ dependencies {
     implementation(libs.play.services.maps)
     implementation(libs.google.maps.compose)
     implementation(libs.firebase.messaging)
+    implementation(libs.vico.compose)
+    implementation(libs.vico.compose.m3)
     kapt(libs.hilt.compiler)
     kapt(libs.androidx.lifecycle.compiler)
     testImplementation(libs.junit)
