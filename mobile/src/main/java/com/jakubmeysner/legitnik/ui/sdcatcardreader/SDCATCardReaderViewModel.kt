@@ -86,8 +86,8 @@ class SDCATCardReaderViewModel @Inject constructor(
 
     fun createUsbReader(usbManager: UsbManager) {
         usbReader = Reader(usbManager).apply {
-            setOnStateChangeListener { slotNum, _, currState ->
-                if (currState == Reader.CARD_PRESENT) {
+            setOnStateChangeListener { slotNum, previousState, currentState ->
+                if (previousState == Reader.CARD_ABSENT && currentState == Reader.CARD_PRESENT) {
                     onCardInserted(slotNum)
                 }
             }
