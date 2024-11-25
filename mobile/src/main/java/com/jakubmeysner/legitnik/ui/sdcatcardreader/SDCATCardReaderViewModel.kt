@@ -121,6 +121,12 @@ class SDCATCardReaderViewModel @Inject constructor(
         _snackbar.update { null }
     }
 
+    override fun onCleared() {
+        if (usbReader?.isOpened == true) {
+            usbReader?.close()
+        }
+    }
+
     companion object {
         private const val SELECTED_INTERFACE_KEY = "selectedInterface"
     }
