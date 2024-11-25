@@ -18,4 +18,8 @@
     <string name="sdcat_card_reader_interface_nfc_prompt">Tap a Student/Doctoral Candidate/Academic Teacher Card with your device to scan it…</string>
     <string name="sdcat_card_reader_interface_nfc_prompt_disclaimer">WARNING: Only some cards support reading data using NFC - others require using a USB reader</string>
     <string name="sdcat_card_reader_snackbar_nfc_unsupported_card">This card is not supported! If it\'s a Student/DC/AT card, try using a USB reader.</string>
+    <string name="sdcat_card_reader_interface_usb_card_reader">USB Card Reader</string>
+    <string name="sdcat_card_reader_interface_usb_device_select_prompt">Connect a USB card reader to your device and select it from the list above…</string>
+    <string name="sdcat_card_reader_snackbar_usb_unsupported_device">The selected USB device is not a supported card reader! Please try using another reader.</string>
+    <string name="sdcat_card_reader_interface_usb_insert_card_prompt">Insert a Student/Doctoral Candidate/Academic Teacher Card into the reader to scan it…</string>
 </resources>

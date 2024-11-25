@@ -80,6 +80,7 @@ dependencies {
     implementation(libs.play.services.maps)
     implementation(libs.google.maps.compose)
     implementation(libs.firebase.messaging)
+    implementation(files("libs/acssmc-1.1.5.jar"))
     kapt(libs.hilt.compiler)
     kapt(libs.androidx.lifecycle.compiler)
     testImplementation(libs.junit)
