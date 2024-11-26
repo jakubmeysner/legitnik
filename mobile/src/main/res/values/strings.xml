@@ -18,4 +18,8 @@
     <string name="sdcat_card_reader_interface_nfc_prompt">Tap a Student/Doctoral Candidate/Academic Teacher Card with your device to scan it…</string>
     <string name="sdcat_card_reader_interface_nfc_prompt_disclaimer">WARNING: Only some cards support reading data using NFC - others require using a USB reader</string>
     <string name="sdcat_card_reader_snackbar_nfc_unsupported_card">This card is not supported! If it\'s a Student/DC/AT card, try using a USB reader.</string>
+    <string name="parking_lot_list_free_places">%1$d free spaces</string>
+    <string name="parking_lot_list_error">An error occurred. Check your internet connection and try again later.</string>
+    <string name="parking_lot_list_snack_error">An error occurred. Displayed data might be outdated.</string>
+    <string name="parking_lot_list_refresh">Refresh</string>
 </resources>

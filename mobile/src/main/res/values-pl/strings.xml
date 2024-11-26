@@ -19,4 +19,8 @@
     <string name="sdcat_card_reader_interface_nfc_prompt">Zbliż Elektroniczną Legitymację Studencką/Doktoranta/Nauczyciela Akademickiego do urządzenia aby ją zeskanować…</string>
     <string name="sdcat_card_reader_interface_nfc_prompt_disclaimer">UWAGA: Tylko część legitymacji wspiera odczyt danych za pomocą NFC - w przypadku pozostałych konieczne jest użycie czytnika USB</string>
     <string name="sdcat_card_reader_snackbar_nfc_unsupported_card">Ta karta nie jest wspierana! Jeżeli jest to ELS/ELD/ELNA, spróbuj użyć czytnika USB.</string>
+    <string name="parking_lot_list_free_places">%1$d wolnych miejsc</string>
+    <string name="parking_lot_list_error">Wystąpił błąd. Sprawdź swoje połączenie i spróbuj ponownie później.</string>
+    <string name="parking_lot_list_snack_error">Wystąpił błąd. Wyświetlane dane mogą być nieaktualne.</string>
+    <string name="parking_lot_list_refresh">Odśwież</string>
 </resources>
