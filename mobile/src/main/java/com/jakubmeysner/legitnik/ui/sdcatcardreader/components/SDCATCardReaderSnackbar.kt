@@ -25,8 +25,12 @@ fun SDCATCardReaderNfcUnsupportedCardSnackbar(
     val scope = rememberCoroutineScope()
     var job by remember { mutableStateOf<Job?>(null) }
 
-    val showNfcUnsupportedCardSnackbarMessage = stringResource(
+    val nfcUnsupportedCardSnackbarMessage = stringResource(
         R.string.sdcat_card_reader_snackbar_nfc_unsupported_card
+    )
+
+    val usbUnsupportedDeviceMessage = stringResource(
+        R.string.sdcat_card_reader_snackbar_usb_unsupported_device
     )
 
     LaunchedEffect(snackbar) {
@@ -37,7 +41,11 @@ fun SDCATCardReaderNfcUnsupportedCardSnackbar(
                 onShowSnackbar(
                     when (snackbar) {
                         SDCATCardReaderSnackbar.NFC_UNSUPPORTED_CARD -> SnackbarVisualsData(
-                            message = showNfcUnsupportedCardSnackbarMessage,
+                            message = nfcUnsupportedCardSnackbarMessage,
+                        )
+
+                        SDCATCardReaderSnackbar.USB_UNSUPPORTED_DEVICE -> SnackbarVisualsData(
+                            message = usbUnsupportedDeviceMessage,
                         )
                     }
                 )

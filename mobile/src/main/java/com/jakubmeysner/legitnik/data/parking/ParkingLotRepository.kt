@@ -2,6 +2,7 @@ package com.jakubmeysner.legitnik.data.parking
 
 
 import android.util.Log
+import com.jakubmeysner.legitnik.util.ClassSimpleNameLoggingTag
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.async
 import kotlinx.coroutines.sync.Mutex

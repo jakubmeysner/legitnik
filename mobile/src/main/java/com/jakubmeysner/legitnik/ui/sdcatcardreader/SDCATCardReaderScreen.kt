@@ -31,13 +31,18 @@ fun SDCATCardReaderScreen(
             )
         }
 
-        when (uiState.selectedInterface) {
-            SDCATCardReaderInterface.NFC -> SDCATCardReaderInterfaceNfc(
-                onTagDiscovered = viewModel::onTagDiscovered
+        if (uiState.selectedInterface == SDCATCardReaderInterface.NFC) {
+            SDCATCardReaderInterfaceNfc(
+                onTagDiscovered = viewModel::onTagDiscovered,
             )
-
-            SDCATCardReaderInterface.USB -> SDCATCardReaderInterfaceUsb()
         }
+
+        SDCATCardReaderInterfaceUsb(
+            visible = uiState.selectedInterface == SDCATCardReaderInterface.USB,
+            createReader = viewModel::createUsbReader,
+            selectedUsbDevice = uiState.selectedUsbDevice,
+            selectUsbDevice = viewModel::selectUsbDevice,
+        )
     }
 
     SDCATCardReaderNfcUnsupportedCardSnackbar(
