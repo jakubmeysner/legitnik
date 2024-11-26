@@ -151,11 +151,9 @@ fun ParkingLotDetailsMapCard(latitude: Double, longitude: Double, name: String) 
 
 
             Button(onClick = {
-
                 showMap(
-                    "geo:0,0?q=$latitude,$longitude($name)".toUri(), context
+                    "geo:0,0?q=$latitude,$longitude".toUri(), context
                 )
-
             }, modifier = Modifier.align(Alignment.CenterHorizontally)) {
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
