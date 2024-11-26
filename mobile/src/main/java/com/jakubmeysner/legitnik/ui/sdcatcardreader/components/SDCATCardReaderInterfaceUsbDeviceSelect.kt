@@ -37,6 +37,7 @@ private const val ACTION_USB_PERMISSION = "com.android.example.USB_PERMISSION"
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SDCATCardReaderInterfaceUsbDeviceSelect(
+    enabled: Boolean,
     selectedUsbDevice: UsbDevice?,
     selectUsbDevice: (usbDevice: UsbDevice?) -> Unit,
 ) {
@@ -115,6 +116,7 @@ fun SDCATCardReaderInterfaceUsbDeviceSelect(
                 .menuAnchor(MenuAnchorType.PrimaryNotEditable)
                 .fillMaxWidth(),
             readOnly = true,
+            enabled = enabled,
             label = {
                 Text(stringResource(R.string.sdcat_card_reader_interface_usb_card_reader))
             },
@@ -128,7 +130,7 @@ fun SDCATCardReaderInterfaceUsbDeviceSelect(
         )
 
         ExposedDropdownMenu(
-            expanded = expanded,
+            expanded = expanded && enabled,
             onDismissRequest = {
                 expanded = false
             },

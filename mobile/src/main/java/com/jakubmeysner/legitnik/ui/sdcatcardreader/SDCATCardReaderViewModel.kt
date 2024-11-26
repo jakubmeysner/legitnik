@@ -9,6 +9,12 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.acs.smartcard.Reader
+import com.jakubmeysner.legitnik.domain.apdu.ApduTransceiver
+import com.jakubmeysner.legitnik.domain.apdu.IsoDepApduTransceiver
+import com.jakubmeysner.legitnik.domain.apdu.UsbReaderTransceiver
+import com.jakubmeysner.legitnik.domain.sdcatcard.SDCATCardData
+import com.jakubmeysner.legitnik.domain.sdcatcard.readSDCATCard
+import com.jakubmeysner.legitnik.domain.sdcatcard.toParsed
 import com.jakubmeysner.legitnik.util.ClassSimpleNameLoggingTag
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -26,16 +32,19 @@ enum class SDCATCardReaderInterface {
     USB
 }
 
-@Serializable
 enum class SDCATCardReaderSnackbar {
     NFC_UNSUPPORTED_CARD,
     USB_UNSUPPORTED_DEVICE,
+    READING_INTERFACE_ERROR,
+    READING_ERROR,
 }
 
 data class SDCATCardReaderUiState(
     val selectedInterface: SDCATCardReaderInterface = SDCATCardReaderInterface.NFC,
     val snackbar: SDCATCardReaderSnackbar? = null,
     val selectedUsbDevice: UsbDevice? = null,
+    val reading: Boolean = false,
+    val cardData: SDCATCardData? = null,
 )
 
 @HiltViewModel
@@ -51,15 +60,23 @@ class SDCATCardReaderViewModel @Inject constructor(
     private var usbReader: Reader? = null
     private var _selectedUsbDevice = MutableStateFlow<UsbDevice?>(null)
 
+    private var _reading = MutableStateFlow(false)
+
+    private var _cardData = MutableStateFlow<SDCATCardData?>(null)
+
     val uiState: StateFlow<SDCATCardReaderUiState> = combine(
         _selectedInterface,
         _snackbar,
         _selectedUsbDevice,
-    ) { selectedInterface, snackbar, selectedUsbDevice ->
+        _reading,
+        _cardData,
+    ) { selectedInterface, snackbar, selectedUsbDevice, reading, cardData ->
         SDCATCardReaderUiState(
             selectedInterface = selectedInterface,
             snackbar = snackbar,
             selectedUsbDevice = selectedUsbDevice,
+            reading = reading,
+            cardData = cardData,
         )
     }.stateIn(
         scope = viewModelScope,
@@ -71,17 +88,65 @@ class SDCATCardReaderViewModel @Inject constructor(
         savedStateHandle[SELECTED_INTERFACE_KEY] = inter
     }
 
-    fun onTagDiscovered(tag: Tag) {
-        val isoDepAvailable = tag.techList.contains(IsoDep::class.qualifiedName)
+    fun onTagDiscovered(nfcTag: Tag) {
+        try {
+            _reading.update { true }
+            val isoDepAvailable = nfcTag.techList.contains(IsoDep::class.qualifiedName)
 
-        if (!isoDepAvailable) {
-            _snackbar.update { SDCATCardReaderSnackbar.NFC_UNSUPPORTED_CARD }
-            return
+            if (!isoDepAvailable) {
+                _snackbar.update { SDCATCardReaderSnackbar.NFC_UNSUPPORTED_CARD }
+                return
+            }
+
+            IsoDep.get(nfcTag).use { isoDep ->
+                isoDep.connect()
+                val apduTransceiver = IsoDepApduTransceiver(isoDep)
+                scanCard(apduTransceiver)
+            }
+        } catch (exception: Exception) {
+            Log.e(tag, "An exception occurred while trying to read card", exception)
+            _snackbar.update { SDCATCardReaderSnackbar.READING_INTERFACE_ERROR }
+        } finally {
+            _reading.update { false }
         }
     }
 
     private fun onCardInserted(slotNum: Int) {
-        Log.d(tag, "Card inserted into slot $slotNum")
+        try {
+            Log.d(tag, "Card inserted into slot $slotNum")
+            val reader = usbReader ?: return
+
+            if (_selectedInterface.value != SDCATCardReaderInterface.USB) {
+                return
+            }
+
+            _reading.update { true }
+
+            reader.power(slotNum, Reader.CARD_COLD_RESET)
+            reader.setProtocol(slotNum, Reader.PROTOCOL_T0 or Reader.PROTOCOL_T1)
+
+            val apduTransceiver = UsbReaderTransceiver(reader, slotNum)
+            scanCard(apduTransceiver)
+
+            reader.power(slotNum, Reader.CARD_POWER_DOWN)
+        } catch (exception: Exception) {
+            Log.e(tag, "An exception occurred while trying to read card", exception)
+            _snackbar.update { SDCATCardReaderSnackbar.READING_INTERFACE_ERROR }
+        } finally {
+            _reading.update { false }
+        }
+    }
+
+    private fun scanCard(apduTransceiver: ApduTransceiver) {
+        try {
+            val rawData = readSDCATCard(apduTransceiver)
+            val parsedData = rawData.toParsed()
+            _cardData.update { SDCATCardData(rawData, parsedData) }
+        } catch (exception: Exception) {
+            Log.e(tag, "An exception occurred while reading card", exception)
+            _snackbar.update { SDCATCardReaderSnackbar.READING_ERROR }
+        }
+
     }
 
     fun createUsbReader(usbManager: UsbManager) {

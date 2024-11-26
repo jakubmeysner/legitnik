@@ -22,4 +22,17 @@
     <string name="sdcat_card_reader_interface_usb_device_select_prompt">Connect a USB card reader to your device and select it from the list above…</string>
     <string name="sdcat_card_reader_snackbar_usb_unsupported_device">The selected USB device is not a supported card reader! Please try using another reader.</string>
     <string name="sdcat_card_reader_interface_usb_insert_card_prompt">Insert a Student/Doctoral Candidate/Academic Teacher Card into the reader to scan it…</string>
+    <string name="sdcat_card_reader_snackbar_reading_interface_error">An error occurred while trying to read data from this card! Please try scanning it again.</string>
+    <string name="sdcat_card_reader_snackbar_reading_error">An error occurred while reading data from this card! Please make sure it\'s a Student/Doctoral Candidate/Academic Teacher Card.</string>
+    <string name="sdcat_card_card_student">Student</string>
+    <string name="sdcat_card_card_doctoral_candidate">Doctoral candidate</string>
+    <string name="sdcat_card_card_academic_teacher">Academic teacher</string>
+    <string name="sdcat_card_card_university">University</string>
+    <string name="sdcat_card_card_university_or_issuer">University/issuer</string>
+    <string name="sdcat_card_card_album_number">Album number</string>
+    <string name="sdcat_card_card_card_number">Card number</string>
+    <string name="sdcat_card_card_edition_number">Edition number</string>
+    <string name="sdcat_card_card_pesel_number">PESEL number</string>
+    <string name="sdcat_card_card_expiry_date">Expiry date</string>
+    <string name="sdcat_card_card_issue_date">Issue date</string>
 </resources>

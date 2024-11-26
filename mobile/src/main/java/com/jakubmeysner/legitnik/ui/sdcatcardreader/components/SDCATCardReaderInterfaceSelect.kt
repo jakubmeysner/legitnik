@@ -35,11 +35,12 @@ private val sdcatCardReaderInterfaceSelectOptions = listOf(
 
 @Composable
 fun SDCATCardReaderInterfaceSelect(
+    enabled: Boolean,
     selectedInterface: SDCATCardReaderInterface,
     onSelectInterface: (inter: SDCATCardReaderInterface) -> Unit,
 ) {
     SingleChoiceSegmentedButtonRow(
-        modifier = Modifier.fillMaxWidth()
+        modifier = Modifier.fillMaxWidth(),
     ) {
         sdcatCardReaderInterfaceSelectOptions.forEachIndexed { i, option ->
             SegmentedButton(
@@ -53,7 +54,8 @@ fun SDCATCardReaderInterfaceSelect(
                 selected = selectedInterface == option.inter,
                 onClick = {
                     onSelectInterface(option.inter)
-                }
+                },
+                enabled = enabled,
             ) {
                 Text(stringResource(option.nameResourceId))
             }

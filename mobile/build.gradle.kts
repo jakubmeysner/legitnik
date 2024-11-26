@@ -49,6 +49,10 @@ android {
     androidResources {
         generateLocaleConfig = true
     }
+
+    packaging {
+        resources.excludes.add("META-INF/versions/9/OSGI-INF/MANIFEST.MF")
+    }
 }
 
 dependencies {
@@ -81,6 +85,8 @@ dependencies {
     implementation(libs.google.maps.compose)
     implementation(libs.firebase.messaging)
     implementation(files("libs/acssmc-1.1.5.jar"))
+    implementation(libs.bouncycastle.bcprov)
+    implementation(libs.bouncycastle.bcpkix)
     kapt(libs.hilt.compiler)
     kapt(libs.androidx.lifecycle.compiler)
     testImplementation(libs.junit)
