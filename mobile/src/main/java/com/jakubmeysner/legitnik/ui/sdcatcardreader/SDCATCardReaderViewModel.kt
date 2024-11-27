@@ -11,6 +11,7 @@ import androidx.lifecycle.viewModelScope
 import com.acs.smartcard.Reader
 import com.jakubmeysner.legitnik.domain.apdu.ApduTransceiver
 import com.jakubmeysner.legitnik.domain.apdu.IsoDepApduTransceiver
+import com.jakubmeysner.legitnik.domain.apdu.UsbReader
 import com.jakubmeysner.legitnik.domain.apdu.UsbReaderTransceiver
 import com.jakubmeysner.legitnik.domain.sdcatcard.SDCATCardData
 import com.jakubmeysner.legitnik.domain.sdcatcard.readSDCATCard
@@ -150,7 +151,7 @@ class SDCATCardReaderViewModel @Inject constructor(
     }
 
     fun createUsbReader(usbManager: UsbManager) {
-        usbReader = Reader(usbManager).apply {
+        usbReader = UsbReader(usbManager).apply {
             setOnStateChangeListener { slotNum, previousState, currentState ->
                 if (previousState == Reader.CARD_ABSENT && currentState == Reader.CARD_PRESENT) {
                     onCardInserted(slotNum)
