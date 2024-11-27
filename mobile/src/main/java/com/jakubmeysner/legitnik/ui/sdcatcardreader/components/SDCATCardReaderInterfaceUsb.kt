@@ -13,6 +13,8 @@ import com.jakubmeysner.legitnik.R
 @Composable
 fun SDCATCardReaderInterfaceUsb(
     visible: Boolean,
+    showPrompt: Boolean,
+    deviceSelectEnabled: Boolean,
     createReader: (usbManager: UsbManager) -> Unit,
     selectedUsbDevice: UsbDevice?,
     selectUsbDevice: (usbDevice: UsbDevice?) -> Unit,
@@ -24,7 +26,7 @@ fun SDCATCardReaderInterfaceUsb(
     }
 
     if (!hasUsbFeature) {
-        if (visible) {
+        if (visible && showPrompt) {
             SDCATCardReaderInterfaceUnavailable(
                 stringResource(R.string.sdcat_card_reader_interface_usb_unavailable)
             )
@@ -38,14 +40,17 @@ fun SDCATCardReaderInterfaceUsb(
 
         if (visible) {
             SDCATCardReaderInterfaceUsbDeviceSelect(
+                enabled = deviceSelectEnabled,
                 selectedUsbDevice = selectedUsbDevice,
                 selectUsbDevice = selectUsbDevice,
             )
 
-            if (selectedUsbDevice == null) {
-                SDCATCardReaderInterfaceUsbDeviceSelectPrompt()
-            } else {
-                SDCATCardReaderInterfaceUsbInsertCardPrompt()
+            if (showPrompt) {
+                if (selectedUsbDevice == null) {
+                    SDCATCardReaderInterfaceUsbDeviceSelectPrompt()
+                } else {
+                    SDCATCardReaderInterfaceUsbInsertCardPrompt()
+                }
             }
         }
     }
