@@ -2,6 +2,7 @@ package com.jakubmeysner.legitnik.data.parking
 
 import android.util.Log
 import com.google.gson.annotations.SerializedName
+import com.jakubmeysner.legitnik.util.ClassSimpleNameLoggingTag
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
@@ -10,7 +11,7 @@ import javax.inject.Inject
 data class ParkingLotsResponseApiModel(
     val success: Int,
     @SerializedName("places")
-    val parkingLots: List<ParkingLotApiModel>
+    val parkingLots: List<ParkingLotApiModel>,
 )
 
 data class ParkingLotApiModel(
@@ -24,14 +25,14 @@ data class ParkingLotApiModel(
     @SerializedName("open_hour") val openHour: String,
     @SerializedName("close_hour") val closeHour: String,
     @SerializedName("places") val places: String,
-    @SerializedName("geo_lan") val geoLan: String,
-    @SerializedName("geo_lat") val geoLat: String,
+    @SerializedName("geo_lan") val geoLan: Double,
+    @SerializedName("geo_lat") val geoLat: Double,
     @SerializedName("photo") val photo: String,
     @SerializedName("aktywny") val active: String,
     @SerializedName("show_park") val showPark: String,
     @SerializedName("lp") val lp: String,
     @SerializedName("address") val address: String,
-    @SerializedName("trend") val trend: String
+    @SerializedName("trend") val trend: String,
 )
 
 
@@ -42,6 +43,8 @@ data class ParkingLot(
     val symbol: String,
     val photo: String,
     val address: String,
+    val latitude: Double,
+    val longitude: Double,
 )
 
 
@@ -52,7 +55,7 @@ interface ParkingLotDataSource {
 
 class ParkingLotRemoteDataSource @Inject constructor(
     private val parkingLotApi: ParkingLotApi,
-    private val ioDispatcher: CoroutineDispatcher
+    private val ioDispatcher: CoroutineDispatcher,
 ) :
     ParkingLotDataSource, ClassSimpleNameLoggingTag {
     override suspend fun getParkingLots(): List<ParkingLot> {
@@ -67,7 +70,9 @@ class ParkingLotRemoteDataSource @Inject constructor(
                     it.name,
                     it.symbol,
                     it.photo,
-                    it.address
+                    it.address,
+                    it.geoLat,
+                    it.geoLan
                 )
             }
             Log.d(tag, "result = $result")

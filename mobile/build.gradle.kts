@@ -6,6 +6,7 @@ plugins {
     alias(libs.plugins.hilt)
     alias(libs.plugins.kotlin.serialization)
     alias(libs.plugins.secrets.gradle.plugin)
+    alias(libs.plugins.google.gms.google.services)
 }
 
 android {
@@ -78,6 +79,8 @@ dependencies {
     implementation(libs.androidx.lifecycle.viewmodel.savedstate)
     implementation(libs.play.services.maps)
     implementation(libs.google.maps.compose)
+    implementation(libs.firebase.messaging)
+    implementation(files("libs/acssmc-1.1.5.jar"))
     kapt(libs.hilt.compiler)
     kapt(libs.androidx.lifecycle.compiler)
     testImplementation(libs.junit)
