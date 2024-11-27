@@ -19,4 +19,4 @@ jobs:
           java-version: "21"
       - uses: gradle/actions/wrapper-validation@v4
       - run: chmod +x ./gradlew
-      - run: ./gradlew build
+      - run: ./gradlew build --no-daemon
