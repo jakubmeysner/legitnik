@@ -29,6 +29,7 @@ import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import coil3.compose.AsyncImage
@@ -111,8 +112,8 @@ fun ParkingItem(
         modifier = Modifier
             .fillMaxWidth()
             .height(90.dp)
-            .background(backgroundColor, shape = RoundedCornerShape(16.dp))
             .clip(RoundedCornerShape(16.dp))
+            .background(backgroundColor)
             .border(1.dp, MaterialTheme.colorScheme.surfaceContainerHighest, shape = RoundedCornerShape(16.dp))
             .clickable { onClick(parkingLot.id) },
         verticalAlignment = Alignment.CenterVertically
@@ -128,7 +129,11 @@ fun ParkingItem(
                 fontWeight = FontWeight.Bold
             )
             Text(
-                text = stringResource(R.string.parking_lot_list_free_places, parkingLot.freePlaces),
+                text = pluralStringResource(
+                    id = R.plurals.parking_lot_list_free_places,
+                    count = parkingLot.freePlaces,
+                    parkingLot.freePlaces
+                ),
                 style = MaterialTheme.typography.bodyMedium
             )
         }
@@ -142,7 +147,6 @@ fun ParkingItem(
         )
     }
 }
-
 
 @Composable
 fun LoadingIndicator() {
