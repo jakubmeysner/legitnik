@@ -18,6 +18,8 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
@@ -35,7 +37,23 @@ import com.google.maps.android.compose.Marker
 import com.google.maps.android.compose.rememberCameraPositionState
 import com.google.maps.android.compose.rememberMarkerState
 import com.jakubmeysner.legitnik.R
+import com.jakubmeysner.legitnik.ui.parking.details.charts.rememberMarker
 import com.jakubmeysner.legitnik.util.showMap
+import com.patrykandpatrick.vico.compose.cartesian.CartesianChartHost
+import com.patrykandpatrick.vico.compose.cartesian.axis.rememberBottom
+import com.patrykandpatrick.vico.compose.cartesian.axis.rememberStart
+import com.patrykandpatrick.vico.compose.cartesian.cartesianLayerPadding
+import com.patrykandpatrick.vico.compose.cartesian.layer.rememberLine
+import com.patrykandpatrick.vico.compose.cartesian.layer.rememberLineCartesianLayer
+import com.patrykandpatrick.vico.compose.cartesian.rememberCartesianChart
+import com.patrykandpatrick.vico.compose.common.data.rememberExtraLambda
+import com.patrykandpatrick.vico.compose.common.fill
+import com.patrykandpatrick.vico.core.cartesian.axis.HorizontalAxis
+import com.patrykandpatrick.vico.core.cartesian.axis.VerticalAxis
+import com.patrykandpatrick.vico.core.cartesian.data.CartesianChartModelProducer
+import com.patrykandpatrick.vico.core.cartesian.data.lineSeries
+import com.patrykandpatrick.vico.core.cartesian.layer.LineCartesianLayer
+import com.patrykandpatrick.vico.core.common.data.ExtraStore
 
 @Composable
 fun ParkingLotDetailsGeneralCard(
@@ -95,24 +113,65 @@ fun ParkingLotDetailsGeneralCard(
 }
 
 @Composable
-fun ParkingLotDetailsHistoryCard() {
+fun ParkingLotDetailsChartCard(
+    modelProducer: CartesianChartModelProducer,
+    chartData: Map<String, Int>,
+) {
     Card {
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = 16.dp, vertical = 16.dp),
+                .padding(vertical = 16.dp),
             verticalArrangement = Arrangement.spacedBy(8.dp)
 
         ) {
             Text(
                 text = stringResource(R.string.parking_lot_details_history),
-                style = MaterialTheme.typography.labelLarge
+                style = MaterialTheme.typography.titleLarge,
+                modifier = Modifier.padding(horizontal = 16.dp)
             )
-//            Image(
-//                painter = painterResource(R.drawable.stonks),
-//                contentDescription = null,
-//                modifier = Modifier.fillMaxWidth()
-//            )
+
+            val labelListKey = ExtraStore.Key<List<String>>()
+            LaunchedEffect(Unit) {
+                modelProducer.runTransaction {
+                    lineSeries {
+                        series(
+                            y = chartData.values
+                        )
+                    }
+                    extras { it[labelListKey] = chartData.keys.toList() }
+                }
+            }
+
+            val marker = rememberMarker()
+            val lineColor = MaterialTheme.colorScheme.primary
+            CartesianChartHost(
+                rememberCartesianChart(
+                    rememberLineCartesianLayer(lineProvider =
+                    LineCartesianLayer.LineProvider.series(
+                        LineCartesianLayer.rememberLine(
+                            remember { LineCartesianLayer.LineFill.single(fill(lineColor)) }
+                        )
+                    ),
+                        pointSpacing = 16.dp
+                    ),
+                    startAxis =
+                    VerticalAxis.rememberStart(
+                    ),
+                    bottomAxis =
+                    HorizontalAxis.rememberBottom(
+                        valueFormatter = { context, x, _ ->
+                            context.model.extraStore[labelListKey][x.toInt()]
+                        },
+                        labelRotationDegrees = 300f,
+                        itemPlacer = HorizontalAxis.ItemPlacer.aligned(3)
+                    ),
+                    layerPadding = cartesianLayerPadding(scalableStart = 0.dp),
+                    marker = marker,
+                    persistentMarkers = rememberExtraLambda(marker) { marker at chartData.keys.size - 1 },
+                ),
+                modelProducer,
+            )
 
 
         }
@@ -198,3 +257,4 @@ fun ParkingLotDetailsDataUnavailable() {
         }
     }
 }
+

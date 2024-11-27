@@ -44,6 +44,29 @@ data class ParkingLot(
     val address: String,
     val latitude: Double,
     val longitude: Double,
+    /*it should be moved to different dataclass (ParkingLotDetails or smth)
+     to avoid unnecessary data passing (copying)
+     hardcoded for development time*/
+    val chartData: Map<String, Int> = mapOf(
+        //opening/closing hours differs in parking lots
+        "6:00" to (0..300).random(),
+        "7:00" to (0..300).random(),
+        "8:00" to (0..300).random(),
+        "9:00" to (0..300).random(),
+        "10:00" to (0..300).random(),
+        "11:00" to (0..300).random(),
+        "12:00" to (0..300).random(),
+        "13:00" to (0..300).random(),
+        "14:00" to (0..300).random(),
+        "15:00" to (0..300).random(),
+        "16:00" to (0..300).random(),
+        "17:00" to (0..300).random(),
+        "18:00" to (0..300).random(),
+        "19:00" to (0..300).random(),
+        "20:00" to (0..300).random(),
+        "21:00" to (0..300).random(),
+        "22:00" to (0..300).random()
+    ),
 )
 
 
