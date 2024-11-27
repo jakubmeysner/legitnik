@@ -36,4 +36,13 @@
     <string name="sdcat_card_card_pesel_number">Nr PESEL</string>
     <string name="sdcat_card_card_expiry_date">Data ważności</string>
     <string name="sdcat_card_card_issue_date">Data wydania</string>
+    <string name="parking_lot_list_error">Wystąpił błąd. Sprawdź swoje połączenie i spróbuj ponownie później.</string>
+    <string name="parking_lot_list_snack_error">Wystąpił błąd. Wyświetlane dane mogą być nieaktualne.</string>
+    <string name="parking_lot_list_refresh">Odśwież</string>
+    <plurals name="parking_lot_list_free_places">
+        <item quantity="one">%d wolne miejsce</item>
+        <item quantity="few">%d wolne miejsca</item>
+        <item quantity="many">%d wolnych miejsc</item>
+        <item quantity="other">%d wolnych miejsc</item>
+    </plurals>
 </resources>
