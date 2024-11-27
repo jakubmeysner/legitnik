@@ -70,7 +70,7 @@ val topLevelRoutes = listOf(
     TopLevelRoute(
         SDCATCardReader,
         R.string.navigation_bar_sdcat_card_reader,
-        ImageVectorOrResourceId.VectorResourceId(R.drawable.smart_card_reader),
+        ImageVectorOrResourceId.VectorResourceId(R.drawable.mdi_smart_card_reader),
         ImageVectorOrResourceId.VectorResourceId(R.drawable.smart_card_reader_outline)
     ),
     TopLevelRoute(

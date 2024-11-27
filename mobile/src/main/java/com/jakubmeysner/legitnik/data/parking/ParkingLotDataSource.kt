@@ -2,6 +2,7 @@ package com.jakubmeysner.legitnik.data.parking
 
 import android.util.Log
 import com.google.gson.annotations.SerializedName
+import com.jakubmeysner.legitnik.util.ClassSimpleNameLoggingTag
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.withContext
 import javax.inject.Inject

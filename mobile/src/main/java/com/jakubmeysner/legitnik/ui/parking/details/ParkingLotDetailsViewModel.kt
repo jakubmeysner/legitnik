@@ -6,10 +6,10 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.toRoute
 import com.jakubmeysner.legitnik.R
-import com.jakubmeysner.legitnik.data.parking.ClassSimpleNameLoggingTag
 import com.jakubmeysner.legitnik.data.parking.ParkingLot
 import com.jakubmeysner.legitnik.data.parking.ParkingLotRepository
 import com.patrykandpatrick.vico.core.cartesian.data.CartesianChartModelProducer
+import com.jakubmeysner.legitnik.util.ClassSimpleNameLoggingTag
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow

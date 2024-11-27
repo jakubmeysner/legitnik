@@ -3,7 +3,7 @@ package com.jakubmeysner.legitnik
 import android.util.Log
 import com.google.firebase.messaging.FirebaseMessagingService
 import com.google.firebase.messaging.RemoteMessage
-import com.jakubmeysner.legitnik.data.parking.ClassSimpleNameLoggingTag
+import com.jakubmeysner.legitnik.util.ClassSimpleNameLoggingTag
 
 class MyFirebaseMessagingService : FirebaseMessagingService(), ClassSimpleNameLoggingTag {
     override fun onNewToken(token: String) {

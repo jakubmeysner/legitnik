@@ -1,4 +1,4 @@
-package com.jakubmeysner.legitnik.data.parking
+package com.jakubmeysner.legitnik.util
 
 interface ClassSimpleNameLoggingTag {
     val tag: String

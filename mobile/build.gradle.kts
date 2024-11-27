@@ -82,6 +82,7 @@ dependencies {
     implementation(libs.firebase.messaging)
     implementation(libs.vico.compose)
     implementation(libs.vico.compose.m3)
+    implementation(files("libs/acssmc-1.1.5.jar"))
     kapt(libs.hilt.compiler)
     kapt(libs.androidx.lifecycle.compiler)
     testImplementation(libs.junit)
