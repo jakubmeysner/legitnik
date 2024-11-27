@@ -23,4 +23,8 @@
     <string name="sdcat_card_reader_interface_usb_device_select_prompt">Podłącz czytnik kart USB do swojego urządzenia i wybierz go z listy…</string>
     <string name="sdcat_card_reader_snackbar_usb_unsupported_device">Wybrane urządzenie USB nie jest wspieranym czytnikiem kart! Spróbuj użyć innego czytnika.</string>
     <string name="sdcat_card_reader_interface_usb_insert_card_prompt">Umieść Elektroniczną Legitymację Studencką/Doktoranta/Nauczyciela Akademickiego w czytniku aby ją zeskanować…</string>
+    <string name="parking_lot_list_free_places">%1$d wolnych miejsc</string>
+    <string name="parking_lot_list_error">Wystąpił błąd. Sprawdź swoje połączenie i spróbuj ponownie później.</string>
+    <string name="parking_lot_list_snack_error">Wystąpił błąd. Wyświetlane dane mogą być nieaktualne.</string>
+    <string name="parking_lot_list_refresh">Odśwież</string>
 </resources>
