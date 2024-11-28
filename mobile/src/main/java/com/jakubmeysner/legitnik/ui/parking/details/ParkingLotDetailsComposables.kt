@@ -37,7 +37,6 @@ import com.google.maps.android.compose.Marker
 import com.google.maps.android.compose.rememberCameraPositionState
 import com.google.maps.android.compose.rememberMarkerState
 import com.jakubmeysner.legitnik.R
-import com.jakubmeysner.legitnik.ui.parking.details.charts.rememberMarker
 import com.jakubmeysner.legitnik.util.showMap
 import com.patrykandpatrick.vico.compose.cartesian.CartesianChartHost
 import com.patrykandpatrick.vico.compose.cartesian.axis.rememberBottom
@@ -53,7 +52,13 @@ import com.patrykandpatrick.vico.core.cartesian.axis.VerticalAxis
 import com.patrykandpatrick.vico.core.cartesian.data.CartesianChartModelProducer
 import com.patrykandpatrick.vico.core.cartesian.data.lineSeries
 import com.patrykandpatrick.vico.core.cartesian.layer.LineCartesianLayer
+import com.patrykandpatrick.vico.core.cartesian.marker.DefaultCartesianMarker
+import com.patrykandpatrick.vico.core.common.Dimensions
+import com.patrykandpatrick.vico.core.common.Fill
+import com.patrykandpatrick.vico.core.common.component.ShapeComponent
+import com.patrykandpatrick.vico.core.common.component.TextComponent
 import com.patrykandpatrick.vico.core.common.data.ExtraStore
+import com.patrykandpatrick.vico.core.common.shape.CorneredShape
 
 @Composable
 fun ParkingLotDetailsGeneralCard(
@@ -115,7 +120,7 @@ fun ParkingLotDetailsGeneralCard(
 @Composable
 fun ParkingLotDetailsChartCard(
     modelProducer: CartesianChartModelProducer,
-    chartData: Map<String, Int>,
+    freePlacesHistory: Map<String, Int>,
 ) {
     Card {
         Column(
@@ -136,15 +141,30 @@ fun ParkingLotDetailsChartCard(
                 modelProducer.runTransaction {
                     lineSeries {
                         series(
-                            y = chartData.values
+                            y = freePlacesHistory.values
                         )
                     }
-                    extras { it[labelListKey] = chartData.keys.toList() }
+                    extras {
+                        it[labelListKey] = freePlacesHistory.keys.toList()
+                    }
                 }
             }
 
-            val marker = rememberMarker()
+            val surfaceColor = MaterialTheme.colorScheme.surfaceBright
             val lineColor = MaterialTheme.colorScheme.primary
+            val marker = DefaultCartesianMarker(
+                label = TextComponent(margins = Dimensions(8f)),
+                indicator = { color ->
+                    ShapeComponent(
+                        fill = fill(surfaceColor),
+                        shape = CorneredShape.Pill,
+                        strokeFill = Fill(color),
+                        strokeThicknessDp = 2f
+                    )
+                },
+                indicatorSizeDp = 10f,
+            )
+
             CartesianChartHost(
                 rememberCartesianChart(
                     rememberLineCartesianLayer(lineProvider =
@@ -168,12 +188,10 @@ fun ParkingLotDetailsChartCard(
                     ),
                     layerPadding = cartesianLayerPadding(scalableStart = 0.dp),
                     marker = marker,
-                    persistentMarkers = rememberExtraLambda(marker) { marker at chartData.keys.size - 1 },
+                    persistentMarkers = rememberExtraLambda(marker) { marker at freePlacesHistory.keys.size - 1 },
                 ),
                 modelProducer,
             )
-
-
         }
     }
 }
