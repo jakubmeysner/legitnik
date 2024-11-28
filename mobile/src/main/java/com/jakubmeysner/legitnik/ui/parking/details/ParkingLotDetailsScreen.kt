@@ -17,6 +17,10 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.jakubmeysner.legitnik.ui.parking.details.components.ParkingLotDetailsChartCard
+import com.jakubmeysner.legitnik.ui.parking.details.components.ParkingLotDetailsDataUnavailable
+import com.jakubmeysner.legitnik.ui.parking.details.components.ParkingLotDetailsGeneralCard
+import com.jakubmeysner.legitnik.ui.parking.details.components.ParkingLotDetailsMapCard
 import com.jakubmeysner.legitnik.util.SnackbarVisualsData
 
 @Composable
