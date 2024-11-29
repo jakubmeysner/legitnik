@@ -35,6 +35,19 @@ data class ParkingLotApiModel(
     @SerializedName("trend") val trend: String,
 )
 
+data class ParkingLotFreePlacesHistoryResponseApiModel(
+    val success: Int,
+    @SerializedName("slots")
+    val parkingLotFreePlacesHistory: ParkingLotFreePlacesHistoryDataApiModel,
+)
+
+data class ParkingLotFreePlacesHistoryDataApiModel(
+    @SerializedName("labels")
+    val hours: List<String>,
+    @SerializedName("data")
+    val freePlaces: List<Int>,
+)
+
 
 data class ParkingLot(
     val id: String,
@@ -45,35 +58,15 @@ data class ParkingLot(
     val address: String,
     val latitude: Double,
     val longitude: Double,
-    /*it should be moved to different dataclass (ParkingLotDetails or smth)
-     to avoid unnecessary data passing (copying)
-     hardcoded for development time*/
-    val chartData: Map<String, Int> = mapOf(
-        //opening/closing hours differs in parking lots
-        "6:00" to (0..300).random(),
-        "7:00" to (0..300).random(),
-        "8:00" to (0..300).random(),
-        "9:00" to (0..300).random(),
-        "10:00" to (0..300).random(),
-        "11:00" to (0..300).random(),
-        "12:00" to (0..300).random(),
-        "13:00" to (0..300).random(),
-        "14:00" to (0..300).random(),
-        "15:00" to (0..300).random(),
-        "16:00" to (0..300).random(),
-        "17:00" to (0..300).random(),
-        "18:00" to (0..300).random(),
-        "19:00" to (0..300).random(),
-        "20:00" to (0..300).random(),
-        "21:00" to (0..300).random(),
-        "22:00" to (0..300).random()
-    ),
+    var freePlacesHistory: List<Pair<String, Int>> = emptyList(),
 )
 
 
 interface ParkingLotDataSource {
     suspend fun getParkingLots():
         List<ParkingLot>
+
+    suspend fun getParkingLotFreePlacesHistory(id: String): List<Pair<String, Int>>
 }
 
 class ParkingLotRemoteDataSource @Inject constructor(
@@ -83,10 +76,11 @@ class ParkingLotRemoteDataSource @Inject constructor(
     ParkingLotDataSource, ClassSimpleNameLoggingTag {
     override suspend fun getParkingLots(): List<ParkingLot> {
         return withContext(ioDispatcher) {
-            Log.d(tag, "Trying to fetch data")
+            Log.d(tag, "Trying to fetch parking lots data")
             val parkingList = parkingLotApi.getParkingLots().parkingLots
             Log.d(tag, "Parking data fetched")
-            val result = parkingList.map {
+
+            val parkingLots = parkingList.map {
                 ParkingLot(
                     it.id,
                     it.freePlaces,
@@ -95,12 +89,32 @@ class ParkingLotRemoteDataSource @Inject constructor(
                     it.photo,
                     it.address,
                     it.geoLat,
-                    it.geoLan
+                    it.geoLan,
+                    freePlacesHistory = getParkingLotFreePlacesHistory(it.id)
                 )
             }
-            Log.d(tag, "result = $result")
-            result
+
+            Log.d(tag, "result = $parkingLots")
+            parkingLots
         }
 
+    }
+
+    override suspend fun getParkingLotFreePlacesHistory(id: String): List<Pair<String, Int>> {
+        return withContext(ioDispatcher) {
+            var result = emptyList<Pair<String, Int>>()
+            try {
+                val body = ParkingLotDetailsFreePlacesHistoryBody(o = "get_today_chart", i = id)
+                Log.d(tag, "Fetching free places history data from parking (id=$id)")
+                val freePlacesHistory =
+                    parkingLotApi.getParkingLotDetails(body).parkingLotFreePlacesHistory
+                Log.d(tag, "Data fetched")
+                result = freePlacesHistory.hours.zip(freePlacesHistory.freePlaces)
+                Log.d(tag, "Data = $result")
+            } catch (e: Exception) {
+                Log.d(tag, "Exception = $e")
+            }
+            result
+        }
     }
 }

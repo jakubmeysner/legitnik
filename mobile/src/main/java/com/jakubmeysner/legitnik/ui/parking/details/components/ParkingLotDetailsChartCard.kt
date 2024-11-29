@@ -1,5 +1,6 @@
 package com.jakubmeysner.legitnik.ui.parking.details.components
 
+import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -35,10 +36,11 @@ import com.patrykandpatrick.vico.core.common.component.ShapeComponent
 import com.patrykandpatrick.vico.core.common.component.TextComponent
 import com.patrykandpatrick.vico.core.common.data.ExtraStore
 import com.patrykandpatrick.vico.core.common.shape.CorneredShape
+import kotlin.math.ceil
 
 @Composable
 fun ParkingLotDetailsChartCard(
-    freePlacesHistory: Map<String, Int>,
+    freePlacesHistory: List<Pair<String, Int>>,
 ) {
     Card {
         Column(
@@ -56,15 +58,17 @@ fun ParkingLotDetailsChartCard(
 
             val modelProducer = CartesianChartModelProducer()
             val labelListKey = ExtraStore.Key<List<String>>()
+            val (xs, ys) = freePlacesHistory.unzip()
+
             LaunchedEffect(Unit) {
                 modelProducer.runTransaction {
                     lineSeries {
                         series(
-                            y = freePlacesHistory.values
+                            y = ys
                         )
                     }
                     extras {
-                        it[labelListKey] = freePlacesHistory.keys.toList()
+                        it[labelListKey] = xs
                     }
                 }
             }
@@ -83,7 +87,12 @@ fun ParkingLotDetailsChartCard(
                 },
                 indicatorSizeDp = 10f,
             )
-
+            //idk how to calculate these to make whole chart visible without need to scroll horizontally
+            val spacing = ceil(ys.size / 10f).toInt()
+            val pointSpacing = ceil(ys.size / 20f).toInt()
+            Log.d("Chart", "N = ${xs.size}")
+            Log.d("Chart", "Spacing = $spacing")
+            Log.d("Chart", "Point Spacing = $pointSpacing")
             CartesianChartHost(
                 rememberCartesianChart(
                     rememberLineCartesianLayer(lineProvider =
@@ -92,7 +101,7 @@ fun ParkingLotDetailsChartCard(
                             remember { LineCartesianLayer.LineFill.single(fill(lineColor)) }
                         )
                     ),
-                        pointSpacing = 16.dp
+                        pointSpacing = pointSpacing.dp
                     ),
                     startAxis =
                     VerticalAxis.rememberStart(
@@ -103,11 +112,14 @@ fun ParkingLotDetailsChartCard(
                             context.model.extraStore[labelListKey][x.toInt()]
                         },
                         labelRotationDegrees = 300f,
-                        itemPlacer = HorizontalAxis.ItemPlacer.aligned(3)
+                        itemPlacer = HorizontalAxis.ItemPlacer.aligned(
+                            spacing = spacing,
+                            addExtremeLabelPadding = false
+                        )
                     ),
                     layerPadding = cartesianLayerPadding(scalableStart = 0.dp),
                     marker = marker,
-                    persistentMarkers = rememberExtraLambda(marker) { marker at freePlacesHistory.keys.size - 1 },
+                    persistentMarkers = rememberExtraLambda(marker) { marker at xs.size - 1 },
                 ),
                 modelProducer,
             )
