@@ -38,7 +38,6 @@ import com.patrykandpatrick.vico.core.common.shape.CorneredShape
 
 @Composable
 fun ParkingLotDetailsChartCard(
-    modelProducer: CartesianChartModelProducer,
     freePlacesHistory: Map<String, Int>,
 ) {
     Card {
@@ -55,6 +54,7 @@ fun ParkingLotDetailsChartCard(
                 modifier = Modifier.padding(horizontal = 16.dp)
             )
 
+            val modelProducer = CartesianChartModelProducer()
             val labelListKey = ExtraStore.Key<List<String>>()
             LaunchedEffect(Unit) {
                 modelProducer.runTransaction {

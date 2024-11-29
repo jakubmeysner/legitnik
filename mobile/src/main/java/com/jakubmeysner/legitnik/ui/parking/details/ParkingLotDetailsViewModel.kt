@@ -8,7 +8,6 @@ import androidx.navigation.toRoute
 import com.jakubmeysner.legitnik.R
 import com.jakubmeysner.legitnik.data.parking.ParkingLot
 import com.jakubmeysner.legitnik.data.parking.ParkingLotRepository
-import com.patrykandpatrick.vico.core.cartesian.data.CartesianChartModelProducer
 import com.jakubmeysner.legitnik.util.ClassSimpleNameLoggingTag
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -22,7 +21,6 @@ data class ParkingLotDetailsUiState(
     val loading: Boolean = false,
     val error: Boolean = false,
     val messageIds: List<Int> = emptyList(),
-    val modelProducer: CartesianChartModelProducer,
 )
 
 @HiltViewModel
@@ -35,7 +33,7 @@ class ParkingLotDetailsViewModel @Inject constructor(
     //not sure if creating model producer here is correct
     //https://www.patrykandpatrick.com/vico/guide/latest/core/cartesian-charts/cartesian-chart-model-producer#222-cartesianchartmodelproducer-creation
     private val _uiState =
-        MutableStateFlow(ParkingLotDetailsUiState(modelProducer = CartesianChartModelProducer()))
+        MutableStateFlow(ParkingLotDetailsUiState())
     val uiState = _uiState.asStateFlow()
 
     init {

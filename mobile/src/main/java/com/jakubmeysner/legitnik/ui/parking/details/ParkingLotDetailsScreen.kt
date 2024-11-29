@@ -49,7 +49,7 @@ fun ParkingLotDetailsScreen(
                 "https://iparking.pwr.edu.pl${parkingLotDetails.photo}"
             )
 
-            ParkingLotDetailsChartCard(uiState.modelProducer, parkingLotDetails.freePlacesHistory)
+            ParkingLotDetailsChartCard(parkingLotDetails.freePlacesHistory)
 
             ParkingLotDetailsMapCard(
                 parkingLotDetails.latitude,
