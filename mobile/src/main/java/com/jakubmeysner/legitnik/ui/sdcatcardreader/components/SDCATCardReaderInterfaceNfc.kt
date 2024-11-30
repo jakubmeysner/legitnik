@@ -12,7 +12,10 @@ import com.jakubmeysner.legitnik.R
 import com.jakubmeysner.legitnik.util.findActivity
 
 @Composable
-fun SDCATCardReaderInterfaceNfc(onTagDiscovered: (tag: Tag) -> Unit) {
+fun SDCATCardReaderInterfaceNfc(
+    showPrompt: Boolean,
+    onTagDiscovered: (tag: Tag) -> Unit,
+) {
     val context = LocalContext.current
     val activity = remember(context) { context.findActivity() }
 
@@ -20,11 +23,15 @@ fun SDCATCardReaderInterfaceNfc(onTagDiscovered: (tag: Tag) -> Unit) {
     val nfcAdapter: NfcAdapter? = remember(nfcManager) { nfcManager.defaultAdapter }
 
     if (nfcAdapter == null || activity == null) {
-        SDCATCardReaderInterfaceUnavailable(
-            stringResource(R.string.sdcat_card_reader_interface_nfc_unavailable)
-        )
+        if (showPrompt) {
+            SDCATCardReaderInterfaceUnavailable(
+                stringResource(R.string.sdcat_card_reader_interface_nfc_unavailable)
+            )
+        }
     } else {
-        SDCATCardReaderInterfaceNfcPrompt()
+        if (showPrompt) {
+            SDCATCardReaderInterfaceNfcPrompt()
+        }
 
         LifecycleResumeEffect(Unit) {
             nfcAdapter.enableReaderMode(

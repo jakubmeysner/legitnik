@@ -23,4 +23,26 @@
     <string name="sdcat_card_reader_interface_usb_device_select_prompt">Podłącz czytnik kart USB do swojego urządzenia i wybierz go z listy…</string>
     <string name="sdcat_card_reader_snackbar_usb_unsupported_device">Wybrane urządzenie USB nie jest wspieranym czytnikiem kart! Spróbuj użyć innego czytnika.</string>
     <string name="sdcat_card_reader_interface_usb_insert_card_prompt">Umieść Elektroniczną Legitymację Studencką/Doktoranta/Nauczyciela Akademickiego w czytniku aby ją zeskanować…</string>
+    <string name="sdcat_card_reader_snackbar_reading_interface_error">Wystąpił błąd przy próbie odczytu danych z tej karty! Spróbuj zeskanować ją ponownie.</string>
+    <string name="sdcat_card_reader_snackbar_reading_error">Wystąpił błąd przy odczycie danych z tej karty! Upewnij się, że jest to Elektroniczna Legitymacja Studencka/Doktoranta/Nauczyciela Akademickiego.</string>
+    <string name="sdcat_card_card_student">Student</string>
+    <string name="sdcat_card_card_doctoral_candidate">Doktorant</string>
+    <string name="sdcat_card_card_academic_teacher">Nauczyciel akademicki</string>
+    <string name="sdcat_card_card_university">Uczelnia</string>
+    <string name="sdcat_card_card_university_or_issuer">Uczelnia/wydawca</string>
+    <string name="sdcat_card_card_album_number">Nr albumu</string>
+    <string name="sdcat_card_card_card_number">Nr legitymacji</string>
+    <string name="sdcat_card_card_edition_number">Nr edycji</string>
+    <string name="sdcat_card_card_pesel_number">Nr PESEL</string>
+    <string name="sdcat_card_card_expiry_date">Data ważności</string>
+    <string name="sdcat_card_card_issue_date">Data wydania</string>
+    <string name="parking_lot_list_error">Wystąpił błąd. Sprawdź swoje połączenie i spróbuj ponownie później.</string>
+    <string name="parking_lot_list_snack_error">Wystąpił błąd. Wyświetlane dane mogą być nieaktualne.</string>
+    <string name="parking_lot_list_refresh">Odśwież</string>
+    <plurals name="parking_lot_list_free_places">
+        <item quantity="one">%d wolne miejsce</item>
+        <item quantity="few">%d wolne miejsca</item>
+        <item quantity="many">%d wolnych miejsc</item>
+        <item quantity="other">%d wolnych miejsc</item>
+    </plurals>
 </resources>

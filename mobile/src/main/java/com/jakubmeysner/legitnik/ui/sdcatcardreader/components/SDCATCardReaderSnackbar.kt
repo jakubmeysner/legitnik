@@ -17,7 +17,7 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 
 @Composable
-fun SDCATCardReaderNfcUnsupportedCardSnackbar(
+fun SDCATCardReaderSnackbar(
     onShowSnackbar: suspend (visuals: SnackbarVisuals) -> SnackbarResult,
     snackbar: SDCATCardReaderSnackbar?,
     onShownSnackbar: () -> Unit,
@@ -33,6 +33,14 @@ fun SDCATCardReaderNfcUnsupportedCardSnackbar(
         R.string.sdcat_card_reader_snackbar_usb_unsupported_device
     )
 
+    val readingInterfaceErrorMessage = stringResource(
+        R.string.sdcat_card_reader_snackbar_reading_interface_error
+    )
+
+    val readingErrorMessage = stringResource(
+        R.string.sdcat_card_reader_snackbar_reading_error
+    )
+
     LaunchedEffect(snackbar) {
         if (snackbar != null) {
             job?.cancel()
@@ -46,6 +54,14 @@ fun SDCATCardReaderNfcUnsupportedCardSnackbar(
 
                         SDCATCardReaderSnackbar.USB_UNSUPPORTED_DEVICE -> SnackbarVisualsData(
                             message = usbUnsupportedDeviceMessage,
+                        )
+
+                        SDCATCardReaderSnackbar.READING_INTERFACE_ERROR -> SnackbarVisualsData(
+                            message = readingInterfaceErrorMessage,
+                        )
+
+                        SDCATCardReaderSnackbar.READING_ERROR -> SnackbarVisualsData(
+                            message = readingErrorMessage,
                         )
                     }
                 )

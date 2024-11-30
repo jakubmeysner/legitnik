@@ -49,6 +49,10 @@ android {
     androidResources {
         generateLocaleConfig = true
     }
+
+    packaging {
+        resources.excludes.add("META-INF/versions/9/OSGI-INF/MANIFEST.MF")
+    }
 }
 
 dependencies {
@@ -83,6 +87,8 @@ dependencies {
     implementation(libs.vico.compose)
     implementation(libs.vico.compose.m3)
     implementation(files("libs/acssmc-1.1.5.jar"))
+    implementation(libs.bouncycastle.bcprov)
+    implementation(libs.bouncycastle.bcpkix)
     kapt(libs.hilt.compiler)
     kapt(libs.androidx.lifecycle.compiler)
     testImplementation(libs.junit)
@@ -92,7 +98,6 @@ dependencies {
     androidTestImplementation(libs.androidx.ui.test.junit4)
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
-    wearApp(project(":wear"))
 }
 
 kapt {
