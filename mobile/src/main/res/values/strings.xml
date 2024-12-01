@@ -42,4 +42,5 @@
         <item quantity="one">%d free place</item>
         <item quantity="other">%d free places</item>
     </plurals>
+    <string name="parking_lot_details_chart_data_unavailable_message">Free places history is currently unavailable. Try again</string>
 </resources>

@@ -39,7 +39,7 @@ import kotlin.math.ceil
 
 @Composable
 fun ParkingLotDetailsChartCard(
-    freePlacesHistory: List<Pair<String, Int>>,
+    freePlacesHistory: List<Pair<String, Int>>?,
 ) {
     Card {
         Column(
@@ -54,71 +54,76 @@ fun ParkingLotDetailsChartCard(
                 style = MaterialTheme.typography.titleLarge,
                 modifier = Modifier.padding(horizontal = 16.dp)
             )
+            if (freePlacesHistory.isNullOrEmpty()) {
+                ParkingLotDetailsDataUnavailable()
+            } else {
+                val modelProducer = remember(freePlacesHistory) { CartesianChartModelProducer() }
+                val labelListKey = ExtraStore.Key<List<String>>()
+                val (xs, ys) = freePlacesHistory.unzip()
 
-            val modelProducer = remember(freePlacesHistory) { CartesianChartModelProducer() }
-            val labelListKey = ExtraStore.Key<List<String>>()
-            val (xs, ys) = freePlacesHistory.unzip()
-
-            LaunchedEffect(freePlacesHistory) {
-                modelProducer.runTransaction {
-                    lineSeries {
-                        series(
-                            y = ys
-                        )
-                    }
-                    extras {
-                        it[labelListKey] = xs
+                LaunchedEffect(freePlacesHistory) {
+                    modelProducer.runTransaction {
+                        lineSeries {
+                            series(
+                                y = ys
+                            )
+                        }
+                        extras {
+                            it[labelListKey] = xs
+                        }
                     }
                 }
-            }
 
-            val surfaceColor = MaterialTheme.colorScheme.surfaceBright
-            val lineColor = MaterialTheme.colorScheme.primary
-            val marker = DefaultCartesianMarker(
-                label = TextComponent(margins = Dimensions(8f)),
-                indicator = { color ->
-                    ShapeComponent(
-                        fill = fill(surfaceColor),
-                        shape = CorneredShape.Pill,
-                        strokeFill = Fill(color),
-                        strokeThicknessDp = 2f
-                    )
-                },
-                indicatorSizeDp = 10f,
-            )
-            //idk how to calculate these to make whole chart visible without need to scroll horizontally
-            val spacing = ceil(ys.size / 10f).toInt()
-            val pointSpacing = ceil(ys.size / 20f).toInt()
-            CartesianChartHost(
-                rememberCartesianChart(
-                    rememberLineCartesianLayer(lineProvider =
-                    LineCartesianLayer.LineProvider.Companion.series(
-                        LineCartesianLayer.rememberLine(
-                            remember { LineCartesianLayer.LineFill.single(fill(lineColor)) }
+                val surfaceColor = MaterialTheme.colorScheme.surfaceBright
+                val lineColor = MaterialTheme.colorScheme.primary
+                val marker = DefaultCartesianMarker(
+                    label = TextComponent(margins = Dimensions(8f)),
+                    indicator = { color ->
+                        ShapeComponent(
+                            fill = fill(surfaceColor),
+                            shape = CorneredShape.Pill,
+                            strokeFill = Fill(color),
+                            strokeThicknessDp = 2f
                         )
+                    },
+                    indicatorSizeDp = 10f,
+                )
+
+                //idk how to calculate these to make whole chart visible without need to scroll horizontally
+                val spacing = ceil(ys.size / 10f).toInt()
+                val pointSpacing = ceil(ys.size / 20f).toInt()
+                CartesianChartHost(
+                    rememberCartesianChart(
+                        rememberLineCartesianLayer(lineProvider =
+                        LineCartesianLayer.LineProvider.Companion.series(
+                            LineCartesianLayer.rememberLine(
+                                remember { LineCartesianLayer.LineFill.single(fill(lineColor)) }
+                            )
+                        ),
+                            pointSpacing = pointSpacing.dp
+                        ),
+                        startAxis =
+                        VerticalAxis.rememberStart(
+                        ),
+                        bottomAxis =
+                        HorizontalAxis.rememberBottom(
+                            valueFormatter = { context, x, _ ->
+                                context.model.extraStore[labelListKey][x.toInt()]
+                            },
+                            labelRotationDegrees = 300f,
+                            itemPlacer = HorizontalAxis.ItemPlacer.aligned(
+                                spacing = spacing,
+                                addExtremeLabelPadding = false
+                            )
+                        ),
+                        layerPadding = cartesianLayerPadding(scalableStart = 0.dp),
+                        marker = marker,
+                        persistentMarkers = rememberExtraLambda(marker) { marker at xs.size - 1 },
                     ),
-                        pointSpacing = pointSpacing.dp
-                    ),
-                    startAxis =
-                    VerticalAxis.rememberStart(
-                    ),
-                    bottomAxis =
-                    HorizontalAxis.rememberBottom(
-                        valueFormatter = { context, x, _ ->
-                            context.model.extraStore[labelListKey][x.toInt()]
-                        },
-                        labelRotationDegrees = 300f,
-                        itemPlacer = HorizontalAxis.ItemPlacer.aligned(
-                            spacing = spacing,
-                            addExtremeLabelPadding = false
-                        )
-                    ),
-                    layerPadding = cartesianLayerPadding(scalableStart = 0.dp),
-                    marker = marker,
-                    persistentMarkers = rememberExtraLambda(marker) { marker at xs.size - 1 },
-                ),
-                modelProducer,
-            )
+                    modelProducer,
+                )
+            }
         }
     }
+
 }

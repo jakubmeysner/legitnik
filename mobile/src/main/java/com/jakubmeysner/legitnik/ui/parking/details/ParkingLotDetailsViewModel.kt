@@ -48,9 +48,11 @@ class ParkingLotDetailsViewModel @Inject constructor(
                         error = parkingLotDetails == null,
                     )
                 }
-                //violated separation of concerns?
+
                 if (parkingLotDetails == null) {
                     showViewModelMessage(R.string.parking_lot_details_data_unavailable_message)
+                } else if (parkingLotDetails.freePlacesHistory.isNullOrEmpty()) {
+                    showViewModelMessage(R.string.parking_lot_details_chart_data_unavailable_message)
                 }
 
             } catch (e: Exception) {
