@@ -29,11 +29,7 @@ class ParkingLotDetailsViewModel @Inject constructor(
     private val parkingLotRepository: ParkingLotRepository,
 ) : ViewModel(), ClassSimpleNameLoggingTag {
     private val route = savedStateHandle.toRoute<ParkingLotDetails>()
-
-    //not sure if creating model producer here is correct
-    //https://www.patrykandpatrick.com/vico/guide/latest/core/cartesian-charts/cartesian-chart-model-producer#222-cartesianchartmodelproducer-creation
-    private val _uiState =
-        MutableStateFlow(ParkingLotDetailsUiState())
+    private val _uiState = MutableStateFlow(ParkingLotDetailsUiState())
     val uiState = _uiState.asStateFlow()
 
     init {

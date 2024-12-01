@@ -4,6 +4,8 @@ import android.util.Log
 import com.google.gson.annotations.SerializedName
 import com.jakubmeysner.legitnik.util.ClassSimpleNameLoggingTag
 import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.async
+import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
@@ -58,7 +60,7 @@ data class ParkingLot(
     val address: String,
     val latitude: Double,
     val longitude: Double,
-    var freePlacesHistory: List<Pair<String, Int>> = emptyList(),
+    var freePlacesHistory: List<Pair<String, Int>>?,
 )
 
 
@@ -81,18 +83,23 @@ class ParkingLotRemoteDataSource @Inject constructor(
             Log.d(tag, "Parking data fetched")
 
             val parkingLots = parkingList.map {
-                ParkingLot(
-                    it.id,
-                    it.freePlaces,
-                    it.name,
-                    it.symbol,
-                    it.photo,
-                    it.address,
-                    it.geoLat,
-                    it.geoLan,
-                    freePlacesHistory = getParkingLotFreePlacesHistory(it.id)
-                )
-            }
+                async(ioDispatcher) {
+                    val freePlacesHistory =
+                        runCatching { getParkingLotFreePlacesHistory(it.id) }.getOrNull()
+
+                    ParkingLot(
+                        it.id,
+                        it.freePlaces,
+                        it.name,
+                        it.symbol,
+                        it.photo,
+                        it.address,
+                        it.geoLat,
+                        it.geoLan,
+                        freePlacesHistory = freePlacesHistory
+                    )
+                }
+            }.awaitAll()
 
             Log.d(tag, "result = $parkingLots")
             parkingLots
@@ -102,18 +109,15 @@ class ParkingLotRemoteDataSource @Inject constructor(
 
     override suspend fun getParkingLotFreePlacesHistory(id: String): List<Pair<String, Int>> {
         return withContext(ioDispatcher) {
-            var result = emptyList<Pair<String, Int>>()
-            try {
-                val body = ParkingLotDetailsFreePlacesHistoryBody(o = "get_today_chart", i = id)
-                Log.d(tag, "Fetching free places history data from parking (id=$id)")
-                val freePlacesHistory =
-                    parkingLotApi.getParkingLotDetails(body).parkingLotFreePlacesHistory
-                Log.d(tag, "Data fetched")
-                result = freePlacesHistory.hours.zip(freePlacesHistory.freePlaces)
-                Log.d(tag, "Data = $result")
-            } catch (e: Exception) {
-                Log.d(tag, "Exception = $e")
-            }
+
+            val body = ParkingLotDetailsFreePlacesHistoryBody(o = "get_today_chart", i = id)
+            Log.d(tag, "Fetching free places history data from parking (id=$id)")
+            val freePlacesHistory =
+                parkingLotApi.getParkingLotDetails(body).parkingLotFreePlacesHistory
+            Log.d(tag, "Free places history data fetched")
+            val result = freePlacesHistory.hours.zip(freePlacesHistory.freePlaces)
+            Log.d(tag, "Data (parkingId=$id) = $result")
+
             result
         }
     }

@@ -1,6 +1,5 @@
 package com.jakubmeysner.legitnik.ui.parking.details.components
 
-import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -56,11 +55,11 @@ fun ParkingLotDetailsChartCard(
                 modifier = Modifier.padding(horizontal = 16.dp)
             )
 
-            val modelProducer = CartesianChartModelProducer()
+            val modelProducer = remember(freePlacesHistory) { CartesianChartModelProducer() }
             val labelListKey = ExtraStore.Key<List<String>>()
             val (xs, ys) = freePlacesHistory.unzip()
 
-            LaunchedEffect(Unit) {
+            LaunchedEffect(freePlacesHistory) {
                 modelProducer.runTransaction {
                     lineSeries {
                         series(
@@ -90,9 +89,6 @@ fun ParkingLotDetailsChartCard(
             //idk how to calculate these to make whole chart visible without need to scroll horizontally
             val spacing = ceil(ys.size / 10f).toInt()
             val pointSpacing = ceil(ys.size / 20f).toInt()
-            Log.d("Chart", "N = ${xs.size}")
-            Log.d("Chart", "Spacing = $spacing")
-            Log.d("Chart", "Point Spacing = $pointSpacing")
             CartesianChartHost(
                 rememberCartesianChart(
                     rememberLineCartesianLayer(lineProvider =
