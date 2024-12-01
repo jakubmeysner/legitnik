@@ -14,7 +14,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.jakubmeysner.legitnik.R
+import com.jakubmeysner.legitnik.ui.theme.Typography
 import com.patrykandpatrick.vico.compose.cartesian.CartesianChartHost
+import com.patrykandpatrick.vico.compose.cartesian.axis.rememberAxisLabelComponent
 import com.patrykandpatrick.vico.compose.cartesian.axis.rememberBottom
 import com.patrykandpatrick.vico.compose.cartesian.axis.rememberStart
 import com.patrykandpatrick.vico.compose.cartesian.cartesianLayerPadding
@@ -107,6 +109,7 @@ fun ParkingLotDetailsChartCard(
                         ),
                         bottomAxis =
                         HorizontalAxis.rememberBottom(
+                            label = rememberAxisLabelComponent(textSize = Typography.labelSmall.fontSize),
                             valueFormatter = { context, x, _ ->
                                 context.model.extraStore[labelListKey][x.toInt()]
                             },
@@ -114,7 +117,7 @@ fun ParkingLotDetailsChartCard(
                             itemPlacer = HorizontalAxis.ItemPlacer.aligned(
                                 spacing = spacing,
                                 addExtremeLabelPadding = false
-                            )
+                            ),
                         ),
                         layerPadding = cartesianLayerPadding(scalableStart = 0.dp),
                         marker = marker,
