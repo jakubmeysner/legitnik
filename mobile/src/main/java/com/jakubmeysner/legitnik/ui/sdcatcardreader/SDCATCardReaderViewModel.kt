@@ -9,11 +9,13 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.acs.smartcard.Reader
+import com.jakubmeysner.legitnik.data.sdcatcard.SDCATCardData
+import com.jakubmeysner.legitnik.data.sdcatcard.SDCATCardValidationResult
+import com.jakubmeysner.legitnik.data.sdcatcard.SDCATCardValidator
 import com.jakubmeysner.legitnik.domain.apdu.ApduTransceiver
 import com.jakubmeysner.legitnik.domain.apdu.IsoDepApduTransceiver
 import com.jakubmeysner.legitnik.domain.apdu.UsbReader
 import com.jakubmeysner.legitnik.domain.apdu.UsbReaderTransceiver
-import com.jakubmeysner.legitnik.domain.sdcatcard.SDCATCardData
 import com.jakubmeysner.legitnik.domain.sdcatcard.readSDCATCard
 import com.jakubmeysner.legitnik.domain.sdcatcard.toParsed
 import com.jakubmeysner.legitnik.util.ClassSimpleNameLoggingTag
@@ -38,6 +40,7 @@ enum class SDCATCardReaderSnackbar {
     USB_UNSUPPORTED_DEVICE,
     READING_INTERFACE_ERROR,
     READING_ERROR,
+    VALIDATION_ERROR,
 }
 
 data class SDCATCardReaderUiState(
@@ -46,38 +49,29 @@ data class SDCATCardReaderUiState(
     val selectedUsbDevice: UsbDevice? = null,
     val reading: Boolean = false,
     val cardData: SDCATCardData? = null,
+    val cardValidationResult: SDCATCardValidationResult? = null,
+    val cardValidationDetailsDialogOpened: Boolean = false,
 )
 
 @HiltViewModel
 class SDCATCardReaderViewModel @Inject constructor(
     private val savedStateHandle: SavedStateHandle,
+    private val cardValidator: SDCATCardValidator,
 ) : ViewModel(), ClassSimpleNameLoggingTag {
+    private var usbReader: Reader? = null
+
     private val _selectedInterface = savedStateHandle.getStateFlow(
         SELECTED_INTERFACE_KEY, SDCATCardReaderInterface.NFC
     )
 
-    private val _snackbar = MutableStateFlow<SDCATCardReaderSnackbar?>(null)
-
-    private var usbReader: Reader? = null
-    private var _selectedUsbDevice = MutableStateFlow<UsbDevice?>(null)
-
-    private var _reading = MutableStateFlow(false)
-
-    private var _cardData = MutableStateFlow<SDCATCardData?>(null)
+    private var _uiState = MutableStateFlow(SDCATCardReaderUiState())
 
     val uiState: StateFlow<SDCATCardReaderUiState> = combine(
+        _uiState,
         _selectedInterface,
-        _snackbar,
-        _selectedUsbDevice,
-        _reading,
-        _cardData,
-    ) { selectedInterface, snackbar, selectedUsbDevice, reading, cardData ->
-        SDCATCardReaderUiState(
+    ) { uiState, selectedInterface ->
+        uiState.copy(
             selectedInterface = selectedInterface,
-            snackbar = snackbar,
-            selectedUsbDevice = selectedUsbDevice,
-            reading = reading,
-            cardData = cardData,
         )
     }.stateIn(
         scope = viewModelScope,
@@ -91,11 +85,11 @@ class SDCATCardReaderViewModel @Inject constructor(
 
     fun onTagDiscovered(nfcTag: Tag) {
         try {
-            _reading.update { true }
+            _uiState.update { it.copy(reading = true) }
             val isoDepAvailable = nfcTag.techList.contains(IsoDep::class.qualifiedName)
 
             if (!isoDepAvailable) {
-                _snackbar.update { SDCATCardReaderSnackbar.NFC_UNSUPPORTED_CARD }
+                _uiState.update { it.copy(snackbar = SDCATCardReaderSnackbar.NFC_UNSUPPORTED_CARD) }
                 return
             }
 
@@ -104,11 +98,17 @@ class SDCATCardReaderViewModel @Inject constructor(
                 val apduTransceiver = IsoDepApduTransceiver(isoDep)
                 scanCard(apduTransceiver)
             }
+
+            _uiState.update { it.copy(reading = false) }
+            validateCard()
         } catch (exception: Exception) {
             Log.e(tag, "An exception occurred while trying to read card", exception)
-            _snackbar.update { SDCATCardReaderSnackbar.READING_INTERFACE_ERROR }
-        } finally {
-            _reading.update { false }
+            _uiState.update {
+                it.copy(
+                    reading = false,
+                    snackbar = SDCATCardReaderSnackbar.READING_INTERFACE_ERROR,
+                )
+            }
         }
     }
 
@@ -121,7 +121,11 @@ class SDCATCardReaderViewModel @Inject constructor(
                 return
             }
 
-            _reading.update { true }
+            _uiState.update { it.copy(reading = true) }
+
+            if (!reader.isOpened && uiState.value.selectedUsbDevice != null) {
+                reader.open(uiState.value.selectedUsbDevice)
+            }
 
             reader.power(slotNum, Reader.CARD_COLD_RESET)
             reader.setProtocol(slotNum, Reader.PROTOCOL_T0 or Reader.PROTOCOL_T1)
@@ -130,11 +134,16 @@ class SDCATCardReaderViewModel @Inject constructor(
             scanCard(apduTransceiver)
 
             reader.power(slotNum, Reader.CARD_POWER_DOWN)
+            _uiState.update { it.copy(reading = false) }
+            validateCard()
         } catch (exception: Exception) {
             Log.e(tag, "An exception occurred while trying to read card", exception)
-            _snackbar.update { SDCATCardReaderSnackbar.READING_INTERFACE_ERROR }
-        } finally {
-            _reading.update { false }
+            _uiState.update {
+                it.copy(
+                    reading = false,
+                    snackbar = SDCATCardReaderSnackbar.READING_INTERFACE_ERROR,
+                )
+            }
         }
     }
 
@@ -142,12 +151,29 @@ class SDCATCardReaderViewModel @Inject constructor(
         try {
             val rawData = readSDCATCard(apduTransceiver)
             val parsedData = rawData.toParsed()
-            _cardData.update { SDCATCardData(rawData, parsedData) }
+            _uiState.update { it.copy(cardData = SDCATCardData(rawData, parsedData)) }
         } catch (exception: Exception) {
             Log.e(tag, "An exception occurred while reading card", exception)
-            _snackbar.update { SDCATCardReaderSnackbar.READING_ERROR }
+            _uiState.update { it.copy(snackbar = SDCATCardReaderSnackbar.READING_ERROR) }
         }
+    }
 
+    private fun validateCard() {
+        try {
+            _uiState.update {
+                it.copy(
+                    cardValidationResult = null,
+                    cardValidationDetailsDialogOpened = false,
+                )
+            }
+
+            val data = _uiState.value.cardData ?: return
+            val result = cardValidator.getValidationResult(data)
+            _uiState.update { it.copy(cardValidationResult = result) }
+        } catch (exception: Exception) {
+            Log.e(tag, "An exception occurred while validating the card", exception)
+            _uiState.update { it.copy(snackbar = SDCATCardReaderSnackbar.VALIDATION_ERROR) }
+        }
     }
 
     fun createUsbReader(usbManager: UsbManager) {
@@ -163,28 +189,36 @@ class SDCATCardReaderViewModel @Inject constructor(
     fun selectUsbDevice(usbDevice: UsbDevice?) {
         if (usbDevice == null) {
             usbReader?.close()
-            _selectedUsbDevice.update { null }
+            _uiState.update { it.copy(selectedUsbDevice = null) }
             return
         }
 
         val reader = usbReader
 
         if (reader == null || !reader.isSupported(usbDevice)) {
-            _snackbar.update { SDCATCardReaderSnackbar.USB_UNSUPPORTED_DEVICE }
+            _uiState.update { it.copy(snackbar = SDCATCardReaderSnackbar.USB_UNSUPPORTED_DEVICE) }
             return
         }
 
         try {
             reader.open(usbDevice)
-            _selectedUsbDevice.update { usbDevice }
+            _uiState.update { it.copy(selectedUsbDevice = usbDevice) }
         } catch (e: Exception) {
             Log.e(tag, "An exception occurred while trying to open USB device", e)
-            _snackbar.update { SDCATCardReaderSnackbar.USB_UNSUPPORTED_DEVICE }
+            _uiState.update { it.copy(snackbar = SDCATCardReaderSnackbar.USB_UNSUPPORTED_DEVICE) }
         }
     }
 
     fun onShownSnackbar() {
-        _snackbar.update { null }
+        _uiState.update { it.copy(snackbar = null) }
+    }
+
+    fun openCardValidationDetailsDialog() {
+        _uiState.update { it.copy(cardValidationDetailsDialogOpened = true) }
+    }
+
+    fun closeCardValidationDetailsDialog() {
+        _uiState.update { it.copy(cardValidationDetailsDialogOpened = false) }
     }
 
     override fun onCleared() {

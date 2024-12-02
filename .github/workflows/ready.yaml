@@ -1,0 +1,21 @@
+name: Ready
+on:
+  pull_request:
+    branches:
+      - main
+    types:
+      - opened
+      - synchronize
+      - reopened
+      - labeled
+      - unlabeled
+
+permissions: { }
+
+jobs:
+  ready:
+    name: Ready
+    runs-on: ubuntu-latest
+    steps:
+      - run: exit 1
+        if: contains(github.event.pull_request.labels.*.name, 'draft')

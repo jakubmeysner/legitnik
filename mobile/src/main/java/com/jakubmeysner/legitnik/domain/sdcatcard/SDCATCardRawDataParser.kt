@@ -1,5 +1,7 @@
 package com.jakubmeysner.legitnik.domain.sdcatcard
 
+import com.jakubmeysner.legitnik.data.sdcatcard.SDCATCardParsedContent
+import com.jakubmeysner.legitnik.data.sdcatcard.SDCATCardParsedData
 import com.jakubmeysner.legitnik.data.sdcatcard.SDCATCardRawData
 import com.jakubmeysner.legitnik.data.sdcatcard.SDCATCardType
 import org.bouncycastle.asn1.ASN1BitString
@@ -11,10 +13,23 @@ import org.bouncycastle.asn1.ASN1PrintableString
 import org.bouncycastle.asn1.ASN1Sequence
 import org.bouncycastle.asn1.ASN1UTF8String
 import org.bouncycastle.cms.CMSSignedData
+import org.bouncycastle.jcajce.provider.asymmetric.x509.CertificateFactory
+import java.security.cert.X509Certificate
 
 fun SDCATCardRawData.toParsed(): SDCATCardParsedData {
-    val cms = CMSSignedData(this.rawMessage.toByteArray())
-    val sequence = ASN1Sequence.getInstance(cms.signedContent.content)
+    val message = CMSSignedData(rawMessage.toByteArray())
+
+    return SDCATCardParsedData(
+        message = message,
+        content = parseContent(type, message),
+        certificate = CertificateFactory().engineGenerateCertificate(
+            rawCertificate.toByteArray().inputStream()
+        ) as X509Certificate,
+    )
+}
+
+fun parseContent(type: SDCATCardType, message: CMSSignedData): SDCATCardParsedContent {
+    val sequence = ASN1Sequence.getInstance(message.signedContent.content)
 
     val version = (sequence.getObjectAt(0) as ASN1Integer).intValueExact()
 
@@ -52,7 +67,7 @@ fun SDCATCardRawData.toParsed(): SDCATCardParsedData {
         val peselNumber = (sequence.getObjectAt(7) as ASN1PrintableString).string
 
         return if (type == SDCATCardType.DOCTORAL_CANDIDATE) {
-            SDCATCardParsedData.DoctoralCandidateCardParsedData(
+            SDCATCardParsedContent.DoctoralCandidateCardParsedContent(
                 version,
                 chipSerialNumber,
                 universityOrIssuerName,
@@ -64,7 +79,7 @@ fun SDCATCardRawData.toParsed(): SDCATCardParsedData {
                 expiryDate,
             )
         } else {
-            SDCATCardParsedData.StudentCardParsedBasicData(
+            SDCATCardParsedContent.StudentCardParsedBasicContent(
                 version,
                 chipSerialNumber,
                 universityOrIssuerName,
@@ -82,7 +97,7 @@ fun SDCATCardRawData.toParsed(): SDCATCardParsedData {
     val issueDate = (sequence.getObjectAt(startIndex + 0) as ASN1GeneralizedTime).date
 
     if (type == SDCATCardType.ACADEMIC_TEACHER && version == 3) {
-        return SDCATCardParsedData.AcademicTeacherCardParsedBasicData(
+        return SDCATCardParsedContent.AcademicTeacherCardParsedBasicContent(
             version,
             chipSerialNumber,
             universityOrIssuerName,
@@ -101,7 +116,7 @@ fun SDCATCardRawData.toParsed(): SDCATCardParsedData {
     val photoEfIdentifier = sequence.getObjectAt(startIndex + 4) as ASN1OctetString
 
     return if (type == SDCATCardType.ACADEMIC_TEACHER) {
-        SDCATCardParsedData.AcademicTeacherCardParsedExtendedData(
+        SDCATCardParsedContent.AcademicTeacherCardParsedExtendedContent(
             version,
             chipSerialNumber,
             universityOrIssuerName,
@@ -119,7 +134,7 @@ fun SDCATCardRawData.toParsed(): SDCATCardParsedData {
     } else {
         val peselNumber = (sequence.getObjectAt(7) as ASN1PrintableString).string
 
-        SDCATCardParsedData.StudentCardParsedExtendedData(
+        SDCATCardParsedContent.StudentCardParsedExtendedContent(
             version,
             chipSerialNumber,
             universityOrIssuerName,
