@@ -46,4 +46,5 @@
         <item quantity="other">%d wolnych miejsc</item>
     </plurals>
     <string name="parking_lot_details_chart_data_unavailable_message">Dane dotyczące historii wolnych miejsc są obecnie niedostępne. Spróbuj ponownie</string>
+    <string name="parking_lot_details_reload_icon_description">Przeładuj</string>
 </resources>

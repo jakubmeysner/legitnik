@@ -110,7 +110,7 @@ class ParkingLotRemoteDataSource @Inject constructor(
     override suspend fun getParkingLotFreePlacesHistory(id: String): List<Pair<String, Int>> {
         return withContext(ioDispatcher) {
 
-            val body = ParkingLotDetailsFreePlacesHistoryBody(o = "get_today_chart", i = id)
+            val body = ParkingLotDetailsFreePlacesHistoryBody(i = id)
             Log.d(tag, "Fetching free places history data from parking (id=$id)")
             val freePlacesHistory =
                 parkingLotApi.getParkingLotDetails(body).parkingLotFreePlacesHistory

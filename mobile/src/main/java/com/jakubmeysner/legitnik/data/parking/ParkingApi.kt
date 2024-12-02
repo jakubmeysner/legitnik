@@ -5,7 +5,7 @@ import retrofit2.http.Headers
 import retrofit2.http.POST
 
 data class ParkingLotDetailsFreePlacesHistoryBody(
-    val o: String,
+    val o: String = "get_today_chart",
     val i: String,
 )
 
