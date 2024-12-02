@@ -30,7 +30,8 @@ google-maps-compose = "6.2.1"
 googleGmsGoogleServices = "4.4.2"
 firebaseMessaging = "24.1.0"
 vico = "2.0.0-beta.3"
-bouncycastle = "1.79"
+bouncycastle = "1.70"
+dss = "1.01.20"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -76,8 +77,13 @@ google-maps-compose = { group = "com.google.maps.android", name = "maps-compose"
 firebase-messaging = { group = "com.google.firebase", name = "firebase-messaging", version.ref = "firebaseMessaging" }
 vico-compose = { group = "com.patrykandpatrick.vico", name = "compose", version.ref = "vico" }
 vico-compose-m3 = { group = "com.patrykandpatrick.vico", name = "compose-m3", version.ref = "vico" }
-bouncycastle-bcprov = { group = "org.bouncycastle", name = "bcprov-jdk18on", version.ref = "bouncycastle" }
-bouncycastle-bcpkix = { group = "org.bouncycastle", name = "bcpkix-jdk18on", version.ref = "bouncycastle" }
+bouncycastle-bcprov = { group = "org.bouncycastle", name = "bcprov-jdk15on", version.ref = "bouncycastle" }
+bouncycastle-bcpkix = { group = "org.bouncycastle", name = "bcpkix-jdk15on", version.ref = "bouncycastle" }
+dss-cades = { group = "com.signerry.dss-android", name = "dss-cades", version.ref = "dss" }
+dss-service = { group = "com.signerry.dss-android", name = "dss-service", version.ref = "dss" }
+dss-spi = { group = "com.signerry.dss-android", name = "dss-spi", version.ref = "dss" }
+dss-tsl-validation = { group = "com.signerry.dss-android", name = "dss-tsl-validation", version.ref = "dss" }
+dss-utils-google-guava = { group = "com.signerry.dss-android", name = "dss-utils-google-guava", version.ref = "dss" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

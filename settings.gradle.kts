@@ -19,6 +19,13 @@ dependencyResolutionManagement {
     repositories {
         google()
         mavenCentral()
+
+        repositories {
+            maven("https://maven.pkg.github.com/signerry/packages") {
+                name = "githubSignerry"
+                credentials(PasswordCredentials::class)
+            }
+        }
     }
 }
 

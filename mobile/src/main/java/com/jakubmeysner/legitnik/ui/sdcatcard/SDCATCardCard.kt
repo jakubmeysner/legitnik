@@ -9,26 +9,37 @@ import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.Icon
+import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.key
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.unit.dp
 import com.jakubmeysner.legitnik.R
-import com.jakubmeysner.legitnik.domain.sdcatcard.SDCATCardParsedData
+import com.jakubmeysner.legitnik.data.sdcatcard.SDCATCardParsedContent
 import java.util.TimeZone
 
 @Composable
 fun SDCATCardCard(
-    parsedData: SDCATCardParsedData,
+    content: SDCATCardParsedContent,
+    valid: Boolean?,
+    onShowValidationDetails: () -> Unit,
 ) {
     val context = LocalContext.current
 
@@ -38,29 +49,29 @@ fun SDCATCardCard(
         }
     }
 
-    val givenNames = parsedData.givenNames.joinToString(separator = " ")
-    val surname = parsedData.surname.joinToString(separator = " ")
+    val givenNames = content.givenNames.joinToString(separator = " ")
+    val surname = content.surname.joinToString(separator = " ")
     val initials = "${givenNames.first()}${surname.first()}"
     val fullName = "$givenNames $surname"
 
     val type = stringResource(
-        when (parsedData) {
-            is SDCATCardParsedData.StudentCardParsedData -> R.string.sdcat_card_card_student
-            is SDCATCardParsedData.DoctoralCandidateCardParsedData -> R.string.sdcat_card_card_doctoral_candidate
-            is SDCATCardParsedData.AcademicTeacherCardParsedData -> R.string.sdcat_card_card_academic_teacher
+        when (content) {
+            is SDCATCardParsedContent.StudentCardParsedContent -> R.string.sdcat_card_card_student
+            is SDCATCardParsedContent.DoctoralCandidateCardParsedContent -> R.string.sdcat_card_card_doctoral_candidate
+            is SDCATCardParsedContent.AcademicTeacherCardParsedContent -> R.string.sdcat_card_card_academic_teacher
         }
     )
 
     val universityOrIssuerNameLabel = stringResource(
-        when (parsedData) {
-            is SDCATCardParsedData.DoctoralCandidateCardParsedData -> R.string.sdcat_card_card_university_or_issuer
+        when (content) {
+            is SDCATCardParsedContent.DoctoralCandidateCardParsedContent -> R.string.sdcat_card_card_university_or_issuer
             else -> R.string.sdcat_card_card_university
         }
     )
 
     val albumOrCardNumberLabel = stringResource(
-        when (parsedData) {
-            is SDCATCardParsedData.StudentCardParsedData -> R.string.sdcat_card_card_album_number
+        when (content) {
+            is SDCATCardParsedContent.StudentCardParsedContent -> R.string.sdcat_card_card_album_number
             else -> R.string.sdcat_card_card_card_number
         }
     )
@@ -71,19 +82,22 @@ fun SDCATCardCard(
     val issueDateLabel = stringResource(R.string.sdcat_card_card_issue_date)
 
     val fields = listOfNotNull(
-        universityOrIssuerNameLabel to parsedData.universityOrIssuerName,
-        albumOrCardNumberLabel to parsedData.albumOrCardNumber,
-        editionNumberLabel to parsedData.editionNumber,
-        if (parsedData is SDCATCardParsedData.SDCATCardParsedDataWithPeselNumber) {
-            peselNumberLabel to parsedData.peselNumber
+        universityOrIssuerNameLabel to content.universityOrIssuerName,
+        albumOrCardNumberLabel to content.albumOrCardNumber,
+        editionNumberLabel to content.editionNumber,
+        if (content is SDCATCardParsedContent.SDCATCardParsedContentWithPeselNumber) {
+            peselNumberLabel to content.peselNumber
         } else null,
-        expiryDateLabel to gmtDateFormat.format(parsedData.expiryDate),
-        if (parsedData is SDCATCardParsedData.SDCATCardParsedDataWithIssueDate) {
-            issueDateLabel to gmtDateFormat.format(parsedData.issueDate)
+        expiryDateLabel to gmtDateFormat.format(content.expiryDate),
+        if (content is SDCATCardParsedContent.SDCATCardParsedContentWithIssueDate) {
+            issueDateLabel to gmtDateFormat.format(content.issueDate)
         } else null,
     )
 
     Card(
+        colors = if (valid != false) CardDefaults.cardColors() else CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.errorContainer
+        ),
         modifier = Modifier.fillMaxWidth(),
     ) {
         Column(
@@ -113,7 +127,7 @@ fun SDCATCardCard(
                 }
 
                 Column(
-                    modifier = Modifier.fillMaxWidth(),
+                    modifier = Modifier.weight(weight = 1f),
                     verticalArrangement = Arrangement.spacedBy(space = 4.dp),
                 ) {
                     Text(
@@ -126,26 +140,39 @@ fun SDCATCardCard(
                         style = MaterialTheme.typography.labelMedium,
                     )
                 }
+
+                if (valid != null) {
+                    Icon(
+                        imageVector = if (valid) Icons.Default.CheckCircle else ImageVector
+                            .vectorResource(R.drawable.mdi_alert_octagram_outline),
+                        contentDescription = if (valid) stringResource(
+                            R.string.sdcat_card_card_valid
+                        ) else stringResource(
+                            R.string.sdcat_card_card_invalid
+                        ),
+                        modifier = Modifier
+                            .size(size = 32.dp),
+                        tint = if (valid) MaterialTheme.colorScheme.primary
+                        else LocalContentColor.current
+                    )
+                } else {
+                    CircularProgressIndicator(
+                        modifier = Modifier.size(size = 32.dp),
+                    )
+                }
             }
 
-            for ((label, value) in fields) {
-                key(label) {
-                    Column(
-                        modifier = Modifier.fillMaxWidth(),
-                        verticalArrangement = Arrangement.spacedBy(space = 4.dp),
-                    ) {
-                        Text(
-                            text = value,
-                            style = MaterialTheme.typography.bodyMedium,
-                        )
+            TextFieldsList(
+                fields = fields,
+                labelColor = if (valid != false) MaterialTheme.colorScheme.onSurfaceVariant
+                else LocalContentColor.current,
+            )
 
-                        Text(
-                            text = label,
-                            style = MaterialTheme.typography.labelSmall,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant,
-                        )
-                    }
-                }
+            TextButton(
+                onClick = onShowValidationDetails,
+                enabled = valid != null,
+            ) {
+                Text(stringResource(R.string.sdcat_card_card_validation_details_button))
             }
         }
     }
