@@ -8,6 +8,8 @@ on:
       - labeled
       - unlabeled
 
+permissions: { }
+
 jobs:
   ready:
     name: Ready
