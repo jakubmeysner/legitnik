@@ -21,3 +21,6 @@ jobs:
       - uses: gradle/actions/wrapper-validation@v4
       - run: chmod +x ./gradlew
       - run: ./gradlew build --no-daemon
+        env:
+          ORG_GRADLE_PROJECT_githubSignerryUsername: ${{ github.actor }}
+          ORG_GRADLE_PROJECT_githubSignerryPassword: ${{ github.token }}
