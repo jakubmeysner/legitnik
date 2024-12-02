@@ -45,4 +45,20 @@
         <item quantity="many">%d wolnych miejsc</item>
         <item quantity="other">%d wolnych miejsc</item>
     </plurals>
+    <string name="sdcat_card_reader_snackbar_validation_error">Wystąpił błąd przy walidacji danych z legitymacji! Może to wskazywać na problem z danymi zapisywanymi na legitymacji.</string>
+    <string name="sdcat_card_card_validation_details_button">Szczegóły walidacji</string>
+    <string name="sdcat_card_card_valid">Ważna</string>
+    <string name="sdcat_card_card_invalid">Nieważna</string>
+    <string name="sdcat_card_validation_details_dialog_title">Szczegóły walidacji</string>
+    <string name="sdcat_card_validation_details_dialog_certificate_title">Certyfikat kwalifikowany</string>
+    <string name="sdcat_card_validation_details_dialog_certificate_subject">Podmiot</string>
+    <string name="sdcat_card_validation_details_dialog_certificate_issuer">Wydawca</string>
+    <string name="sdcat_card_validation_details_dialog_certificate_validity">Ważność</string>
+    <string name="sdcat_card_validation_details_dialog_valid_qualified_signature">Prawidłowy podpis kwalifikowany</string>
+    <string name="sdcat_card_validation_details_dialog_qualified_signature_status_details">Szczegóły statusu podpisu kwalifikowanego</string>
+    <string name="sdcat_card_validation_details_dialog_issuer_matches_certificate_subject_label">Wydawca legitymacji zgodny z podmiotem</string>
+    <string name="sdcat_card_validation_details_dialog_certificate_subject_authorized_label">Podmiot uprawniony do wystawiania legitymacji</string>
+    <string name="sdcat_card_validation_details_dialog_not_expired_label">Ważna</string>
+    <string name="sdcat_card_validation_details_dialog_yes">Tak</string>
+    <string name="sdcat_card_validation_details_dialog_no">Nie</string>
 </resources>

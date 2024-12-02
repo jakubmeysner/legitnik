@@ -51,7 +51,11 @@ android {
     }
 
     packaging {
-        resources.excludes.add("META-INF/versions/9/OSGI-INF/MANIFEST.MF")
+        resources {
+            excludes += "META-INF/versions/9/OSGI-INF/MANIFEST.MF"
+            excludes += "META-INF/*"
+            pickFirsts += "xsd/*"
+        }
     }
 }
 
@@ -87,6 +91,11 @@ dependencies {
     implementation(files("libs/acssmc-1.1.5.jar"))
     implementation(libs.bouncycastle.bcprov)
     implementation(libs.bouncycastle.bcpkix)
+    implementation(libs.dss.cades)
+    implementation(libs.dss.service)
+    implementation(libs.dss.spi)
+    implementation(libs.dss.tsl.validation)
+    implementation(libs.dss.utils.google.guava)
     kapt(libs.hilt.compiler)
     kapt(libs.androidx.lifecycle.compiler)
     testImplementation(libs.junit)

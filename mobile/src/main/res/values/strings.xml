@@ -42,4 +42,20 @@
         <item quantity="one">%d free place</item>
         <item quantity="other">%d free places</item>
     </plurals>
+    <string name="sdcat_card_reader_snackbar_validation_error">An error occurred while validating card data! This might indicate an issue with the data saved on the card.</string>
+    <string name="sdcat_card_card_validation_details_button">Validation details</string>
+    <string name="sdcat_card_card_valid">Valid</string>
+    <string name="sdcat_card_card_invalid">Invalid</string>
+    <string name="sdcat_card_validation_details_dialog_title">Validation details</string>
+    <string name="sdcat_card_validation_details_dialog_certificate_title">Qualified certificate</string>
+    <string name="sdcat_card_validation_details_dialog_certificate_subject">Subject</string>
+    <string name="sdcat_card_validation_details_dialog_certificate_issuer">Issuer</string>
+    <string name="sdcat_card_validation_details_dialog_certificate_validity">Validity</string>
+    <string name="sdcat_card_validation_details_dialog_valid_qualified_signature">Valid qualified signature</string>
+    <string name="sdcat_card_validation_details_dialog_qualified_signature_status_details">Qualified signature status details</string>
+    <string name="sdcat_card_validation_details_dialog_issuer_matches_certificate_subject_label">Card issuer matches certificate subject</string>
+    <string name="sdcat_card_validation_details_dialog_certificate_subject_authorized_label">Subject authorized to issue cards</string>
+    <string name="sdcat_card_validation_details_dialog_not_expired_label">Not expired</string>
+    <string name="sdcat_card_validation_details_dialog_yes">Yes</string>
+    <string name="sdcat_card_validation_details_dialog_no">No</string>
 </resources>

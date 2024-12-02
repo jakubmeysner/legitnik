@@ -1,11 +1,11 @@
-package com.jakubmeysner.legitnik.domain.sdcatcard
+package com.jakubmeysner.legitnik.data.sdcatcard
 
 import org.bouncycastle.asn1.ASN1BitString
 import org.bouncycastle.asn1.ASN1ObjectIdentifier
 import org.bouncycastle.asn1.ASN1OctetString
 import java.util.Date
 
-sealed interface SDCATCardParsedData {
+sealed interface SDCATCardParsedContent {
     val version: Int
     val chipSerialNumber: String
     val universityOrIssuerName: String
@@ -15,25 +15,25 @@ sealed interface SDCATCardParsedData {
     val editionNumber: String
     val expiryDate: Date
 
-    sealed interface SDCATCardParsedDataWithPeselNumber : SDCATCardParsedData {
+    sealed interface SDCATCardParsedContentWithPeselNumber : SDCATCardParsedContent {
         val peselNumber: String
     }
 
-    sealed interface SDCATCardParsedDataWithIssueDate : SDCATCardParsedData {
+    sealed interface SDCATCardParsedContentWithIssueDate : SDCATCardParsedContent {
         val issueDate: Date
     }
 
-    sealed interface SDCATCardParsedDataWithCancellationUrlAndPhotoMetadata :
-        SDCATCardParsedDataWithIssueDate {
+    sealed interface SDCATCardParsedContentWithCancellationUrlAndPhotoMetadata :
+        SDCATCardParsedContentWithIssueDate {
         val cancellationUrl: String
         val photoHashFunction: ASN1ObjectIdentifier
         val photoHash: ASN1BitString
         val photoEfIdentifier: ASN1OctetString
     }
 
-    sealed interface StudentCardParsedData : SDCATCardParsedDataWithPeselNumber
+    sealed interface StudentCardParsedContent : SDCATCardParsedContentWithPeselNumber
 
-    data class StudentCardParsedBasicData(
+    data class StudentCardParsedBasicContent(
         override val version: Int,
         override val chipSerialNumber: String,
         override val universityOrIssuerName: String,
@@ -43,9 +43,9 @@ sealed interface SDCATCardParsedData {
         override val editionNumber: String,
         override val peselNumber: String,
         override val expiryDate: Date,
-    ) : StudentCardParsedData
+    ) : StudentCardParsedContent
 
-    data class StudentCardParsedExtendedData(
+    data class StudentCardParsedExtendedContent(
         override val version: Int,
         override val chipSerialNumber: String,
         override val universityOrIssuerName: String,
@@ -60,9 +60,9 @@ sealed interface SDCATCardParsedData {
         override val photoHashFunction: ASN1ObjectIdentifier,
         override val photoHash: ASN1BitString,
         override val photoEfIdentifier: ASN1OctetString,
-    ) : StudentCardParsedData, SDCATCardParsedDataWithCancellationUrlAndPhotoMetadata
+    ) : StudentCardParsedContent, SDCATCardParsedContentWithCancellationUrlAndPhotoMetadata
 
-    data class DoctoralCandidateCardParsedData(
+    data class DoctoralCandidateCardParsedContent(
         override val version: Int,
         override val chipSerialNumber: String,
         override val universityOrIssuerName: String,
@@ -72,11 +72,11 @@ sealed interface SDCATCardParsedData {
         override val editionNumber: String,
         override val peselNumber: String,
         override val expiryDate: Date,
-    ) : SDCATCardParsedDataWithPeselNumber
+    ) : SDCATCardParsedContentWithPeselNumber
 
-    sealed interface AcademicTeacherCardParsedData : SDCATCardParsedDataWithIssueDate
+    sealed interface AcademicTeacherCardParsedContent : SDCATCardParsedContentWithIssueDate
 
-    data class AcademicTeacherCardParsedBasicData(
+    data class AcademicTeacherCardParsedBasicContent(
         override val version: Int,
         override val chipSerialNumber: String,
         override val universityOrIssuerName: String,
@@ -86,9 +86,9 @@ sealed interface SDCATCardParsedData {
         override val editionNumber: String,
         override val expiryDate: Date,
         override val issueDate: Date,
-    ) : AcademicTeacherCardParsedData
+    ) : AcademicTeacherCardParsedContent
 
-    data class AcademicTeacherCardParsedExtendedData(
+    data class AcademicTeacherCardParsedExtendedContent(
         override val version: Int,
         override val chipSerialNumber: String,
         override val universityOrIssuerName: String,
@@ -102,5 +102,5 @@ sealed interface SDCATCardParsedData {
         override val photoHashFunction: ASN1ObjectIdentifier,
         override val photoHash: ASN1BitString,
         override val photoEfIdentifier: ASN1OctetString,
-    ) : AcademicTeacherCardParsedData, SDCATCardParsedDataWithCancellationUrlAndPhotoMetadata
+    ) : AcademicTeacherCardParsedContent, SDCATCardParsedContentWithCancellationUrlAndPhotoMetadata
 }

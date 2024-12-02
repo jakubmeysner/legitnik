@@ -17,6 +17,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.jakubmeysner.legitnik.ui.sdcatcard.SDCATCardCard
+import com.jakubmeysner.legitnik.ui.sdcatcard.SDCATCardValidationDetailsDialog
 import com.jakubmeysner.legitnik.ui.sdcatcardreader.components.SDCATCardReaderInterfaceNfc
 import com.jakubmeysner.legitnik.ui.sdcatcardreader.components.SDCATCardReaderInterfaceSelect
 import com.jakubmeysner.legitnik.ui.sdcatcardreader.components.SDCATCardReaderInterfaceUsb
@@ -29,6 +30,7 @@ fun SDCATCardReaderScreen(
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val cardData = uiState.cardData
+    val validationResult = uiState.cardValidationResult
     val showPrompt = !uiState.reading && cardData == null
 
     Column(
@@ -70,7 +72,17 @@ fun SDCATCardReaderScreen(
         } else if (cardData != null) {
             Box(modifier = Modifier.padding(top = 16.dp)) {
                 SDCATCardCard(
-                    parsedData = cardData.parsedData,
+                    content = cardData.parsedData.content,
+                    valid = validationResult?.valid,
+                    onShowValidationDetails = viewModel::openCardValidationDetailsDialog,
+                )
+            }
+
+            if (uiState.cardValidationDetailsDialogOpened && validationResult != null) {
+                SDCATCardValidationDetailsDialog(
+                    certificate = cardData.parsedData.certificate,
+                    validationResult = validationResult,
+                    onClose = viewModel::closeCardValidationDetailsDialog,
                 )
             }
         }

@@ -41,6 +41,10 @@ fun SDCATCardReaderSnackbar(
         R.string.sdcat_card_reader_snackbar_reading_error
     )
 
+    val validationErrorMessage = stringResource(
+        R.string.sdcat_card_reader_snackbar_validation_error
+    )
+
     LaunchedEffect(snackbar) {
         if (snackbar != null) {
             job?.cancel()
@@ -62,6 +66,10 @@ fun SDCATCardReaderSnackbar(
 
                         SDCATCardReaderSnackbar.READING_ERROR -> SnackbarVisualsData(
                             message = readingErrorMessage,
+                        )
+
+                        SDCATCardReaderSnackbar.VALIDATION_ERROR -> SnackbarVisualsData(
+                            message = validationErrorMessage,
                         )
                     }
                 )
