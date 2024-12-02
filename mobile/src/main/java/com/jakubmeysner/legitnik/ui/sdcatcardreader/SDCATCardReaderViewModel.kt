@@ -98,12 +98,17 @@ class SDCATCardReaderViewModel @Inject constructor(
                 val apduTransceiver = IsoDepApduTransceiver(isoDep)
                 scanCard(apduTransceiver)
             }
-        } catch (exception: Exception) {
-            Log.e(tag, "An exception occurred while trying to read card", exception)
-            _uiState.update { it.copy(snackbar = SDCATCardReaderSnackbar.READING_INTERFACE_ERROR) }
-        } finally {
+
             _uiState.update { it.copy(reading = false) }
             validateCard()
+        } catch (exception: Exception) {
+            Log.e(tag, "An exception occurred while trying to read card", exception)
+            _uiState.update {
+                it.copy(
+                    reading = false,
+                    snackbar = SDCATCardReaderSnackbar.READING_INTERFACE_ERROR,
+                )
+            }
         }
     }
 
@@ -129,12 +134,16 @@ class SDCATCardReaderViewModel @Inject constructor(
             scanCard(apduTransceiver)
 
             reader.power(slotNum, Reader.CARD_POWER_DOWN)
-        } catch (exception: Exception) {
-            Log.e(tag, "An exception occurred while trying to read card", exception)
-            _uiState.update { it.copy(snackbar = SDCATCardReaderSnackbar.READING_INTERFACE_ERROR) }
-        } finally {
             _uiState.update { it.copy(reading = false) }
             validateCard()
+        } catch (exception: Exception) {
+            Log.e(tag, "An exception occurred while trying to read card", exception)
+            _uiState.update {
+                it.copy(
+                    reading = false,
+                    snackbar = SDCATCardReaderSnackbar.READING_INTERFACE_ERROR,
+                )
+            }
         }
     }
 
