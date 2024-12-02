@@ -42,6 +42,7 @@ import kotlin.math.ceil
 @Composable
 fun ParkingLotDetailsChartCard(
     freePlacesHistory: List<Pair<String, Int>>?,
+    onReload: () -> Unit,
 ) {
     Card {
         Column(
@@ -57,7 +58,7 @@ fun ParkingLotDetailsChartCard(
                 modifier = Modifier.padding(horizontal = 16.dp)
             )
             if (freePlacesHistory.isNullOrEmpty()) {
-                ParkingLotDetailsDataUnavailable()
+                ParkingLotDetailsDataUnavailable(onReload)
             } else {
                 val modelProducer = remember(freePlacesHistory) { CartesianChartModelProducer() }
                 val labelListKey = ExtraStore.Key<List<String>>()

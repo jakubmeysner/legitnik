@@ -16,14 +16,14 @@ import androidx.compose.ui.unit.dp
 import com.jakubmeysner.legitnik.R
 
 @Composable
-fun ParkingLotDetailsDataUnavailable() {
+fun ParkingLotDetailsDataUnavailable(onReload: () -> Unit) {
     Box(
         contentAlignment = Alignment.Center,
         modifier = Modifier
             .fillMaxSize()
     ) {
         Button(
-            onClick = {/*TODO refresh action*/ },
+            onClick = { onReload() },
             modifier = Modifier
                 .align(Alignment.Center)
                 .size(72.dp),

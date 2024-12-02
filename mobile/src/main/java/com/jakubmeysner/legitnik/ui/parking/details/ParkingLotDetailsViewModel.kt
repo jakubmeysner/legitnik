@@ -36,11 +36,11 @@ class ParkingLotDetailsViewModel @Inject constructor(
         loadParkingLotDetails()
     }
 
-    private fun loadParkingLotDetails() {
+    fun loadParkingLotDetails(reload: Boolean = false) {
         viewModelScope.launch {
             try {
                 _uiState.update { currentUiState -> currentUiState.copy(loading = true) }
-                val parkingLotDetails = parkingLotRepository.getParkingLot(route.id)
+                val parkingLotDetails = parkingLotRepository.getParkingLot(route.id, reload)
                 _uiState.update { currentUiState ->
                     currentUiState.copy(
                         loading = false,

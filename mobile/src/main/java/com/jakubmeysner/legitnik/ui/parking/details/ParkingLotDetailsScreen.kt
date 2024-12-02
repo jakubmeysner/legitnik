@@ -31,8 +31,12 @@ fun ParkingLotDetailsScreen(
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val parkingLotDetails = uiState.parkingLotDetails
 
+    val onReload: () -> Unit = {
+        viewModel.loadParkingLotDetails(reload = true)
+    }
+
     if (parkingLotDetails == null) {
-        ParkingLotDetailsDataUnavailable()
+        ParkingLotDetailsDataUnavailable(onReload)
     } else {
         Column(
             modifier = Modifier
@@ -49,7 +53,7 @@ fun ParkingLotDetailsScreen(
                 "https://iparking.pwr.edu.pl${parkingLotDetails.photo}"
             )
 
-            ParkingLotDetailsChartCard(parkingLotDetails.freePlacesHistory)
+            ParkingLotDetailsChartCard(parkingLotDetails.freePlacesHistory, onReload)
 
             ParkingLotDetailsMapCard(
                 parkingLotDetails.latitude,
