@@ -10,6 +10,8 @@
     <string name="parking_lot_details_image_description">Parking image</string>
     <string name="parking_lot_details_error_message">Error occurred! Displayed data might be outdated</string>
     <string name="parking_lot_details_data_unavailable_message">Data about parking lot details is unavailable. Try again later</string>
+    <string name="parking_lot_details_chart_data_unavailable_message">Free places history is currently unavailable. Try again</string>
+    <string name="parking_lot_details_reload_icon_description">Reload</string>
     <string name="navigation_bar_sdcat_card_reader">Card Reader</string>
     <string name="sdcat_card_reader_interface_nfc">NFC</string>
     <string name="sdcat_card_reader_interface_usb">USB</string>

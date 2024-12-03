@@ -17,6 +17,10 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.jakubmeysner.legitnik.ui.parking.details.components.ParkingLotDetailsChartCard
+import com.jakubmeysner.legitnik.ui.parking.details.components.ParkingLotDetailsDataUnavailable
+import com.jakubmeysner.legitnik.ui.parking.details.components.ParkingLotDetailsGeneralCard
+import com.jakubmeysner.legitnik.ui.parking.details.components.ParkingLotDetailsMapCard
 import com.jakubmeysner.legitnik.util.SnackbarVisualsData
 
 @Composable
@@ -27,8 +31,12 @@ fun ParkingLotDetailsScreen(
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val parkingLotDetails = uiState.parkingLotDetails
 
+    val onReload: () -> Unit = {
+        viewModel.loadParkingLotDetails(reload = true)
+    }
+
     if (parkingLotDetails == null) {
-        ParkingLotDetailsDataUnavailable()
+        ParkingLotDetailsDataUnavailable(onReload)
     } else {
         Column(
             modifier = Modifier
@@ -44,6 +52,8 @@ fun ParkingLotDetailsScreen(
                 parkingLotDetails.freePlaces,
                 "https://iparking.pwr.edu.pl${parkingLotDetails.photo}"
             )
+
+            ParkingLotDetailsChartCard(parkingLotDetails.freePlacesHistory, onReload)
 
             ParkingLotDetailsMapCard(
                 parkingLotDetails.latitude,

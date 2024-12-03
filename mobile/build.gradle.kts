@@ -88,6 +88,8 @@ dependencies {
     implementation(libs.play.services.maps)
     implementation(libs.google.maps.compose)
     implementation(libs.firebase.messaging)
+    implementation(libs.vico.compose)
+    implementation(libs.vico.compose.m3)
     implementation(files("libs/acssmc-1.1.5.jar"))
     implementation(libs.bouncycastle.bcprov)
     implementation(libs.bouncycastle.bcpkix)

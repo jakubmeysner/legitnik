@@ -29,6 +29,7 @@ secrets-gradle-plugin = "2.0.1"
 google-maps-compose = "6.2.1"
 googleGmsGoogleServices = "4.4.2"
 firebaseMessaging = "24.1.0"
+vico = "2.0.0-beta.3"
 bouncycastle = "1.70"
 dss = "1.01.20"
 
@@ -74,6 +75,8 @@ play-services-maps = { group = "com.google.android.gms", name = "play-services-m
 secrets-gradle-plugin = { group = "com.google.android.libraries.mapsplatform.secrets-gradle-plugin", name = "secrets-gradle-plugin", version.ref = "secrets-gradle-plugin" }
 google-maps-compose = { group = "com.google.maps.android", name = "maps-compose", version.ref = "google-maps-compose" }
 firebase-messaging = { group = "com.google.firebase", name = "firebase-messaging", version.ref = "firebaseMessaging" }
+vico-compose = { group = "com.patrykandpatrick.vico", name = "compose", version.ref = "vico" }
+vico-compose-m3 = { group = "com.patrykandpatrick.vico", name = "compose-m3", version.ref = "vico" }
 bouncycastle-bcprov = { group = "org.bouncycastle", name = "bcprov-jdk15on", version.ref = "bouncycastle" }
 bouncycastle-bcpkix = { group = "org.bouncycastle", name = "bcpkix-jdk15on", version.ref = "bouncycastle" }
 dss-cades = { group = "com.signerry.dss-android", name = "dss-cades", version.ref = "dss" }

@@ -11,6 +11,8 @@
     <string name="parking_lot_details_image_description">Zdjęcie parkingu</string>
     <string name="parking_lot_details_error_message">Wystąpił błąd! Wyświetlane dane mogą być nieaktualne</string>
     <string name="parking_lot_details_data_unavailable_message">Dane dotyczące tego parkingu są niedostępne. Spróbuj ponownie później</string>
+    <string name="parking_lot_details_chart_data_unavailable_message">Dane dotyczące historii wolnych miejsc są obecnie niedostępne. Spróbuj ponownie</string>
+    <string name="parking_lot_details_reload_icon_description">Przeładuj</string>
     <string name="navigation_bar_sdcat_card_reader">Czytnik EL</string>
     <string name="sdcat_card_reader_interface_nfc">NFC</string>
     <string name="sdcat_card_reader_interface_usb">USB</string>

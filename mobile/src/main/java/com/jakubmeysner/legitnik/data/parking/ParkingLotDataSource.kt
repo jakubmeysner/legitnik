@@ -4,6 +4,8 @@ import android.util.Log
 import com.google.gson.annotations.SerializedName
 import com.jakubmeysner.legitnik.util.ClassSimpleNameLoggingTag
 import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.async
+import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
@@ -35,6 +37,19 @@ data class ParkingLotApiModel(
     @SerializedName("trend") val trend: String,
 )
 
+data class ParkingLotFreePlacesHistoryResponseApiModel(
+    val success: Int,
+    @SerializedName("slots")
+    val parkingLotFreePlacesHistory: ParkingLotFreePlacesHistoryDataApiModel,
+)
+
+data class ParkingLotFreePlacesHistoryDataApiModel(
+    @SerializedName("labels")
+    val hours: List<String>,
+    @SerializedName("data")
+    val freePlaces: List<Int>,
+)
+
 
 data class ParkingLot(
     val id: String,
@@ -45,12 +60,15 @@ data class ParkingLot(
     val address: String,
     val latitude: Double,
     val longitude: Double,
+    var freePlacesHistory: List<Pair<String, Int>>?,
 )
 
 
 interface ParkingLotDataSource {
     suspend fun getParkingLots():
         List<ParkingLot>
+
+    suspend fun getParkingLotFreePlacesHistory(id: String): List<Pair<String, Int>>
 }
 
 class ParkingLotRemoteDataSource @Inject constructor(
@@ -60,24 +78,47 @@ class ParkingLotRemoteDataSource @Inject constructor(
     ParkingLotDataSource, ClassSimpleNameLoggingTag {
     override suspend fun getParkingLots(): List<ParkingLot> {
         return withContext(ioDispatcher) {
-            Log.d(tag, "Trying to fetch data")
+            Log.d(tag, "Trying to fetch parking lots data")
             val parkingList = parkingLotApi.getParkingLots().parkingLots
             Log.d(tag, "Parking data fetched")
-            val result = parkingList.map {
-                ParkingLot(
-                    it.id,
-                    it.freePlaces,
-                    it.name,
-                    it.symbol,
-                    it.photo,
-                    it.address,
-                    it.geoLat,
-                    it.geoLan
-                )
-            }
-            Log.d(tag, "result = $result")
-            result
+
+            val parkingLots = parkingList.map {
+                async(ioDispatcher) {
+                    val freePlacesHistory =
+                        runCatching { getParkingLotFreePlacesHistory(it.id) }.getOrNull()
+
+                    ParkingLot(
+                        it.id,
+                        it.freePlaces,
+                        it.name,
+                        it.symbol,
+                        it.photo,
+                        it.address,
+                        it.geoLat,
+                        it.geoLan,
+                        freePlacesHistory = freePlacesHistory
+                    )
+                }
+            }.awaitAll()
+
+            Log.d(tag, "result = $parkingLots")
+            parkingLots
         }
 
+    }
+
+    override suspend fun getParkingLotFreePlacesHistory(id: String): List<Pair<String, Int>> {
+        return withContext(ioDispatcher) {
+
+            val body = ParkingLotDetailsFreePlacesHistoryBody(i = id)
+            Log.d(tag, "Fetching free places history data from parking (id=$id)")
+            val freePlacesHistory =
+                parkingLotApi.getParkingLotDetails(body).parkingLotFreePlacesHistory
+            Log.d(tag, "Free places history data fetched")
+            val result = freePlacesHistory.hours.zip(freePlacesHistory.freePlaces)
+            Log.d(tag, "Data (parkingId=$id) = $result")
+
+            result
+        }
     }
 }
