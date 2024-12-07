@@ -10,6 +10,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.acs.smartcard.Reader
 import com.jakubmeysner.legitnik.data.sdcatcard.SDCATCardData
+import com.jakubmeysner.legitnik.data.sdcatcard.SDCATCardRepository
 import com.jakubmeysner.legitnik.data.sdcatcard.SDCATCardValidationResult
 import com.jakubmeysner.legitnik.data.sdcatcard.SDCATCardValidator
 import com.jakubmeysner.legitnik.domain.apdu.ApduTransceiver
@@ -57,6 +58,7 @@ data class SDCATCardReaderUiState(
 class SDCATCardReaderViewModel @Inject constructor(
     private val savedStateHandle: SavedStateHandle,
     private val cardValidator: SDCATCardValidator,
+    private val cardRepository: SDCATCardRepository,
 ) : ViewModel(), ClassSimpleNameLoggingTag {
     private var usbReader: Reader? = null
 
