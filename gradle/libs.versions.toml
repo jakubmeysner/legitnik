@@ -32,6 +32,10 @@ firebaseMessaging = "24.1.0"
 vico = "2.0.0-beta.3"
 bouncycastle = "1.70"
 dss = "1.01.20"
+roomCompiler = "2.6.1"
+roomKtx = "2.6.1"
+roomRuntime = "2.6.1"
+ksp = "2.0.21-1.0.27"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -84,6 +88,9 @@ dss-service = { group = "com.signerry.dss-android", name = "dss-service", versio
 dss-spi = { group = "com.signerry.dss-android", name = "dss-spi", version.ref = "dss" }
 dss-tsl-validation = { group = "com.signerry.dss-android", name = "dss-tsl-validation", version.ref = "dss" }
 dss-utils-google-guava = { group = "com.signerry.dss-android", name = "dss-utils-google-guava", version.ref = "dss" }
+androidx-room-compiler = { group = "androidx.room", name = "room-compiler", version.ref = "roomCompiler" }
+androidx-room-ktx = { group = "androidx.room", name = "room-ktx", version.ref = "roomKtx" }
+androidx-room-runtime = { group = "androidx.room", name = "room-runtime", version.ref = "roomRuntime" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
@@ -94,3 +101,4 @@ hilt = { id = "com.google.dagger.hilt.android", version.ref = "hilt" }
 kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
 secrets-gradle-plugin = { id = "com.google.android.libraries.mapsplatform.secrets-gradle-plugin" }
 google-gms-google-services = { id = "com.google.gms.google-services", version.ref = "googleGmsGoogleServices" }
+ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
