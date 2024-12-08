@@ -1,4 +1,4 @@
-package com.jakubmeysner.legitnik.data.sdcatcard
+package com.jakubmeysner.legitnik.data.sdcatcard.database
 
 import android.content.Context
 import androidx.room.Room
@@ -15,7 +15,8 @@ object DatabaseModule {
     @Provides
     @Singleton
     fun provideAppDatabase(@ApplicationContext context: Context): AppDatabase {
-        return Room.databaseBuilder(context, AppDatabase::class.java, "database").build()
+        return Room.databaseBuilder(context, AppDatabase::class.java, "database")
+            .addTypeConverter(Converters()).build()
     }
 
     @Provides

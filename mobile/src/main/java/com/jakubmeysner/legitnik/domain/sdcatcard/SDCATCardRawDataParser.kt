@@ -2,7 +2,7 @@ package com.jakubmeysner.legitnik.domain.sdcatcard
 
 import com.jakubmeysner.legitnik.data.sdcatcard.SDCATCardParsedContent
 import com.jakubmeysner.legitnik.data.sdcatcard.SDCATCardParsedData
-import com.jakubmeysner.legitnik.data.sdcatcard.SDCATCardRawData
+import com.jakubmeysner.legitnik.data.sdcatcard.SDCATCardRawDataInterface
 import com.jakubmeysner.legitnik.data.sdcatcard.SDCATCardType
 import org.bouncycastle.asn1.ASN1BitString
 import org.bouncycastle.asn1.ASN1GeneralizedTime
@@ -16,7 +16,7 @@ import org.bouncycastle.cms.CMSSignedData
 import org.bouncycastle.jcajce.provider.asymmetric.x509.CertificateFactory
 import java.security.cert.X509Certificate
 
-fun SDCATCardRawData.toParsed(): SDCATCardParsedData {
+fun SDCATCardRawDataInterface.toParsed(): SDCATCardParsedData {
     val message = CMSSignedData(rawMessage.toByteArray())
 
     return SDCATCardParsedData(
