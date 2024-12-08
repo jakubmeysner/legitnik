@@ -1,8 +1,6 @@
 package com.jakubmeysner.legitnik.ui.sdcatcardreader.components
 
-import android.nfc.NfcAdapter
-import android.nfc.NfcManager
-import android.nfc.Tag
+import android.app.Activity
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.platform.LocalContext
@@ -13,16 +11,15 @@ import com.jakubmeysner.legitnik.util.findActivity
 
 @Composable
 fun SDCATCardReaderInterfaceNfc(
+    hasNfcFeature: Boolean,
     showPrompt: Boolean,
-    onTagDiscovered: (tag: Tag) -> Unit,
+    enableNfcAdapterReaderMode: (activity: Activity) -> Unit,
+    disableNfcAdapterReaderMode: (activity: Activity) -> Unit,
 ) {
     val context = LocalContext.current
     val activity = remember(context) { context.findActivity() }
 
-    val nfcManager = remember(context) { context.getSystemService(NfcManager::class.java) }
-    val nfcAdapter: NfcAdapter? = remember(nfcManager) { nfcManager.defaultAdapter }
-
-    if (nfcAdapter == null || activity == null) {
+    if (!hasNfcFeature || activity == null) {
         if (showPrompt) {
             SDCATCardReaderInterfaceUnavailable(
                 stringResource(R.string.sdcat_card_reader_interface_nfc_unavailable)
@@ -34,15 +31,10 @@ fun SDCATCardReaderInterfaceNfc(
         }
 
         LifecycleResumeEffect(Unit) {
-            nfcAdapter.enableReaderMode(
-                activity,
-                onTagDiscovered,
-                NfcAdapter.FLAG_READER_NFC_A or NfcAdapter.FLAG_READER_NFC_B,
-                null
-            )
+            enableNfcAdapterReaderMode(activity)
 
             onPauseOrDispose {
-                nfcAdapter.disableReaderMode(activity)
+                disableNfcAdapterReaderMode(activity)
             }
         }
     }
