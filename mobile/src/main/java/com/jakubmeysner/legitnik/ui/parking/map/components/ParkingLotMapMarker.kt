@@ -19,7 +19,7 @@ import com.jakubmeysner.legitnik.R
 import com.jakubmeysner.legitnik.data.parking.ParkingLot
 
 @Composable
-fun ParkingLotMapMarkerInfoWindow(
+fun ParkingLotMapMarker(
     parkingLot: ParkingLot,
     navigateToParkingLotDetails: (id: String) -> Unit,
 ) {

@@ -49,7 +49,7 @@ fun ParkingLotMapMap(
     ) {
         for (parkingLot in parkingLots) {
             key(parkingLot.id) {
-                ParkingLotMapMarkerInfoWindow(
+                ParkingLotMapMarker(
                     parkingLot = parkingLot,
                     navigateToParkingLotDetails = navigateToParkingLotDetails,
                 )
