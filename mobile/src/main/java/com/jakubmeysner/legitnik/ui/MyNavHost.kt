@@ -1,4 +1,4 @@
-package com.jakubmeysner.legitnik
+package com.jakubmeysner.legitnik.ui
 
 import android.annotation.SuppressLint
 import androidx.compose.animation.core.tween
@@ -32,6 +32,7 @@ import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import com.jakubmeysner.legitnik.R
 import com.jakubmeysner.legitnik.ui.parking.ParkingRoute
 import com.jakubmeysner.legitnik.ui.parking.details.navigateToParkingLotDetails
 import com.jakubmeysner.legitnik.ui.parking.parkingDestination
