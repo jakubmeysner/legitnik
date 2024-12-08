@@ -39,7 +39,7 @@ fun ParkingLotDetailsMapCard(latitude: Double, longitude: Double, name: String) 
     val parkingGeo = LatLng(latitude, longitude)
     val parkingMarkerState = rememberMarkerState(position = parkingGeo)
     val cameraPosition = rememberCameraPositionState {
-        position = CameraPosition.fromLatLngZoom(parkingGeo, 12f)
+        position = CameraPosition.fromLatLngZoom(parkingGeo, 14f)
     }
 
     Card {
