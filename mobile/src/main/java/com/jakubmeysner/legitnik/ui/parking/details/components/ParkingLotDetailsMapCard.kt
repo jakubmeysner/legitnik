@@ -25,6 +25,7 @@ import androidx.compose.ui.unit.dp
 import androidx.core.net.toUri
 import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
+import com.google.maps.android.compose.ComposeMapColorScheme
 import com.google.maps.android.compose.GoogleMap
 import com.google.maps.android.compose.Marker
 import com.google.maps.android.compose.rememberCameraPositionState
@@ -58,6 +59,7 @@ fun ParkingLotDetailsMapCard(latitude: Double, longitude: Double, name: String) 
                     .fillMaxWidth()
                     .height(300.dp),
                 cameraPositionState = cameraPosition,
+                mapColorScheme = ComposeMapColorScheme.FOLLOW_SYSTEM,
             ) {
                 Marker(state = parkingMarkerState, title = name)
             }
