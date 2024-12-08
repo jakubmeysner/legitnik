@@ -7,12 +7,12 @@ import androidx.navigation.compose.composable
 import kotlinx.serialization.Serializable
 
 @Serializable
-object SDCATCardReader
+object SDCATCardReaderRoute
 
 fun NavGraphBuilder.sdcatCardReaderDestination(
     onShowSnackbar: suspend (visuals: SnackbarVisuals) -> SnackbarResult,
 ) {
-    composable<SDCATCardReader> {
+    composable<SDCATCardReaderRoute> {
         SDCATCardReaderScreen(onShowSnackbar = onShowSnackbar)
     }
 }

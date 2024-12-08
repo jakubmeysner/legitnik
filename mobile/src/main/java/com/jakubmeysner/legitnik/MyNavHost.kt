@@ -32,12 +32,12 @@ import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
-import com.jakubmeysner.legitnik.ui.parking.Parking
+import com.jakubmeysner.legitnik.ui.parking.ParkingRoute
 import com.jakubmeysner.legitnik.ui.parking.details.navigateToParkingLotDetails
 import com.jakubmeysner.legitnik.ui.parking.parkingDestination
-import com.jakubmeysner.legitnik.ui.sdcatcardreader.SDCATCardReader
+import com.jakubmeysner.legitnik.ui.sdcatcardreader.SDCATCardReaderRoute
 import com.jakubmeysner.legitnik.ui.sdcatcardreader.sdcatCardReaderDestination
-import com.jakubmeysner.legitnik.ui.settings.Settings
+import com.jakubmeysner.legitnik.ui.settings.SettingsRoute
 import com.jakubmeysner.legitnik.ui.settings.settingsDestination
 
 data class TopLevelRoute<T : Any>(
@@ -62,19 +62,19 @@ sealed class ImageVectorOrResourceId {
 
 val topLevelRoutes = listOf(
     TopLevelRoute(
-        Parking,
+        ParkingRoute,
         R.string.navigation_bar_parking,
         ImageVectorOrResourceId.Vector(Icons.Default.Place),
         ImageVectorOrResourceId.Vector(Icons.Outlined.Place)
     ),
     TopLevelRoute(
-        SDCATCardReader,
+        SDCATCardReaderRoute,
         R.string.navigation_bar_sdcat_card_reader,
         ImageVectorOrResourceId.VectorResourceId(R.drawable.mdi_smart_card_reader),
         ImageVectorOrResourceId.VectorResourceId(R.drawable.smart_card_reader_outline)
     ),
     TopLevelRoute(
-        Settings,
+        SettingsRoute,
         R.string.navigation_bar_settings,
         ImageVectorOrResourceId.Vector(Icons.Default.Settings),
         ImageVectorOrResourceId.Vector(Icons.Outlined.Settings)
@@ -134,7 +134,7 @@ fun MyNavHost() {
     ) { innerPadding ->
         NavHost(
             navController = navController,
-            startDestination = Parking,
+            startDestination = ParkingRoute,
             modifier = Modifier.padding(innerPadding),
             enterTransition = {
                 fadeIn(animationSpec = tween(300))

@@ -7,13 +7,13 @@ import androidx.navigation.compose.composable
 import kotlinx.serialization.Serializable
 
 @Serializable
-object ParkingLotList
+object ParkingLotListRoute
 
 fun NavGraphBuilder.parkingLotListDestination(
     onNavigateToParkingLotDetails: (id: String) -> Unit,
     onShowSnackbar: suspend (visuals: SnackbarVisuals) -> SnackbarResult
 ) {
-    composable<ParkingLotList> {
+    composable<ParkingLotListRoute> {
         ParkingLotListScreen(onNavigateToParkingLotDetails = onNavigateToParkingLotDetails, onShowSnackbar = onShowSnackbar)
     }
 }
