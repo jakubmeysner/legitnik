@@ -25,7 +25,9 @@ fun NavGraphBuilder.parkingDestination(
             onShowSnackbar = onShowSnackbar,
         )
 
-        parkingLotMapDestination()
+        parkingLotMapDestination(
+            navigateToParkingLotDetails = onNavigateToParkingLotDetails,
+        )
 
         parkingLotDetailsDestination(onShowSnackbar = onShowSnackbar)
     }
