@@ -10,10 +10,15 @@ import kotlinx.serialization.Serializable
 object ParkingLotListRoute
 
 fun NavGraphBuilder.parkingLotListDestination(
+    navigateToParkingLotMap: () -> Unit,
     onNavigateToParkingLotDetails: (id: String) -> Unit,
-    onShowSnackbar: suspend (visuals: SnackbarVisuals) -> SnackbarResult
+    onShowSnackbar: suspend (visuals: SnackbarVisuals) -> SnackbarResult,
 ) {
     composable<ParkingLotListRoute> {
-        ParkingLotListScreen(onNavigateToParkingLotDetails = onNavigateToParkingLotDetails, onShowSnackbar = onShowSnackbar)
+        ParkingLotListScreen(
+            navigateToParkingLotMap = navigateToParkingLotMap,
+            onNavigateToParkingLotDetails = onNavigateToParkingLotDetails,
+            onShowSnackbar = onShowSnackbar
+        )
     }
 }

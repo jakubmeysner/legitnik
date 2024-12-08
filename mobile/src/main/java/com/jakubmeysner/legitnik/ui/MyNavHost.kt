@@ -35,6 +35,7 @@ import androidx.navigation.compose.rememberNavController
 import com.jakubmeysner.legitnik.R
 import com.jakubmeysner.legitnik.ui.parking.ParkingRoute
 import com.jakubmeysner.legitnik.ui.parking.details.navigateToParkingLotDetails
+import com.jakubmeysner.legitnik.ui.parking.map.navigateToParkingLotMap
 import com.jakubmeysner.legitnik.ui.parking.parkingDestination
 import com.jakubmeysner.legitnik.ui.sdcatcardreader.SDCATCardReaderRoute
 import com.jakubmeysner.legitnik.ui.sdcatcardreader.sdcatCardReaderDestination
@@ -145,10 +146,13 @@ fun MyNavHost() {
             }
         ) {
             parkingDestination(
+                navigateToParkingLotMap = navController::navigateToParkingLotMap,
                 onNavigateToParkingLotDetails = navController::navigateToParkingLotDetails,
                 onShowSnackbar = onShowSnackbar
             )
+
             sdcatCardReaderDestination(onShowSnackbar = onShowSnackbar)
+
             settingsDestination()
         }
     }
