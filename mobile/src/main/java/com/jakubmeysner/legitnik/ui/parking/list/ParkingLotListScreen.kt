@@ -33,11 +33,13 @@ import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
@@ -47,6 +49,8 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil3.compose.AsyncImage
+import com.google.android.gms.common.ConnectionResult
+import com.google.android.gms.common.GoogleApiAvailability
 import com.jakubmeysner.legitnik.R
 import com.jakubmeysner.legitnik.data.parking.ParkingLot
 import com.jakubmeysner.legitnik.util.SnackbarVisualsData
@@ -60,6 +64,13 @@ fun ParkingLotListScreen(
     onNavigateToParkingLotDetails: (id: String) -> Unit,
     onShowSnackbar: suspend (visuals: SnackbarVisuals) -> SnackbarResult,
 ) {
+    val context = LocalContext.current
+
+    val isPlayServicesAvailable = remember(context) {
+        GoogleApiAvailability.getInstance()
+            .isGooglePlayServicesAvailable(context) == ConnectionResult.SUCCESS
+    }
+
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val pullToRefreshState = rememberPullToRefreshState()
     val errorMessage = stringResource(R.string.parking_lot_list_snack_error)
@@ -84,18 +95,22 @@ fun ParkingLotListScreen(
         LoadingIndicator()
     } else {
         Scaffold(
-            floatingActionButton = {
-                FloatingActionButton(
-                    onClick = {
-                        navigateToParkingLotMap()
-                    },
-                    containerColor = MaterialTheme.colorScheme.tertiaryContainer,
-                ) {
-                    Icon(
-                        imageVector = ImageVector.vectorResource(R.drawable.mdi_map),
-                        contentDescription = stringResource(R.string.parking_lot_list_open_map),
-                    )
+            floatingActionButton = if (isPlayServicesAvailable) {
+                {
+                    FloatingActionButton(
+                        onClick = {
+                            navigateToParkingLotMap()
+                        },
+                        containerColor = MaterialTheme.colorScheme.tertiaryContainer,
+                    ) {
+                        Icon(
+                            imageVector = ImageVector.vectorResource(R.drawable.mdi_map),
+                            contentDescription = stringResource(R.string.parking_lot_list_open_map),
+                        )
+                    }
                 }
+            } else {
+                {}
             },
             contentWindowInsets = WindowInsets(0),
         ) {

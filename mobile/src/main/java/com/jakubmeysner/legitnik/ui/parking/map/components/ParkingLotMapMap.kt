@@ -6,9 +6,13 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.key
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
+import com.google.android.gms.common.ConnectionResult
+import com.google.android.gms.common.GoogleApiAvailability
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.LatLngBounds
@@ -22,6 +26,17 @@ fun ParkingLotMapMap(
     parkingLots: List<ParkingLot>,
     navigateToParkingLotDetails: (id: String) -> Unit,
 ) {
+    val context = LocalContext.current
+
+    val isPlayServicesAvailable = remember(context) {
+        GoogleApiAvailability.getInstance()
+            .isGooglePlayServicesAvailable(context) == ConnectionResult.SUCCESS
+    }
+
+    if (!isPlayServicesAvailable) {
+        return
+    }
+
     val cameraPositionState = rememberCameraPositionState()
     var cameraMoved by rememberSaveable { mutableStateOf(false) }
 
