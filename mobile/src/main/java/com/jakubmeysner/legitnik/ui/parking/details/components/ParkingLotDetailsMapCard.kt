@@ -1,5 +1,8 @@
 package com.jakubmeysner.legitnik.ui.parking.details.components
 
+import android.content.ActivityNotFoundException
+import android.content.Intent
+import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -34,10 +37,16 @@ import com.google.maps.android.compose.Marker
 import com.google.maps.android.compose.rememberCameraPositionState
 import com.google.maps.android.compose.rememberMarkerState
 import com.jakubmeysner.legitnik.R
-import com.jakubmeysner.legitnik.util.showMap
 
 @Composable
-fun ParkingLotDetailsMapCard(latitude: Double, longitude: Double, name: String) {
+fun ParkingLotDetailsMapCard(
+    latitude: Double,
+    longitude: Double,
+    name: String,
+    showMessage: (messageId: Int) -> Unit,
+) {
+    val TAG = "ParkingLotDetailsMapCard"
+
     val context = LocalContext.current
 
     val isPlayServicesAvailable = remember(context) {
@@ -79,9 +88,17 @@ fun ParkingLotDetailsMapCard(latitude: Double, longitude: Double, name: String) 
             }
 
             Button(onClick = {
-                showMap(
-                    "geo:0,0?q=$latitude,$longitude".toUri(), context
-                )
+                try {
+                    context.startActivity(
+                        Intent(
+                            Intent.ACTION_VIEW,
+                            "geo:0,0?q=$latitude,$longitude".toUri()
+                        )
+                    )
+                } catch (e: ActivityNotFoundException) {
+                    Log.e(TAG, "Activity not found for navigate action", e)
+                    showMessage(R.string.parking_lot_details_navigate_activity_not_found_exception)
+                }
             }, modifier = Modifier.align(Alignment.CenterHorizontally)) {
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
