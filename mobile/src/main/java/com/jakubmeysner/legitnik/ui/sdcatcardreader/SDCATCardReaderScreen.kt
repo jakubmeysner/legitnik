@@ -43,21 +43,28 @@ fun SDCATCardReaderScreen(
             enabled = !uiState.reading,
         )
 
-        if (uiState.selectedInterface == SDCATCardReaderInterface.NFC) {
-            SDCATCardReaderInterfaceNfc(
-                showPrompt = showPrompt,
-                onTagDiscovered = viewModel::onTagDiscovered,
-            )
+        when (uiState.selectedInterface) {
+            SDCATCardReaderInterface.NFC -> {
+                SDCATCardReaderInterfaceNfc(
+                    hasNfcFeature = uiState.hasNfcFeature,
+                    showPrompt = showPrompt,
+                    enableNfcAdapterReaderMode = viewModel::enableNfcAdapterReaderMode,
+                    disableNfcAdapterReaderMode = viewModel::disableNfcAdapterReaderMode,
+                )
+            }
+
+            SDCATCardReaderInterface.USB -> {
+                SDCATCardReaderInterfaceUsb(
+                    hasUsbHostFeature = uiState.hasUsbHostFeature,
+                    showPrompt = showPrompt,
+                    deviceSelectEnabled = !uiState.reading,
+                    selectedUsbDeviceName = uiState.selectedUsbDeviceName,
+                    selectUsbDevice = viewModel::selectUsbDevice,
+                )
+            }
         }
 
-        SDCATCardReaderInterfaceUsb(
-            visible = uiState.selectedInterface == SDCATCardReaderInterface.USB,
-            showPrompt = showPrompt,
-            deviceSelectEnabled = !uiState.reading,
-            createReader = viewModel::createUsbReader,
-            selectedUsbDevice = uiState.selectedUsbDevice,
-            selectUsbDevice = viewModel::selectUsbDevice,
-        )
+
 
         if (uiState.reading) {
             Column(
