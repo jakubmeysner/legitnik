@@ -28,7 +28,7 @@ class ParkingLotDetailsViewModel @Inject constructor(
     private val savedStateHandle: SavedStateHandle,
     private val parkingLotRepository: ParkingLotRepository,
 ) : ViewModel(), ClassSimpleNameLoggingTag {
-    private val route = savedStateHandle.toRoute<ParkingLotDetails>()
+    private val route = savedStateHandle.toRoute<ParkingLotDetailsRoute>()
     private val _uiState = MutableStateFlow(ParkingLotDetailsUiState())
     val uiState = _uiState.asStateFlow()
 
