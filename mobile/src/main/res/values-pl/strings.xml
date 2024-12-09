@@ -65,4 +65,5 @@
     <string name="sdcat_card_validation_details_dialog_no">Nie</string>
     <string name="parking_lot_list_open_map">Otwórz mapę</string>
     <string name="parking_lot_details_navigate_activity_not_found_exception">Nie znaleziono żadnej aplikacji do map!</string>
+    <string name="parking_lot_map_show_my_location">Pokaż moją lokalizację</string>
 </resources>
