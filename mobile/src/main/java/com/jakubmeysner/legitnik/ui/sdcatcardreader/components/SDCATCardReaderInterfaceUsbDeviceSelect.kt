@@ -38,7 +38,7 @@ private const val ACTION_USB_PERMISSION = "com.android.example.USB_PERMISSION"
 @Composable
 fun SDCATCardReaderInterfaceUsbDeviceSelect(
     enabled: Boolean,
-    selectedUsbDevice: UsbDevice?,
+    selectedUsbDeviceName: String?,
     selectUsbDevice: (usbDevice: UsbDevice?) -> Unit,
 ) {
     val context = LocalContext.current
@@ -66,10 +66,6 @@ fun SDCATCardReaderInterfaceUsbDeviceSelect(
 
                     UsbManager.ACTION_USB_DEVICE_DETACHED -> {
                         deviceList = manager.deviceList
-
-                        if (selectedUsbDevice == null) {
-                            selectUsbDevice(null)
-                        }
                     }
 
                     ACTION_USB_PERMISSION -> {
@@ -102,6 +98,7 @@ fun SDCATCardReaderInterfaceUsbDeviceSelect(
     }
 
     var expanded by rememberSaveable { mutableStateOf(false) }
+    val selectedUsbDevice = manager.deviceList[selectedUsbDeviceName]
 
     ExposedDropdownMenuBox(
         expanded = expanded,

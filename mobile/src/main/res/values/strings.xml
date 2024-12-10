@@ -10,6 +10,8 @@
     <string name="parking_lot_details_image_description">Parking image</string>
     <string name="parking_lot_details_error_message">Error occurred! Displayed data might be outdated</string>
     <string name="parking_lot_details_data_unavailable_message">Data about parking lot details is unavailable. Try again later</string>
+    <string name="parking_lot_details_chart_data_unavailable_message">Free places history is currently unavailable. Try again</string>
+    <string name="parking_lot_details_reload_icon_description">Reload</string>
     <string name="navigation_bar_sdcat_card_reader">Card Reader</string>
     <string name="sdcat_card_reader_interface_nfc">NFC</string>
     <string name="sdcat_card_reader_interface_usb">USB</string>
@@ -58,6 +60,7 @@
     <string name="sdcat_card_validation_details_dialog_not_expired_label">Not expired</string>
     <string name="sdcat_card_validation_details_dialog_yes">Yes</string>
     <string name="sdcat_card_validation_details_dialog_no">No</string>
-    <string name="settings_notification_category">Enable notifications of available parking spaces in selected parking lots</string>
-    <string name="settings_ongoing_notification_category">Enable an ongoing notification that tracks the number of available parking spaces in selected parking lots</string>
+    <string name="parking_lot_list_open_map">Open map</string>
+    <string name="parking_lot_details_navigate_activity_not_found_exception">No maps app was found!</string>
+    <string name="parking_lot_map_show_my_location">Show my location</string>
 </resources>

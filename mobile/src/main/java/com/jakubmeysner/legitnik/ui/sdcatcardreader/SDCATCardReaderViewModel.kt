@@ -1,7 +1,15 @@
 package com.jakubmeysner.legitnik.ui.sdcatcardreader
 
+import android.app.Activity
+import android.content.BroadcastReceiver
+import android.content.Context
+import android.content.Intent
+import android.content.IntentFilter
+import android.content.pm.PackageManager
 import android.hardware.usb.UsbDevice
 import android.hardware.usb.UsbManager
+import android.nfc.NfcAdapter
+import android.nfc.NfcManager
 import android.nfc.Tag
 import android.nfc.tech.IsoDep
 import android.util.Log
@@ -20,6 +28,7 @@ import com.jakubmeysner.legitnik.domain.sdcatcard.readSDCATCard
 import com.jakubmeysner.legitnik.domain.sdcatcard.toParsed
 import com.jakubmeysner.legitnik.util.ClassSimpleNameLoggingTag
 import dagger.hilt.android.lifecycle.HiltViewModel
+import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -46,19 +55,45 @@ enum class SDCATCardReaderSnackbar {
 data class SDCATCardReaderUiState(
     val selectedInterface: SDCATCardReaderInterface = SDCATCardReaderInterface.NFC,
     val snackbar: SDCATCardReaderSnackbar? = null,
-    val selectedUsbDevice: UsbDevice? = null,
+    val selectedUsbDeviceName: String? = null,
     val reading: Boolean = false,
     val cardData: SDCATCardData? = null,
     val cardValidationResult: SDCATCardValidationResult? = null,
     val cardValidationDetailsDialogOpened: Boolean = false,
+    val hasNfcFeature: Boolean = false,
+    val hasUsbHostFeature: Boolean = false,
 )
 
 @HiltViewModel
 class SDCATCardReaderViewModel @Inject constructor(
     private val savedStateHandle: SavedStateHandle,
+    @ApplicationContext private val context: Context,
     private val cardValidator: SDCATCardValidator,
 ) : ViewModel(), ClassSimpleNameLoggingTag {
-    private var usbReader: Reader? = null
+    private val nfcManager = context.getSystemService(NfcManager::class.java)
+    private val usbManager = context.getSystemService(UsbManager::class.java)
+
+    private val nfcAdapter: NfcAdapter? = nfcManager.defaultAdapter
+
+    private val hasUsbHostFeature = context.packageManager.hasSystemFeature(
+        PackageManager.FEATURE_USB_HOST
+    )
+
+    private var usbReader = UsbReader(usbManager).apply {
+        setOnStateChangeListener(::onUsbReaderStateChange)
+    }
+
+    private val usbBroadcastReceiver = object : BroadcastReceiver() {
+        override fun onReceive(context: Context, intent: Intent) {
+            onUsbBroadcastReceive(intent)
+        }
+    }.apply {
+        context.registerReceiver(
+            this,
+            IntentFilter(UsbManager.ACTION_USB_DEVICE_DETACHED),
+            Context.RECEIVER_EXPORTED,
+        )
+    }
 
     private val _selectedInterface = savedStateHandle.getStateFlow(
         SELECTED_INTERFACE_KEY, SDCATCardReaderInterface.NFC
@@ -72,6 +107,8 @@ class SDCATCardReaderViewModel @Inject constructor(
     ) { uiState, selectedInterface ->
         uiState.copy(
             selectedInterface = selectedInterface,
+            hasNfcFeature = nfcAdapter != null,
+            hasUsbHostFeature = hasUsbHostFeature,
         )
     }.stateIn(
         scope = viewModelScope,
@@ -83,13 +120,31 @@ class SDCATCardReaderViewModel @Inject constructor(
         savedStateHandle[SELECTED_INTERFACE_KEY] = inter
     }
 
+    fun enableNfcAdapterReaderMode(activity: Activity) {
+        nfcAdapter?.enableReaderMode(
+            activity,
+            ::onTagDiscovered,
+            NfcAdapter.FLAG_READER_NFC_A or NfcAdapter.FLAG_READER_NFC_B,
+            null
+        )
+    }
+
+    fun disableNfcAdapterReaderMode(activity: Activity) {
+        nfcAdapter?.disableReaderMode(activity)
+    }
+
     fun onTagDiscovered(nfcTag: Tag) {
         try {
             _uiState.update { it.copy(reading = true) }
             val isoDepAvailable = nfcTag.techList.contains(IsoDep::class.qualifiedName)
 
             if (!isoDepAvailable) {
-                _uiState.update { it.copy(snackbar = SDCATCardReaderSnackbar.NFC_UNSUPPORTED_CARD) }
+                _uiState.update {
+                    it.copy(
+                        reading = false,
+                        snackbar = SDCATCardReaderSnackbar.NFC_UNSUPPORTED_CARD,
+                    )
+                }
                 return
             }
 
@@ -112,10 +167,21 @@ class SDCATCardReaderViewModel @Inject constructor(
         }
     }
 
+    private fun onUsbBroadcastReceive(intent: Intent) {
+        val device: UsbDevice? = intent.getParcelableExtra(UsbManager.EXTRA_DEVICE)
+
+        when (intent.action) {
+            UsbManager.ACTION_USB_DEVICE_DETACHED -> {
+                if (device?.deviceName == _uiState.value.selectedUsbDeviceName) {
+                    selectUsbDevice(null)
+                }
+            }
+        }
+    }
+
     private fun onCardInserted(slotNum: Int) {
         try {
             Log.d(tag, "Card inserted into slot $slotNum")
-            val reader = usbReader ?: return
 
             if (_selectedInterface.value != SDCATCardReaderInterface.USB) {
                 return
@@ -123,17 +189,13 @@ class SDCATCardReaderViewModel @Inject constructor(
 
             _uiState.update { it.copy(reading = true) }
 
-            if (!reader.isOpened && uiState.value.selectedUsbDevice != null) {
-                reader.open(uiState.value.selectedUsbDevice)
-            }
+            usbReader.power(slotNum, Reader.CARD_COLD_RESET)
+            usbReader.setProtocol(slotNum, Reader.PROTOCOL_T0 or Reader.PROTOCOL_T1)
 
-            reader.power(slotNum, Reader.CARD_COLD_RESET)
-            reader.setProtocol(slotNum, Reader.PROTOCOL_T0 or Reader.PROTOCOL_T1)
-
-            val apduTransceiver = UsbReaderTransceiver(reader, slotNum)
+            val apduTransceiver = UsbReaderTransceiver(usbReader, slotNum)
             scanCard(apduTransceiver)
 
-            reader.power(slotNum, Reader.CARD_POWER_DOWN)
+            usbReader.power(slotNum, Reader.CARD_POWER_DOWN)
             _uiState.update { it.copy(reading = false) }
             validateCard()
         } catch (exception: Exception) {
@@ -176,33 +238,29 @@ class SDCATCardReaderViewModel @Inject constructor(
         }
     }
 
-    fun createUsbReader(usbManager: UsbManager) {
-        usbReader = UsbReader(usbManager).apply {
-            setOnStateChangeListener { slotNum, previousState, currentState ->
-                if (previousState == Reader.CARD_ABSENT && currentState == Reader.CARD_PRESENT) {
-                    onCardInserted(slotNum)
-                }
-            }
+    private fun onUsbReaderStateChange(slotNum: Int, previousState: Int, currentState: Int) {
+        if (previousState == Reader.CARD_ABSENT && currentState == Reader.CARD_PRESENT) {
+            onCardInserted(slotNum)
         }
     }
 
     fun selectUsbDevice(usbDevice: UsbDevice?) {
         if (usbDevice == null) {
-            usbReader?.close()
-            _uiState.update { it.copy(selectedUsbDevice = null) }
+            usbReader.close()
+            _uiState.update { it.copy(selectedUsbDeviceName = null) }
             return
         }
 
         val reader = usbReader
 
-        if (reader == null || !reader.isSupported(usbDevice)) {
+        if (!reader.isSupported(usbDevice)) {
             _uiState.update { it.copy(snackbar = SDCATCardReaderSnackbar.USB_UNSUPPORTED_DEVICE) }
             return
         }
 
         try {
             reader.open(usbDevice)
-            _uiState.update { it.copy(selectedUsbDevice = usbDevice) }
+            _uiState.update { it.copy(selectedUsbDeviceName = usbDevice.deviceName) }
         } catch (e: Exception) {
             Log.e(tag, "An exception occurred while trying to open USB device", e)
             _uiState.update { it.copy(snackbar = SDCATCardReaderSnackbar.USB_UNSUPPORTED_DEVICE) }
@@ -222,9 +280,11 @@ class SDCATCardReaderViewModel @Inject constructor(
     }
 
     override fun onCleared() {
-        if (usbReader?.isOpened == true) {
-            usbReader?.close()
+        if (usbReader.isOpened) {
+            usbReader.close()
         }
+
+        context.unregisterReceiver(usbBroadcastReceiver)
     }
 
     companion object {

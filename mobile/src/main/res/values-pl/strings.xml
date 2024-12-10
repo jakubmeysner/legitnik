@@ -11,6 +11,8 @@
     <string name="parking_lot_details_image_description">Zdjęcie parkingu</string>
     <string name="parking_lot_details_error_message">Wystąpił błąd! Wyświetlane dane mogą być nieaktualne</string>
     <string name="parking_lot_details_data_unavailable_message">Dane dotyczące tego parkingu są niedostępne. Spróbuj ponownie później</string>
+    <string name="parking_lot_details_chart_data_unavailable_message">Dane dotyczące historii wolnych miejsc są obecnie niedostępne. Spróbuj ponownie</string>
+    <string name="parking_lot_details_reload_icon_description">Przeładuj</string>
     <string name="navigation_bar_sdcat_card_reader">Czytnik EL</string>
     <string name="sdcat_card_reader_interface_nfc">NFC</string>
     <string name="sdcat_card_reader_interface_usb">USB</string>
@@ -61,6 +63,7 @@
     <string name="sdcat_card_validation_details_dialog_not_expired_label">Ważna</string>
     <string name="sdcat_card_validation_details_dialog_yes">Tak</string>
     <string name="sdcat_card_validation_details_dialog_no">Nie</string>
-    <string name="settings_notification_category">Włącz powiadomienia o dostępnych miejscach parkingowych na wybranych parkingach</string>
-    <string name="settings_ongoing_notification_category">Włącz powiadomienie stałe śledzące liczbę dostępnych miejsc parkingowych na wybranych parkingach</string>
+    <string name="parking_lot_list_open_map">Otwórz mapę</string>
+    <string name="parking_lot_details_navigate_activity_not_found_exception">Nie znaleziono żadnej aplikacji do map!</string>
+    <string name="parking_lot_map_show_my_location">Pokaż moją lokalizację</string>
 </resources>

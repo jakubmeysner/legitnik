@@ -26,23 +26,21 @@ data class ParkingLotDetailsUiState(
 @HiltViewModel
 class ParkingLotDetailsViewModel @Inject constructor(
     private val savedStateHandle: SavedStateHandle,
-    private val parkingLotRepository: ParkingLotRepository
+    private val parkingLotRepository: ParkingLotRepository,
 ) : ViewModel(), ClassSimpleNameLoggingTag {
-    private val route = savedStateHandle.toRoute<ParkingLotDetails>()
-
+    private val route = savedStateHandle.toRoute<ParkingLotDetailsRoute>()
     private val _uiState = MutableStateFlow(ParkingLotDetailsUiState())
     val uiState = _uiState.asStateFlow()
-
 
     init {
         loadParkingLotDetails()
     }
 
-    private fun loadParkingLotDetails() {
+    fun loadParkingLotDetails(reload: Boolean = false) {
         viewModelScope.launch {
             try {
                 _uiState.update { currentUiState -> currentUiState.copy(loading = true) }
-                val parkingLotDetails = parkingLotRepository.getParkingLot(route.id)
+                val parkingLotDetails = parkingLotRepository.getParkingLot(route.id, reload)
                 _uiState.update { currentUiState ->
                     currentUiState.copy(
                         loading = false,
@@ -50,9 +48,11 @@ class ParkingLotDetailsViewModel @Inject constructor(
                         error = parkingLotDetails == null,
                     )
                 }
-                //violated separation of concerns?
+
                 if (parkingLotDetails == null) {
                     showViewModelMessage(R.string.parking_lot_details_data_unavailable_message)
+                } else if (parkingLotDetails.freePlacesHistory.isNullOrEmpty()) {
+                    showViewModelMessage(R.string.parking_lot_details_chart_data_unavailable_message)
                 }
 
             } catch (e: Exception) {
