@@ -31,6 +31,7 @@ googleGmsGoogleServices = "4.4.2"
 firebaseMessaging = "24.1.0"
 bouncycastle = "1.70"
 dss = "1.01.20"
+datastore = "1.1.1"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -81,6 +82,7 @@ dss-service = { group = "com.signerry.dss-android", name = "dss-service", versio
 dss-spi = { group = "com.signerry.dss-android", name = "dss-spi", version.ref = "dss" }
 dss-tsl-validation = { group = "com.signerry.dss-android", name = "dss-tsl-validation", version.ref = "dss" }
 dss-utils-google-guava = { group = "com.signerry.dss-android", name = "dss-utils-google-guava", version.ref = "dss" }
+datastore-preferences = { group = "androidx.datastore", name = "datastore-preferences", version.ref = "datastore" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

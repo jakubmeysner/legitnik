@@ -61,4 +61,6 @@
     <string name="sdcat_card_validation_details_dialog_not_expired_label">Ważna</string>
     <string name="sdcat_card_validation_details_dialog_yes">Tak</string>
     <string name="sdcat_card_validation_details_dialog_no">Nie</string>
+    <string name="settings_notification_category">Włącz powiadomienia o dostępnych miejscach parkingowych na wybranych parkingach</string>
+    <string name="settings_ongoing_notification_category">Włącz powiadomienie stałe śledzące liczbę dostępnych miejsc parkingowych na wybranych parkingach</string>
 </resources>
