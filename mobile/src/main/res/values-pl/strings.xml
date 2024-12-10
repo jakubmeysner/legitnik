@@ -66,4 +66,6 @@
     <string name="parking_lot_list_open_map">Otwórz mapę</string>
     <string name="parking_lot_details_navigate_activity_not_found_exception">Nie znaleziono żadnej aplikacji do map!</string>
     <string name="parking_lot_map_show_my_location">Pokaż moją lokalizację</string>
+    <string name="settings_notification_category">Włącz powiadomienia o dostępnych miejscach parkingowych na wybranych parkingach</string>
+    <string name="settings_ongoing_notification_category">Włącz powiadomienie stałe śledzące liczbę dostępnych miejsc parkingowych na wybranych parkingach</string>
 </resources>

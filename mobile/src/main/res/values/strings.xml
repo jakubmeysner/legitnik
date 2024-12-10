@@ -63,4 +63,6 @@
     <string name="parking_lot_list_open_map">Open map</string>
     <string name="parking_lot_details_navigate_activity_not_found_exception">No maps app was found!</string>
     <string name="parking_lot_map_show_my_location">Show my location</string>
+    <string name="settings_notification_category">Enable notifications of available parking spaces in selected parking lots</string>
+    <string name="settings_ongoing_notification_category">Enable an ongoing notification that tracks the number of available parking spaces in selected parking lots</string>
 </resources>
