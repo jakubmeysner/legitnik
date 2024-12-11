@@ -7,5 +7,5 @@ import androidx.room.TypeConverters
 @Database(entities = [SDCATCardRawDataEntity::class], version = 1)
 @TypeConverters(Converters::class)
 abstract class AppDatabase : RoomDatabase() {
-    abstract fun SDCATCardRawDao(): SDCATCardRawDao
+    abstract fun sdcatCardRawDao(): SDCATCardRawDao
 }

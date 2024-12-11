@@ -14,6 +14,9 @@ interface SDCATCardRawDao {
     @Query("SELECT * FROM SDCAT_card_raw_data WHERE uuid = :uuid")
     suspend fun getOne(uuid: UUID): SDCATCardRawDataEntity
 
+    @Query("SELECT * FROM SDCAT_card_raw_data WHERE hash = :hash")
+    suspend fun getOneByHash(hash: List<Byte>): SDCATCardRawDataEntity
+
     @Insert
     suspend fun insert(card: SDCATCardRawDataEntity)
 

@@ -7,7 +7,7 @@ import androidx.room.PrimaryKey
 import com.jakubmeysner.legitnik.data.sdcatcard.SDCATCardType
 import java.util.UUID
 
-@Entity(tableName = "SDCAT_card_raw_data", indices = [Index(value = ["hash"], unique = true)])
+@Entity(tableName = "sdcat_card_raw_data", indices = [Index(value = ["hash"], unique = true)])
 data class SDCATCardRawDataEntity(
     @PrimaryKey override val uuid: UUID,
     val hash: List<Byte>,

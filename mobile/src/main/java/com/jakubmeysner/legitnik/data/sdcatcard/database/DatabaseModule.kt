@@ -20,7 +20,8 @@ object DatabaseModule {
     }
 
     @Provides
+    @Singleton
     fun provideSDCATCardRawDao(database: AppDatabase): SDCATCardRawDao {
-        return database.SDCATCardRawDao()
+        return database.sdcatCardRawDao()
     }
 }
