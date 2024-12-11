@@ -98,6 +98,7 @@ dependencies {
     implementation(libs.dss.spi)
     implementation(libs.dss.tsl.validation)
     implementation(libs.dss.utils.google.guava)
+    implementation(libs.accompanist.permissions)
     kapt(libs.hilt.compiler)
     kapt(libs.androidx.lifecycle.compiler)
     testImplementation(libs.junit)

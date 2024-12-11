@@ -60,4 +60,7 @@
     <string name="sdcat_card_validation_details_dialog_not_expired_label">Not expired</string>
     <string name="sdcat_card_validation_details_dialog_yes">Yes</string>
     <string name="sdcat_card_validation_details_dialog_no">No</string>
+    <string name="parking_lot_list_open_map">Open map</string>
+    <string name="parking_lot_details_navigate_activity_not_found_exception">No maps app was found!</string>
+    <string name="parking_lot_map_show_my_location">Show my location</string>
 </resources>

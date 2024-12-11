@@ -58,7 +58,8 @@ fun ParkingLotDetailsScreen(
             ParkingLotDetailsMapCard(
                 parkingLotDetails.latitude,
                 parkingLotDetails.longitude,
-                parkingLotDetails.name
+                parkingLotDetails.name,
+                viewModel::showUserMessage,
             )
         }
     }
@@ -80,7 +81,3 @@ fun ParkingLotDetailsScreen(
     }
 
 }
-
-
-
-

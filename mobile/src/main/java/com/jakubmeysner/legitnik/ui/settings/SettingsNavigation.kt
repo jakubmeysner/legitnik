@@ -5,10 +5,10 @@ import androidx.navigation.compose.composable
 import kotlinx.serialization.Serializable
 
 @Serializable
-object Settings
+object SettingsRoute
 
 fun NavGraphBuilder.settingsDestination() {
-    composable<Settings> {
+    composable<SettingsRoute> {
         SettingsScreen()
     }
 }
