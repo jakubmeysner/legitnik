@@ -16,6 +16,10 @@ class SDCATCardRepository @Inject constructor(private val sdcatCardRawDao: SDCAT
         return sdcatCardRawDao.getOne(uuid)
     }
 
+    suspend fun getCardByHash(hash: ByteArray): SDCATCardRawDataEntityInterface? {
+        return sdcatCardRawDao.getOneByHash(hash.toList())
+    }
+
     suspend fun addCard(sdcatCardRawData: SDCATCardRawDataInterface) {
         sdcatCardRawDao.insert(
             SDCATCardRawDataEntity(

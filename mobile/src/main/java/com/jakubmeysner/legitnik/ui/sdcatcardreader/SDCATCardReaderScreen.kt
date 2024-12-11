@@ -32,6 +32,7 @@ fun SDCATCardReaderScreen(
     val cardData = uiState.cardData
     val validationResult = uiState.cardValidationResult
     val showPrompt = !uiState.reading && cardData == null
+    val isSaved = uiState.isSaved
 
     Column(
         modifier = Modifier.padding(16.dp),
@@ -74,6 +75,8 @@ fun SDCATCardReaderScreen(
                 SDCATCardCard(
                     content = cardData.parsedData.content,
                     valid = validationResult?.valid,
+                    isSaved = isSaved,
+                    saveCard = viewModel::saveCard,
                     onShowValidationDetails = viewModel::openCardValidationDetailsDialog,
                 )
             }

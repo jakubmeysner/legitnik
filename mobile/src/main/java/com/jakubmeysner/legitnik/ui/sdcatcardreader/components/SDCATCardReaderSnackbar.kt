@@ -45,6 +45,18 @@ fun SDCATCardReaderSnackbar(
         R.string.sdcat_card_reader_snackbar_validation_error
     )
 
+    val savingCardErrorMessage = stringResource(
+        R.string.sdcat_card_reader_snackbar_saving_error
+    )
+
+    val savingCardErrorDuplicateMessage = stringResource(
+        R.string.sdcat_card_reader_snackbar_saving_error_duplicate
+    )
+
+    val savingCardSuccessMessage = stringResource(
+        R.string.sdcat_card_reader_snackbar_saving_success
+    )
+
     LaunchedEffect(snackbar) {
         if (snackbar != null) {
             job?.cancel()
@@ -70,6 +82,18 @@ fun SDCATCardReaderSnackbar(
 
                         SDCATCardReaderSnackbar.VALIDATION_ERROR -> SnackbarVisualsData(
                             message = validationErrorMessage,
+                        )
+
+                        SDCATCardReaderSnackbar.SAVING_ERROR -> SnackbarVisualsData(
+                            message = savingCardErrorMessage
+                        )
+
+                        SDCATCardReaderSnackbar.SAVING_ERROR_DUPLICATE -> SnackbarVisualsData(
+                            message = savingCardErrorDuplicateMessage
+                        )
+
+                        SDCATCardReaderSnackbar.SAVING_SUCCESS -> SnackbarVisualsData(
+                            message = savingCardSuccessMessage
                         )
                     }
                 )
