@@ -22,6 +22,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import com.jakubmeysner.legitnik.R
 import com.jakubmeysner.legitnik.data.sdcatcard.SDCATCardValidationResult
+import eu.europa.esig.dss.enumerations.SubIndication
 import java.security.cert.X509Certificate
 
 @Composable
@@ -35,10 +36,6 @@ fun SDCATCardValidationDetailsDialog(
 
     val signatureValidLabel = stringResource(
         R.string.sdcat_card_validation_details_dialog_valid_qualified_signature
-    )
-
-    val signatureStatusDetailsLabel = stringResource(
-        R.string.sdcat_card_validation_details_dialog_qualified_signature_status_details
     )
 
     val issuerMatchesCertificateSubjectLabel = stringResource(
@@ -75,21 +72,73 @@ fun SDCATCardValidationDetailsDialog(
 
     val fields = listOfNotNull<Pair<String, @Composable () -> Unit>>(
         signatureValidLabel to if (validationResult.signatureValid) YesIcon else NoIcon,
-        validationResult.signatureSubIndication?.let {
-            signatureStatusDetailsLabel to @Composable {
-                Text(
-                    text = it.toString(),
-                    style = MaterialTheme.typography.labelSmall,
-                )
-            }
-        },
         issuerMatchesCertificateSubjectLabel to if (
             validationResult.issuerMatchesCertificateSubject
         ) YesIcon else NoIcon,
         certificateSubjectAuthorizedLabel to if (
             validationResult.certificateSubjectAuthorized
         ) YesIcon else NoIcon,
-        notExpiredLabel to if (validationResult.notExpired) YesIcon else NoIcon,
+        notExpiredLabel to if (validationResult.notExpired) {
+            YesIcon
+        } else NoIcon,
+    )
+
+    val simpleReport = validationResult.signatureValidationReports.simpleReport
+    val firstSignatureId = simpleReport.firstSignatureId
+    val indication = simpleReport.getIndication(firstSignatureId)
+    val subIndication: SubIndication? = simpleReport.getSubIndication(firstSignatureId)
+    val detailedReport = validationResult.signatureValidationReports.detailedReport
+
+    val signatureValidationDetailsFields: List<Pair<String, String>> = listOfNotNull(
+        Pair(
+            stringResource(R.string.sdcat_card_validation_details_indication),
+            indication.name
+        ),
+        subIndication?.let {
+            Pair(
+                stringResource(R.string.sdcat_card_validation_details_sub_indication),
+                it.name
+            )
+        },
+    ).plus(
+        listOf(
+            Pair(
+                R.string.sdcat_card_validation_details_ades_errors,
+                detailedReport.getAdESValidationErrors(firstSignatureId)
+            ),
+            Pair(
+                R.string.sdcat_card_validation_details_ades_warnings,
+                detailedReport.getAdESValidationWarnings(firstSignatureId)
+            ),
+            Pair(
+                R.string.sdcat_card_validation_details_ades_infos,
+                detailedReport.getAdESValidationInfos(firstSignatureId)
+            ),
+            Pair(
+                R.string.sdcat_card_validation_details_qualification_errors,
+                detailedReport.getQualificationErrors(firstSignatureId)
+            ),
+            Pair(
+                R.string.sdcat_card_validation_details_qualification_warnings,
+                detailedReport.getQualificationWarnings(firstSignatureId)
+            ),
+            Pair(
+                R.string.sdcat_card_validation_details_qualification_infos,
+                detailedReport.getQualificationInfos(firstSignatureId)
+            ),
+        ).mapNotNull { pair ->
+            if (pair.second.isNotEmpty()) {
+                Pair(
+                    stringResource(pair.first),
+                    pair.second.joinToString(
+                        prefix = "\u2022 ",
+                        separator = "\n\u2022 ",
+                    ) { it.value },
+                )
+            } else {
+                null
+            }
+        }
     )
 
     val certificateValidityLabel = stringResource(
@@ -131,6 +180,19 @@ fun SDCATCardValidationDetailsDialog(
 
                 FieldsList(
                     fields = fields,
+                    labelColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                    labelBeforeValue = true,
+                )
+
+                Text(
+                    text = stringResource(
+                        R.string.sdcat_card_validation_details_signature_validation_title
+                    ),
+                    style = MaterialTheme.typography.titleMedium,
+                )
+
+                TextFieldsList(
+                    fields = signatureValidationDetailsFields,
                     labelColor = MaterialTheme.colorScheme.onSurfaceVariant,
                     labelBeforeValue = true,
                 )

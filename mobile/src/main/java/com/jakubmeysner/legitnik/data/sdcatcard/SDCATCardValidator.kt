@@ -39,10 +39,8 @@ class SDCATCardValidator @Inject constructor(
         val notExpired = data.parsedData.content.expiryDate.after(Date())
 
         val result = SDCATCardValidationResult(
+            signatureValidationReports = signatureValidationReports,
             signatureValid = signatureValidationReports.simpleReport.isValid(
-                signatureValidationReports.simpleReport.firstSignatureId
-            ),
-            signatureSubIndication = signatureValidationReports.simpleReport.getSubIndication(
                 signatureValidationReports.simpleReport.firstSignatureId
             ),
             issuerMatchesCertificateSubject = issuerMatchesCertificateSubject,

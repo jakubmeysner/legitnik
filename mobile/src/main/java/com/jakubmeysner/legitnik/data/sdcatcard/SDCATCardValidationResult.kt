@@ -1,10 +1,10 @@
 package com.jakubmeysner.legitnik.data.sdcatcard
 
-import eu.europa.esig.dss.enumerations.SubIndication
+import eu.europa.esig.dss.validation.reports.Reports
 
 data class SDCATCardValidationResult(
+    val signatureValidationReports: Reports,
     val signatureValid: Boolean,
-    val signatureSubIndication: SubIndication?,
     val issuerMatchesCertificateSubject: Boolean,
     val certificateSubjectAuthorized: Boolean,
     val notExpired: Boolean,
