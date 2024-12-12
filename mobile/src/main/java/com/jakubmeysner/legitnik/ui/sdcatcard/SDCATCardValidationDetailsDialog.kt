@@ -50,7 +50,7 @@ fun SDCATCardValidationDetailsDialog(
         R.string.sdcat_card_validation_details_dialog_not_expired_label
     )
 
-    val YesIcon = @Composable {
+    val yesIcon = @Composable {
         Icon(
             imageVector = Icons.Default.CheckCircle,
             contentDescription = stringResource(
@@ -60,7 +60,7 @@ fun SDCATCardValidationDetailsDialog(
         )
     }
 
-    val NoIcon = @Composable {
+    val noIcon = @Composable {
         Icon(
             imageVector = Icons.Default.Close,
             contentDescription = stringResource(
@@ -71,16 +71,16 @@ fun SDCATCardValidationDetailsDialog(
     }
 
     val fields = listOfNotNull<Pair<String, @Composable () -> Unit>>(
-        signatureValidLabel to if (validationResult.signatureValid) YesIcon else NoIcon,
+        signatureValidLabel to if (validationResult.signatureValid) yesIcon else noIcon,
         issuerMatchesCertificateSubjectLabel to if (
             validationResult.issuerMatchesCertificateSubject
-        ) YesIcon else NoIcon,
+        ) yesIcon else noIcon,
         certificateSubjectAuthorizedLabel to if (
             validationResult.certificateSubjectAuthorized
-        ) YesIcon else NoIcon,
+        ) yesIcon else noIcon,
         notExpiredLabel to if (validationResult.notExpired) {
-            YesIcon
-        } else NoIcon,
+            yesIcon
+        } else noIcon,
     )
 
     val simpleReport = validationResult.signatureValidationReports.simpleReport
@@ -158,11 +158,9 @@ fun SDCATCardValidationDetailsDialog(
             dateFormat.format(certificate.notAfter)
         }",
         certificateSubjectLabel to certificate.subjectDN.name.split(",")
-            .map { it.split("=").joinToString(" = ") }
-            .joinToString("\n"),
+            .joinToString("\n") { it.split("=").joinToString(" = ") },
         certificateIssuerLabel to certificate.issuerX500Principal.name.split(",")
-            .map { it.split("=").joinToString(" = ") }
-            .joinToString("\n"),
+            .joinToString("\n") { it.split("=").joinToString(" = ") },
     )
 
     Dialog(onDismissRequest = onClose) {
