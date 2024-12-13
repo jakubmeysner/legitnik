@@ -49,12 +49,12 @@ fun SDCATCardReaderSnackbar(
         R.string.sdcat_card_reader_snackbar_saving_error
     )
 
-    val savingCardErrorDuplicateMessage = stringResource(
-        R.string.sdcat_card_reader_snackbar_saving_error_duplicate
-    )
-
     val savingCardSuccessMessage = stringResource(
         R.string.sdcat_card_reader_snackbar_saving_success
+    )
+
+    val removingCardSuccessMessage = stringResource(
+        R.string.sdcat_card_reader_snackbar_removing_success
     )
 
     LaunchedEffect(snackbar) {
@@ -88,12 +88,12 @@ fun SDCATCardReaderSnackbar(
                             message = savingCardErrorMessage
                         )
 
-                        SDCATCardReaderSnackbar.SAVING_ERROR_DUPLICATE -> SnackbarVisualsData(
-                            message = savingCardErrorDuplicateMessage
-                        )
-
                         SDCATCardReaderSnackbar.SAVING_SUCCESS -> SnackbarVisualsData(
                             message = savingCardSuccessMessage
+                        )
+
+                        SDCATCardReaderSnackbar.REMOVING_SUCCESS -> SnackbarVisualsData(
+                            message = removingCardSuccessMessage
                         )
                     }
                 )

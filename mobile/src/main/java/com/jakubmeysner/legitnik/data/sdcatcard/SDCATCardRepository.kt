@@ -12,7 +12,7 @@ class SDCATCardRepository @Inject constructor(private val sdcatCardRawDao: SDCAT
         return sdcatCardRawDao.getAll()
     }
 
-    suspend fun getCard(uuid: UUID): SDCATCardRawDataEntityInterface {
+    suspend fun getCard(uuid: UUID): SDCATCardRawDataEntityInterface? {
         return sdcatCardRawDao.getOne(uuid)
     }
 
@@ -33,8 +33,10 @@ class SDCATCardRepository @Inject constructor(private val sdcatCardRawDao: SDCAT
     }
 
     suspend fun removeCard(uuid: UUID) {
-        sdcatCardRawDao.delete(
-            sdcatCardRawDao.getOne(uuid)
-        )
+        sdcatCardRawDao.getOne(uuid)?.let {
+            sdcatCardRawDao.delete(
+                it
+            )
+        }
     }
 }

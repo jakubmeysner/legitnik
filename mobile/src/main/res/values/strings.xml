@@ -64,4 +64,6 @@
     <string name="sdcat_card_reader_snackbar_saving_error">An error occurred while saving card on the device.</string>
     <string name="sdcat_card_reader_snackbar_saving_success">Card was successfully saved on the device.</string>
     <string name="sdcat_card_reader_snackbar_saving_error_duplicate">Card is already saved on the device.</string>
+    <string name="sdcat_card_card_remove_button_text">Remove</string>
+    <string name="sdcat_card_reader_snackbar_removing_success">Card was successfully removed from device.</string>
 </resources>

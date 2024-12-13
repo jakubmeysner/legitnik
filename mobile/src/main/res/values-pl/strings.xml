@@ -67,4 +67,6 @@
     <string name="sdcat_card_reader_snackbar_saving_error">Wystąpił błąd w trakcie zapisywania karty na urządzeniu.</string>
     <string name="sdcat_card_reader_snackbar_saving_success">Karta została pomyślnie zapisana na urządzeniu.</string>
     <string name="sdcat_card_reader_snackbar_saving_error_duplicate">Karta jest już zapisana na urządzeniu.</string>
+    <string name="sdcat_card_card_remove_button_text">Usuń</string>
+    <string name="sdcat_card_reader_snackbar_removing_success">Karta została pomyślnie usunięta z urządzenia.</string>
 </resources>

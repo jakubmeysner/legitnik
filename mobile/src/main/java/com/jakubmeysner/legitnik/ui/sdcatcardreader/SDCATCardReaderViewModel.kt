@@ -30,6 +30,7 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.serialization.Serializable
+import java.util.UUID
 import javax.inject.Inject
 
 @Serializable
@@ -45,8 +46,8 @@ enum class SDCATCardReaderSnackbar {
     READING_ERROR,
     VALIDATION_ERROR,
     SAVING_ERROR,
-    SAVING_ERROR_DUPLICATE,
-    SAVING_SUCCESS
+    SAVING_SUCCESS,
+    REMOVING_SUCCESS
 }
 
 data class SDCATCardReaderUiState(
@@ -55,6 +56,7 @@ data class SDCATCardReaderUiState(
     val selectedUsbDevice: UsbDevice? = null,
     val reading: Boolean = false,
     val isSaved: Boolean = false,
+    val cardUUID: UUID? = null,
     val cardData: SDCATCardData? = null,
     val cardValidationResult: SDCATCardValidationResult? = null,
     val cardValidationDetailsDialogOpened: Boolean = false,
@@ -129,7 +131,8 @@ class SDCATCardReaderViewModel @Inject constructor(
                     _uiState.update {
                         it.copy(
                             snackbar = SDCATCardReaderSnackbar.SAVING_SUCCESS,
-                            isSaved = true
+                            isSaved = true,
+                            cardUUID = cardRepository.getCardByHash(rawData.getHash())?.uuid
                         )
                     }
                 }
@@ -144,18 +147,36 @@ class SDCATCardReaderViewModel @Inject constructor(
         }
     }
 
+    fun removeCard() {
+        viewModelScope.launch {
+            val rawData = _uiState.value.cardData?.rawData
+            if (rawData != null && _uiState.value.isSaved) {
+                cardRepository.removeCard(_uiState.value.cardUUID!!)
+                _uiState.update {
+                    it.copy(
+                        cardUUID = null,
+                        isSaved = false,
+                        snackbar = SDCATCardReaderSnackbar.REMOVING_SUCCESS
+                    )
+                }
+            }
+        }
+    }
+
     private fun checkIfCardIsSaved() {
         viewModelScope.launch {
             val rawData = _uiState.value.cardData?.rawData
-            if (rawData != null)
-                if (cardRepository.getCardByHash(rawData.getHash()) != null) {
+            if (rawData != null) {
+                val card = cardRepository.getCardByHash(rawData.getHash())
+                if (card != null) {
                     _uiState.update {
                         it.copy(
+                            cardUUID = card.uuid,
                             isSaved = true,
-                            snackbar = SDCATCardReaderSnackbar.SAVING_ERROR_DUPLICATE
                         )
                     }
                 }
+            }
         }
     }
 

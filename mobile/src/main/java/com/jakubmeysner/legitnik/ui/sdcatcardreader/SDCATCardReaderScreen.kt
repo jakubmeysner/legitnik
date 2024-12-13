@@ -77,6 +77,7 @@ fun SDCATCardReaderScreen(
                     valid = validationResult?.valid,
                     isSaved = isSaved,
                     saveCard = viewModel::saveCard,
+                    removeCard = viewModel::removeCard,
                     onShowValidationDetails = viewModel::openCardValidationDetailsDialog,
                 )
             }
