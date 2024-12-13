@@ -61,7 +61,7 @@
     <string name="sdcat_card_validation_details_dialog_yes">Yes</string>
     <string name="sdcat_card_validation_details_dialog_no">No</string>
     <string name="sdcat_card_card_save_button_text">Save</string>
-    <string name="sdcat_card_reader_snackbar_saving_error">An error occurred while saving card on the device. Card data may be corrupted.</string>
+    <string name="sdcat_card_reader_snackbar_saving_error">An error occurred while saving card on the device.</string>
     <string name="sdcat_card_reader_snackbar_saving_success">Card was successfully saved on the device.</string>
     <string name="sdcat_card_reader_snackbar_saving_error_duplicate">Card is already saved on the device.</string>
 </resources>
