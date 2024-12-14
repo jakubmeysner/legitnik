@@ -32,7 +32,7 @@ fun SDCATCardReaderScreen(
     val cardData = uiState.cardData
     val validationResult = uiState.cardValidationResult
     val showPrompt = !uiState.reading && cardData == null
-    val isSaved = uiState.isSaved
+    val isSaved = uiState.cardUUID != null
 
     Column(
         modifier = Modifier.padding(16.dp),

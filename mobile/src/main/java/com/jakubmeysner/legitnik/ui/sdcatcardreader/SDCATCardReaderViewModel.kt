@@ -55,7 +55,6 @@ data class SDCATCardReaderUiState(
     val snackbar: SDCATCardReaderSnackbar? = null,
     val selectedUsbDevice: UsbDevice? = null,
     val reading: Boolean = false,
-    val isSaved: Boolean = false,
     val cardUUID: UUID? = null,
     val cardData: SDCATCardData? = null,
     val cardValidationResult: SDCATCardValidationResult? = null,
@@ -131,7 +130,6 @@ class SDCATCardReaderViewModel @Inject constructor(
                     _uiState.update {
                         it.copy(
                             snackbar = SDCATCardReaderSnackbar.SAVING_SUCCESS,
-                            isSaved = true,
                             cardUUID = cardRepository.getCardByHash(rawData.getHash())?.uuid
                         )
                     }
@@ -150,12 +148,12 @@ class SDCATCardReaderViewModel @Inject constructor(
     fun removeCard() {
         viewModelScope.launch {
             val rawData = _uiState.value.cardData?.rawData
-            if (rawData != null && _uiState.value.isSaved) {
-                cardRepository.removeCard(_uiState.value.cardUUID!!)
+            val cardUUID = _uiState.value.cardUUID
+            if (rawData != null && cardUUID != null) {
+                cardRepository.removeCard(cardUUID)
                 _uiState.update {
                     it.copy(
                         cardUUID = null,
-                        isSaved = false,
                         snackbar = SDCATCardReaderSnackbar.REMOVING_SUCCESS
                     )
                 }
@@ -172,7 +170,6 @@ class SDCATCardReaderViewModel @Inject constructor(
                     _uiState.update {
                         it.copy(
                             cardUUID = card.uuid,
-                            isSaved = true,
                         )
                     }
                 }
