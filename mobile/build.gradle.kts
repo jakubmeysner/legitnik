@@ -99,6 +99,7 @@ dependencies {
     implementation(libs.dss.spi)
     implementation(libs.dss.tsl.validation)
     implementation(libs.dss.utils.google.guava)
+    implementation(libs.accompanist.permissions)
     implementation(libs.androidx.room.runtime)
     implementation(libs.androidx.room.ktx)
     ksp(libs.androidx.room.compiler)

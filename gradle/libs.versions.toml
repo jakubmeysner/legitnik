@@ -1,5 +1,5 @@
 [versions]
-agp = "8.7.2"
+agp = "8.7.3"
 coilCompose = "3.0.0-rc02"
 converterGson = "2.9.0"
 kotlin = "2.0.21"
@@ -32,6 +32,7 @@ firebaseMessaging = "24.1.0"
 vico = "2.0.0-beta.3"
 bouncycastle = "1.70"
 dss = "1.01.20"
+accompanist = "0.36.0"
 roomCompiler = "2.6.1"
 roomKtx = "2.6.1"
 roomRuntime = "2.6.1"
@@ -88,6 +89,7 @@ dss-service = { group = "com.signerry.dss-android", name = "dss-service", versio
 dss-spi = { group = "com.signerry.dss-android", name = "dss-spi", version.ref = "dss" }
 dss-tsl-validation = { group = "com.signerry.dss-android", name = "dss-tsl-validation", version.ref = "dss" }
 dss-utils-google-guava = { group = "com.signerry.dss-android", name = "dss-utils-google-guava", version.ref = "dss" }
+accompanist-permissions = { group = "com.google.accompanist", name = "accompanist-permissions", version.ref = "accompanist" }
 androidx-room-compiler = { group = "androidx.room", name = "room-compiler", version.ref = "roomCompiler" }
 androidx-room-ktx = { group = "androidx.room", name = "room-ktx", version.ref = "roomKtx" }
 androidx-room-runtime = { group = "androidx.room", name = "room-runtime", version.ref = "roomRuntime" }

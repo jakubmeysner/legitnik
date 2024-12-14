@@ -2,8 +2,7 @@
 
 <!--
     Default validation policy from `dss-policy-jaxb` resource `policy/constraint.xml` with
-    SignatureConstraints SigningTime level changed from FAIL to WARN due to law not following the
-    standard
+    some changes described by comments starting with "Level changed from"
 -->
 <ConstraintsParameters Name="QES AdESQC TL based"
     xmlns="http://dss.esig.europa.eu/validation/policy">
@@ -87,7 +86,7 @@
                 <NotExpired Level="FAIL" />
                 <AuthorityInfoAccessPresent Level="WARN" />
                 <RevocationInfoAccessPresent Level="WARN" />
-                <RevocationDataAvailable Level="FAIL" />
+                <RevocationDataAvailable Level="WARN" /> <!-- Level changed from: FAIL (facilitate offline use) -->
                 <AcceptableRevocationDataFound Level="FAIL" />
                 <CRLNextUpdatePresent Level="WARN" />
                 <RevocationFreshness
@@ -168,7 +167,7 @@
             <Cryptographic />
         </BasicSignatureConstraints>
         <SignedAttributes>
-            <SigningCertificatePresent Level="WARN" />
+            <SigningCertificatePresent Level="IGNORE" /> <!-- Level changed from: WARN (included separately per law) -->
             <UnicitySigningCertificate Level="WARN" />
             <SigningCertificateRefersCertificateChain Level="WARN" />
             <SigningCertificateDigestAlgorithm Level="WARN" />
@@ -176,7 +175,7 @@
             <CertDigestMatch Level="FAIL" />
             <IssuerSerialMatch Level="WARN" />
             <KeyIdentifierMatch Level="WARN" />
-            <SigningTime Level="WARN" />
+            <SigningTime Level="IGNORE" /> <!-- Level changed from: FAIL (different data type per law) -->
             <MessageDigestOrSignedPropertiesPresent Level="FAIL" />
             <EllipticCurveKeySize Level="WARN" />
             <!--		<ContentType Level="FAIL" value="1.2.840.113549.1.7.1" />

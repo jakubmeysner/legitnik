@@ -32,7 +32,7 @@ class TrustedListsCertificateSourceSupplier @Inject constructor(
     private val certificateSource = TrustedListsCertificateSource()
 
     private val onlineLoader = FileCacheDataLoader().apply {
-        setCacheExpirationTime(7.days.inWholeMilliseconds)
+        setCacheExpirationTime(TL_FILE_CACHE_EXPIRATION_TIME.inWholeMilliseconds)
         dataLoader = CommonsDataLoader()
     }
 
@@ -70,6 +70,7 @@ class TrustedListsCertificateSourceSupplier @Inject constructor(
 
     companion object {
         const val TL_SOURCE_URL = "https://www.nccert.pl/tsl/PL_TSL.xml"
-        const val TL_FILE_CACHE_DIRECTORY_NAME = "dss_tl_pl_file_cache"
+        const val TL_FILE_CACHE_DIRECTORY_NAME = "tl_dcf7e0de"
+        val TL_FILE_CACHE_EXPIRATION_TIME = 7.days
     }
 }
