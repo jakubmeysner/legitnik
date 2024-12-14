@@ -13,12 +13,14 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.CheckCircle
+import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -39,6 +41,9 @@ import java.util.TimeZone
 fun SDCATCardCard(
     content: SDCATCardParsedContent,
     valid: Boolean?,
+    isSaved: Boolean,
+    saveCard: () -> Unit,
+    removeCard: () -> Unit,
     onShowValidationDetails: () -> Unit,
 ) {
     val context = LocalContext.current
@@ -168,11 +173,40 @@ fun SDCATCardCard(
                 else LocalContentColor.current,
             )
 
-            TextButton(
-                onClick = onShowValidationDetails,
-                enabled = valid != null,
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween
             ) {
-                Text(stringResource(R.string.sdcat_card_card_validation_details_button))
+                TextButton(
+                    onClick = onShowValidationDetails,
+                    enabled = valid != null,
+                ) {
+                    Text(stringResource(R.string.sdcat_card_card_validation_details_button))
+                }
+
+                if (isSaved) {
+                    OutlinedButton(
+                        onClick = removeCard,
+                        enabled = valid != null
+                    ) {
+                        Text(
+                            stringResource(
+                                R.string.sdcat_card_card_remove_button_text
+                            )
+                        )
+                    }
+                } else {
+                    Button(
+                        onClick = saveCard,
+                        enabled = valid ?: false
+                    ) {
+                        Text(
+                            stringResource(
+                                R.string.sdcat_card_card_save_button_text
+                            )
+                        )
+                    }
+                }
             }
         }
     }
