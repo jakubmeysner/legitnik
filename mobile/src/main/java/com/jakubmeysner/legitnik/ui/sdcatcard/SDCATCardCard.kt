@@ -198,6 +198,7 @@ fun SDCATCardCard(
                 } else {
                     Button(
                         onClick = saveCard,
+                        enabled = valid ?: false
                     ) {
                         Text(
                             stringResource(
