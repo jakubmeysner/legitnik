@@ -57,7 +57,6 @@
     <string name="sdcat_card_validation_details_dialog_certificate_issuer">Wydawca</string>
     <string name="sdcat_card_validation_details_dialog_certificate_validity">Ważność</string>
     <string name="sdcat_card_validation_details_dialog_valid_qualified_signature">Prawidłowy podpis kwalifikowany</string>
-    <string name="sdcat_card_validation_details_dialog_qualified_signature_status_details">Szczegóły statusu podpisu kwalifikowanego</string>
     <string name="sdcat_card_validation_details_dialog_issuer_matches_certificate_subject_label">Wydawca legitymacji zgodny z podmiotem</string>
     <string name="sdcat_card_validation_details_dialog_certificate_subject_authorized_label">Podmiot uprawniony do wystawiania legitymacji</string>
     <string name="sdcat_card_validation_details_dialog_not_expired_label">Ważna</string>
@@ -72,4 +71,13 @@
     <string name="parking_lot_list_open_map">Otwórz mapę</string>
     <string name="parking_lot_details_navigate_activity_not_found_exception">Nie znaleziono żadnej aplikacji do map!</string>
     <string name="parking_lot_map_show_my_location">Pokaż moją lokalizację</string>
+    <string name="sdcat_card_validation_details_signature_validation_title">Walidacja podpisu kwalifikowanego</string>
+    <string name="sdcat_card_validation_details_indication">Wskazanie</string>
+    <string name="sdcat_card_validation_details_sub_indication">Podwskazanie</string>
+    <string name="sdcat_card_validation_details_ades_errors">Błędy AdES</string>
+    <string name="sdcat_card_validation_details_ades_warnings">Ostrzeżenia AdES</string>
+    <string name="sdcat_card_validation_details_ades_infos">Informacje dot. AdES</string>
+    <string name="sdcat_card_validation_details_qualification_errors">Błędy kwalifikacji</string>
+    <string name="sdcat_card_validation_details_qualification_warnings">Ostrzeżenia dot. kwalifikacji</string>
+    <string name="sdcat_card_validation_details_qualification_infos">Informacje dot. kwalifikacji</string>
 </resources>
