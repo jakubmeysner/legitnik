@@ -59,6 +59,12 @@
     <string name="sdcat_card_validation_details_dialog_not_expired_label">Not expired</string>
     <string name="sdcat_card_validation_details_dialog_yes">Yes</string>
     <string name="sdcat_card_validation_details_dialog_no">No</string>
+    <string name="sdcat_card_card_save_button_text">Save</string>
+    <string name="sdcat_card_reader_snackbar_saving_error">An error occurred while saving card on the device.</string>
+    <string name="sdcat_card_reader_snackbar_saving_success">Card was successfully saved on the device.</string>
+    <string name="sdcat_card_reader_snackbar_saving_error_duplicate">Card is already saved on the device.</string>
+    <string name="sdcat_card_card_remove_button_text">Remove</string>
+    <string name="sdcat_card_reader_snackbar_removing_success">Card was successfully removed from device.</string>
     <string name="parking_lot_list_open_map">Open map</string>
     <string name="parking_lot_details_navigate_activity_not_found_exception">No maps app was found!</string>
     <string name="parking_lot_map_show_my_location">Show my location</string>

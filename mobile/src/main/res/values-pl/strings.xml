@@ -62,6 +62,12 @@
     <string name="sdcat_card_validation_details_dialog_not_expired_label">Ważna</string>
     <string name="sdcat_card_validation_details_dialog_yes">Tak</string>
     <string name="sdcat_card_validation_details_dialog_no">Nie</string>
+    <string name="sdcat_card_card_save_button_text">Zapisz</string>
+    <string name="sdcat_card_reader_snackbar_saving_error">Wystąpił błąd w trakcie zapisywania karty na urządzeniu.</string>
+    <string name="sdcat_card_reader_snackbar_saving_success">Karta została pomyślnie zapisana na urządzeniu.</string>
+    <string name="sdcat_card_reader_snackbar_saving_error_duplicate">Karta jest już zapisana na urządzeniu.</string>
+    <string name="sdcat_card_card_remove_button_text">Usuń</string>
+    <string name="sdcat_card_reader_snackbar_removing_success">Karta została pomyślnie usunięta z urządzenia.</string>
     <string name="parking_lot_list_open_map">Otwórz mapę</string>
     <string name="parking_lot_details_navigate_activity_not_found_exception">Nie znaleziono żadnej aplikacji do map!</string>
     <string name="parking_lot_map_show_my_location">Pokaż moją lokalizację</string>
