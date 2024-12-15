@@ -39,6 +39,8 @@ import com.jakubmeysner.legitnik.ui.parking.map.navigateToParkingLotMap
 import com.jakubmeysner.legitnik.ui.parking.parkingDestination
 import com.jakubmeysner.legitnik.ui.sdcatcardreader.SDCATCardReaderRoute
 import com.jakubmeysner.legitnik.ui.sdcatcardreader.sdcatCardReaderDestination
+import com.jakubmeysner.legitnik.ui.sdcatcardsaved.SDCATCardSavedRoute
+import com.jakubmeysner.legitnik.ui.sdcatcardsaved.sdcatCardSavedDestination
 import com.jakubmeysner.legitnik.ui.settings.SettingsRoute
 import com.jakubmeysner.legitnik.ui.settings.settingsDestination
 
@@ -74,6 +76,12 @@ val topLevelRoutes = listOf(
         R.string.navigation_bar_sdcat_card_reader,
         ImageVectorOrResourceId.VectorResourceId(R.drawable.mdi_smart_card_reader),
         ImageVectorOrResourceId.VectorResourceId(R.drawable.smart_card_reader_outline)
+    ),
+    TopLevelRoute(
+        SDCATCardSavedRoute,
+        R.string.navigation_bar_sdcat_card_saved,
+        ImageVectorOrResourceId.VectorResourceId(R.drawable.mdi_card_multiple),
+        ImageVectorOrResourceId.VectorResourceId(R.drawable.mdi_card_multiple_outline),
     ),
     TopLevelRoute(
         SettingsRoute,
@@ -151,7 +159,11 @@ fun MyNavHost() {
                 onShowSnackbar = onShowSnackbar
             )
 
-            sdcatCardReaderDestination(onShowSnackbar = onShowSnackbar)
+            sdcatCardReaderDestination(
+                onShowSnackbar = onShowSnackbar,
+            )
+
+            sdcatCardSavedDestination()
 
             settingsDestination()
         }

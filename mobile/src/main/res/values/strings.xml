@@ -77,4 +77,5 @@
     <string name="sdcat_card_validation_details_qualification_errors">Qualification errors</string>
     <string name="sdcat_card_validation_details_qualification_warnings">Qualification warnings</string>
     <string name="sdcat_card_validation_details_qualification_infos">Qualification infos</string>
+    <string name="navigation_bar_sdcat_card_saved">Saved Cards</string>
 </resources>
