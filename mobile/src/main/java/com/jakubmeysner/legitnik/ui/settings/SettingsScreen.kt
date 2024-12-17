@@ -14,17 +14,15 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.jakubmeysner.legitnik.R
+import kotlinx.coroutines.flow.Flow
+import com.jakubmeysner.legitnik.data.settings.*
 
 @Composable
 fun SettingsScreen(viewModel: SettingsViewModel = hiltViewModel()) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
-    val parkingLots = uiState.parkingLots
-
-    var parkingLabels = listOf("WRO", "C13", "D20", "GEO-L", "E01") // idk czy to dobry pomysl? Bo w sumie jak często pojawiają się nowe parkingi na pwr? A takto jest dostęp do strony ustawień nawet jeśli nie ma połączenia. Thoughts?
-
-    if (parkingLots != null) {
-        parkingLabels = parkingLots.map { it.symbol }
-    }
+    val savedParkingLabels = (viewModel.getLabelsFromSettingsCategory(SettingCategory.NOTIFICATION).collectAsState(initial = emptyList()).value +
+                                viewModel.getLabelsFromSettingsCategory(SettingCategory.ONGOING).collectAsState(initial = emptyList()).value).distinct()
+    val parkingLabels = uiState.parkingLots?.map { it.symbol } ?: savedParkingLabels
 
     val isNotificationCategoryEnabled by viewModel.isCategoryEnabled(SettingCategory.NOTIFICATION).collectAsState(false)
     val isTrackingCategoryEnabled by viewModel.isCategoryEnabled(SettingCategory.ONGOING).collectAsState(false)
@@ -38,10 +36,10 @@ fun SettingsScreen(viewModel: SettingsViewModel = hiltViewModel()) {
             SettingsCategory(
                 title = stringResource(R.string.settings_notification_category),
                 isEnabled = isNotificationCategoryEnabled,
-                onToggle = { newValue -> viewModel.toggleCategory(newValue, SettingCategory.NOTIFICATION) },
+                onToggle = { newValue -> viewModel.toggleCategory(SettingCategory.NOTIFICATION, newValue) },
                 parkingLabels = parkingLabels,
-                viewModel = viewModel,
-                category = SettingCategory.NOTIFICATION
+                getSettingState = { label -> viewModel.isSettingEnabled(label, SettingCategory.NOTIFICATION) },
+                onToggleSetting = { label, newValue -> viewModel.toggleSetting(label, SettingCategory.NOTIFICATION, newValue) }
             )
         }
 
@@ -56,10 +54,10 @@ fun SettingsScreen(viewModel: SettingsViewModel = hiltViewModel()) {
             SettingsCategory(
                 title = stringResource(R.string.settings_ongoing_notification_category),
                 isEnabled = isTrackingCategoryEnabled,
-                onToggle = { newValue -> viewModel.toggleCategory(newValue, SettingCategory.ONGOING) },
+                onToggle = { newValue -> viewModel.toggleCategory(SettingCategory.ONGOING, newValue) },
                 parkingLabels = parkingLabels,
-                viewModel = viewModel,
-                category = SettingCategory.ONGOING
+                getSettingState = { label -> viewModel.isSettingEnabled(label, SettingCategory.ONGOING) },
+                onToggleSetting = { label, newValue -> viewModel.toggleSetting(label, SettingCategory.ONGOING, newValue) }
             )
         }
     }
@@ -71,8 +69,8 @@ fun SettingsCategory(
     isEnabled: Boolean,
     onToggle: (Boolean) -> Unit,
     parkingLabels: List<String>,
-    viewModel: SettingsViewModel,
-    category: SettingCategory
+    getSettingState: (String) -> Flow<Boolean>,
+    onToggleSetting: (String, Boolean) -> Unit
 ) {
     Column {
         Row(
@@ -92,10 +90,10 @@ fun SettingsCategory(
         if (isEnabled) {
             parkingLabels.forEachIndexed { index, label ->
                 ToggleItem(
-                    viewModel = viewModel,
                     label = label,
-                    category = category,
-                    index = index
+                    index = index,
+                    getSettingState = getSettingState,
+                    onToggle = onToggleSetting
                 )
             }
         }
@@ -104,16 +102,14 @@ fun SettingsCategory(
 
 @Composable
 fun ToggleItem(
-    viewModel: SettingsViewModel,
     label: String,
-    category: SettingCategory,
-    index: Int
+    index: Int,
+    getSettingState: (String) -> Flow<Boolean>,
+    onToggle: (String, Boolean) -> Unit
 ) {
-    // używam tu null, bo jeżeli dam initial state na np. false, to za każdym przełączeniem kategorii w ustawieniach te switche odpalają animację przełączenia.
-    // idk czy to dobry pomysl
-    val isCheckedFromViewModel by viewModel.isSettingEnabled(label, category).collectAsState(initial = null)
+    val isCheckedState by getSettingState(label).collectAsState(initial = null)
 
-    if (isCheckedFromViewModel != null) {
+    if (isCheckedState != null) {
         Row(
             modifier = Modifier
                 .background(
@@ -130,10 +126,8 @@ fun ToggleItem(
                 style = MaterialTheme.typography.bodyMedium
             )
             Switch(
-                checked = isCheckedFromViewModel!!,
-                onCheckedChange = { newValue ->
-                    viewModel.toggleSetting(label, newValue, category)
-                }
+                checked = isCheckedState!!,
+                onCheckedChange = { newValue -> onToggle(label, newValue) }
             )
         }
     }

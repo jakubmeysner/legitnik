@@ -7,6 +7,7 @@ plugins {
     alias(libs.plugins.kotlin.serialization)
     alias(libs.plugins.secrets.gradle.plugin)
     alias(libs.plugins.google.gms.google.services)
+    alias(libs.plugins.protobuf)
 }
 
 android {
@@ -109,6 +110,9 @@ dependencies {
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
     implementation(libs.datastore.preferences)
+    implementation(libs.datastore.protobuf)
+    implementation(libs.protobuf.javalite)
+    implementation(libs.protobuf.lite)
 }
 
 kapt {
@@ -120,3 +124,19 @@ secrets {
     defaultPropertiesFileName = "local.defaults.properties"
     ignoreList.add("sdk.*")
 }
+
+protobuf {
+    protoc {
+        artifact = "com.google.protobuf:protoc:3.25.3"
+    }
+    generateProtoTasks {
+        all().forEach { task ->
+            task.builtins {
+                register("java") {
+                    option("lite")
+                }
+            }
+        }
+    }
+}
+
