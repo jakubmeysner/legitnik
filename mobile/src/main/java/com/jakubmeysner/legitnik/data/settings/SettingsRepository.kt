@@ -12,7 +12,7 @@ import javax.inject.Inject
 
 val Context.dataStore by preferencesDataStore(name = "settings")
 
-enum class SettingCategory {
+enum class CategoryType {
     NOTIFICATION,
     ONGOING
 }
@@ -20,35 +20,35 @@ enum class SettingCategory {
 class SettingsRepository @Inject constructor(
     @ApplicationContext private val context: Context
 ) {
-    private fun categoryKey(category: SettingCategory): Preferences.Key<Boolean> =
+    private fun categoryKey(category: CategoryType): Preferences.Key<Boolean> =
         booleanPreferencesKey("${category.name.lowercase()}_category_enabled")
 
-    private fun settingKey(label: String, category: SettingCategory): Preferences.Key<Boolean> =
+    private fun settingKey(label: String, category: CategoryType): Preferences.Key<Boolean> =
         booleanPreferencesKey("${category.name.lowercase()}_$label")
 
-    fun isCategoryEnabled(category: SettingCategory): Flow<Boolean> =
+    fun isCategoryEnabled(category: CategoryType): Flow<Boolean> =
         context.dataStore.data.map { preferences ->
             preferences[categoryKey(category)] ?: false
         }
 
-    suspend fun toggleCategory(category: SettingCategory, isEnabled: Boolean) {
+    suspend fun toggleCategory(category: CategoryType, isEnabled: Boolean) {
         context.dataStore.edit { preferences ->
             preferences[categoryKey(category)] = isEnabled
         }
     }
 
-    fun isSettingEnabled(label: String, category: SettingCategory): Flow<Boolean> =
+    fun isSettingEnabled(label: String, category: CategoryType): Flow<Boolean> =
         context.dataStore.data.map { preferences ->
             preferences[settingKey(label, category)] ?: false
         }
 
-    suspend fun toggleSetting(label: String, category: SettingCategory, isEnabled: Boolean) {
+    suspend fun toggleSetting(label: String, category: CategoryType, isEnabled: Boolean) {
         context.dataStore.edit { preferences ->
             preferences[settingKey(label, category)] = isEnabled
         }
     }
 
-    fun getSavedLabelsForCategory(category: SettingCategory): Flow<List<String>> {
+    fun getSavedLabelsForCategory(category: CategoryType): Flow<List<String>> {
         return context.dataStore.data.map { preferences ->
             preferences.asMap().keys
                 .filter { it.name.startsWith("${category.name.lowercase()}_") && !it.name.endsWith("_category_enabled") }

@@ -1,9 +1,13 @@
 syntax = "proto3";
 
-option java_package = "com.jakubmeysner.legitnik";
+option java_package = "com.jakubmeysner.legitnik.data.settings";
 option java_multiple_files = true;
 
-message SettingCategory {
-    string categoryName = 1;
-    repeated string labels = 2;
+message Settings {
+    map<string, CategorySettings> categories = 1;
+}
+
+message CategorySettings {
+    bool enabled = 1;
+    map<string, bool> settings = 2;
 }

@@ -2,23 +2,22 @@ package com.jakubmeysner.legitnik.data.settings
 
 import androidx.datastore.core.CorruptionException
 import androidx.datastore.core.Serializer
-import com.jakubmeysner.legitnik.SettingCategory
 import com.google.protobuf.InvalidProtocolBufferException
 import java.io.InputStream
 import java.io.OutputStream
 
-object SettingCategorySerializer : Serializer<SettingCategory> {
-    override val defaultValue: SettingCategory = SettingCategory.getDefaultInstance()
+object SettingsSerializer : Serializer<Settings> {
+    override val defaultValue: Settings = Settings.getDefaultInstance()
 
-    override suspend fun readFrom(input: InputStream): SettingCategory {
+    override suspend fun readFrom(input: InputStream): Settings {
         try {
-            return SettingCategory.parseFrom(input)
-        } catch (e: InvalidProtocolBufferException) {
-            throw CorruptionException("Cannot read proto.", e)
+            return Settings.parseFrom(input)
+        } catch (exception: InvalidProtocolBufferException) {
+            throw CorruptionException("Unable to read settings data.", exception)
         }
     }
 
-    override suspend fun writeTo(t: SettingCategory, output: OutputStream) {
+    override suspend fun writeTo(t: Settings, output: OutputStream) {
         t.writeTo(output)
     }
 }

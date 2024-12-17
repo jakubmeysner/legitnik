@@ -20,12 +20,12 @@ import com.jakubmeysner.legitnik.data.settings.*
 @Composable
 fun SettingsScreen(viewModel: SettingsViewModel = hiltViewModel()) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
-    val savedParkingLabels = (viewModel.getLabelsFromSettingsCategory(SettingCategory.NOTIFICATION).collectAsState(initial = emptyList()).value +
-                                viewModel.getLabelsFromSettingsCategory(SettingCategory.ONGOING).collectAsState(initial = emptyList()).value).distinct()
+    val savedParkingLabels = (viewModel.getLabelsFromSettingsCategory(CategoryType.NOTIFICATION).collectAsState(initial = emptyList()).value +
+                                viewModel.getLabelsFromSettingsCategory(CategoryType.ONGOING).collectAsState(initial = emptyList()).value).distinct()
     val parkingLabels = uiState.parkingLots?.map { it.symbol } ?: savedParkingLabels
 
-    val isNotificationCategoryEnabled by viewModel.isCategoryEnabled(SettingCategory.NOTIFICATION).collectAsState(false)
-    val isTrackingCategoryEnabled by viewModel.isCategoryEnabled(SettingCategory.ONGOING).collectAsState(false)
+    val isNotificationCategoryEnabled by viewModel.isCategoryEnabled(CategoryType.NOTIFICATION).collectAsState(false)
+    val isTrackingCategoryEnabled by viewModel.isCategoryEnabled(CategoryType.ONGOING).collectAsState(false)
 
     LazyColumn(
         modifier = Modifier
@@ -36,10 +36,10 @@ fun SettingsScreen(viewModel: SettingsViewModel = hiltViewModel()) {
             SettingsCategory(
                 title = stringResource(R.string.settings_notification_category),
                 isEnabled = isNotificationCategoryEnabled,
-                onToggle = { newValue -> viewModel.toggleCategory(SettingCategory.NOTIFICATION, newValue) },
+                onToggle = { newValue -> viewModel.toggleCategory(CategoryType.NOTIFICATION, newValue) },
                 parkingLabels = parkingLabels,
-                getSettingState = { label -> viewModel.isSettingEnabled(label, SettingCategory.NOTIFICATION) },
-                onToggleSetting = { label, newValue -> viewModel.toggleSetting(label, SettingCategory.NOTIFICATION, newValue) }
+                getSettingState = { label -> viewModel.isSettingEnabled(label, CategoryType.NOTIFICATION) },
+                onToggleSetting = { label, newValue -> viewModel.toggleSetting(label, CategoryType.NOTIFICATION, newValue) }
             )
         }
 
@@ -54,10 +54,10 @@ fun SettingsScreen(viewModel: SettingsViewModel = hiltViewModel()) {
             SettingsCategory(
                 title = stringResource(R.string.settings_ongoing_notification_category),
                 isEnabled = isTrackingCategoryEnabled,
-                onToggle = { newValue -> viewModel.toggleCategory(SettingCategory.ONGOING, newValue) },
+                onToggle = { newValue -> viewModel.toggleCategory(CategoryType.ONGOING, newValue) },
                 parkingLabels = parkingLabels,
-                getSettingState = { label -> viewModel.isSettingEnabled(label, SettingCategory.ONGOING) },
-                onToggleSetting = { label, newValue -> viewModel.toggleSetting(label, SettingCategory.ONGOING, newValue) }
+                getSettingState = { label -> viewModel.isSettingEnabled(label, CategoryType.ONGOING) },
+                onToggleSetting = { label, newValue -> viewModel.toggleSetting(label, CategoryType.ONGOING, newValue) }
             )
         }
     }
