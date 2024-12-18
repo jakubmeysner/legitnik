@@ -1,16 +1,11 @@
 package com.jakubmeysner.legitnik.data.settings
 
 import android.content.Context
-import androidx.datastore.preferences.core.Preferences
-import androidx.datastore.preferences.core.booleanPreferencesKey
-import androidx.datastore.preferences.core.edit
-import androidx.datastore.preferences.preferencesDataStore
-import dagger.hilt.android.qualifiers.ApplicationContext
+import com.jakubmeysner.legitnik.data.settings.SettingsProto.Settings
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import javax.inject.Inject
-
-val Context.dataStore by preferencesDataStore(name = "settings")
+import dagger.hilt.android.qualifiers.ApplicationContext
 
 enum class CategoryType {
     NOTIFICATION,
@@ -20,39 +15,53 @@ enum class CategoryType {
 class SettingsRepository @Inject constructor(
     @ApplicationContext private val context: Context
 ) {
-    private fun categoryKey(category: CategoryType): Preferences.Key<Boolean> =
-        booleanPreferencesKey("${category.name.lowercase()}_category_enabled")
+    private val settingsFlow: Flow<Settings> = context.settingsDataStore.data
 
-    private fun settingKey(label: String, category: CategoryType): Preferences.Key<Boolean> =
-        booleanPreferencesKey("${category.name.lowercase()}_$label")
-
-    fun isCategoryEnabled(category: CategoryType): Flow<Boolean> =
-        context.dataStore.data.map { preferences ->
-            preferences[categoryKey(category)] ?: false
+    fun getCategoryState(category: CategoryType): Flow<Boolean> = settingsFlow.map { settings ->
+        when (category) {
+            CategoryType.NOTIFICATION -> settings.notificationCategoryEnabled
+            CategoryType.ONGOING -> settings.ongoingCategoryEnabled
         }
+    }
 
     suspend fun toggleCategory(category: CategoryType, isEnabled: Boolean) {
-        context.dataStore.edit { preferences ->
-            preferences[categoryKey(category)] = isEnabled
+        context.settingsDataStore.updateData { currentSettings ->
+            when (category) {
+                CategoryType.NOTIFICATION -> currentSettings.toBuilder()
+                    .setNotificationCategoryEnabled(isEnabled)
+                    .build()
+                CategoryType.ONGOING -> currentSettings.toBuilder()
+                    .setOngoingCategoryEnabled(isEnabled)
+                    .build()
+            }
         }
     }
 
     fun isSettingEnabled(label: String, category: CategoryType): Flow<Boolean> =
-        context.dataStore.data.map { preferences ->
-            preferences[settingKey(label, category)] ?: false
+        settingsFlow.map { settings ->
+            when (category) {
+                CategoryType.NOTIFICATION -> settings.notificationSettingsMap[label] ?: false
+                CategoryType.ONGOING -> settings.ongoingSettingsMap[label] ?: false
+            }
         }
 
     suspend fun toggleSetting(label: String, category: CategoryType, isEnabled: Boolean) {
-        context.dataStore.edit { preferences ->
-            preferences[settingKey(label, category)] = isEnabled
+        context.settingsDataStore.updateData { currentSettings ->
+            val builder = currentSettings.toBuilder()
+            when (category) {
+                CategoryType.NOTIFICATION -> builder.putNotificationSettings(label, isEnabled)
+                CategoryType.ONGOING -> builder.putOngoingSettings(label, isEnabled)
+            }
+            builder.build()
         }
     }
 
     fun getSavedLabelsForCategory(category: CategoryType): Flow<List<String>> {
-        return context.dataStore.data.map { preferences ->
-            preferences.asMap().keys
-                .filter { it.name.startsWith("${category.name.lowercase()}_") && !it.name.endsWith("_category_enabled") }
-                .map { it.name.substringAfter("${category.name.lowercase()}_") }
+        return settingsFlow.map { settings ->
+            when (category) {
+                CategoryType.NOTIFICATION -> settings.notificationSettingsMap.keys.toList()
+                CategoryType.ONGOING -> settings.ongoingSettingsMap.keys.toList()
+            }
         }
     }
 }

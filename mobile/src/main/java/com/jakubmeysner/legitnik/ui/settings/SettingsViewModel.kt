@@ -38,26 +38,20 @@ class SettingsViewModel @Inject constructor(
     }
 
     fun isCategoryEnabled(category: CategoryType): Flow<Boolean> =
-        settingsRepository.isCategoryEnabled(category)
+        settingsRepository.getCategoryState(category)
 
-    fun toggleCategory(category: CategoryType, isEnabled: Boolean) {
-        viewModelScope.launch {
-            settingsRepository.toggleCategory(category, isEnabled)
-        }
+    suspend fun toggleCategory(category: CategoryType, isEnabled: Boolean) {
+        settingsRepository.toggleCategory(category, isEnabled)
     }
 
     fun isSettingEnabled(label: String, category: CategoryType): Flow<Boolean> =
         settingsRepository.isSettingEnabled(label, category)
 
-    fun toggleSetting(label: String, category: CategoryType, isEnabled: Boolean) {
-        viewModelScope.launch {
-            settingsRepository.toggleSetting(label, category, isEnabled)
-        }
+    suspend fun toggleSetting(label: String, category: CategoryType, isEnabled: Boolean) {
+        settingsRepository.toggleSetting(label, category, isEnabled)
     }
 
     fun getLabelsFromSettingsCategory(category: CategoryType): Flow<List<String>> {
         return settingsRepository.getSavedLabelsForCategory(category)
     }
 }
-
-

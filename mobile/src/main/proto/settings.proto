@@ -1,0 +1,13 @@
+syntax = "proto3";
+
+package com.jakubmeysner.legitnik.data.settings;
+
+option java_package = "com.jakubmeysner.legitnik.data.settings";
+option java_outer_classname = "SettingsProto";
+
+message Settings {
+    bool notification_category_enabled = 1;
+    bool ongoing_category_enabled = 2;
+    map<string, bool> notification_settings = 3;
+    map<string, bool> ongoing_settings = 4;
+}

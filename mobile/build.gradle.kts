@@ -111,7 +111,6 @@ dependencies {
     debugImplementation(libs.androidx.ui.test.manifest)
     implementation(libs.datastore.preferences)
     implementation(libs.datastore.protobuf)
-    implementation(libs.protobuf.javalite)
     implementation(libs.protobuf.lite)
 }
 
