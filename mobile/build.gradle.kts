@@ -7,6 +7,7 @@ plugins {
     alias(libs.plugins.kotlin.serialization)
     alias(libs.plugins.secrets.gradle.plugin)
     alias(libs.plugins.google.gms.google.services)
+    alias(libs.plugins.ksp)
     alias(libs.plugins.protobuf)
 }
 
@@ -100,6 +101,9 @@ dependencies {
     implementation(libs.dss.tsl.validation)
     implementation(libs.dss.utils.google.guava)
     implementation(libs.accompanist.permissions)
+    implementation(libs.androidx.room.runtime)
+    implementation(libs.androidx.room.ktx)
+    ksp(libs.androidx.room.compiler)
     kapt(libs.hilt.compiler)
     kapt(libs.androidx.lifecycle.compiler)
     testImplementation(libs.junit)
