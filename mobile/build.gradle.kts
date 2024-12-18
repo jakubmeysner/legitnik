@@ -109,7 +109,6 @@ dependencies {
     androidTestImplementation(libs.androidx.ui.test.junit4)
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
-    implementation(libs.datastore.preferences)
     implementation(libs.datastore.protobuf)
     implementation(libs.protobuf.lite)
 }
