@@ -6,6 +6,7 @@ import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
 import android.content.pm.PackageManager
+import android.database.sqlite.SQLiteConstraintException
 import android.hardware.usb.UsbDevice
 import android.hardware.usb.UsbManager
 import android.nfc.NfcAdapter
@@ -193,7 +194,12 @@ class SDCATCardReaderViewModel @Inject constructor(
             try {
                 val rawData = _uiState.value.cardData?.rawData
                 if (rawData != null) {
-                    cardRepository.addCard(rawData)
+                    try {
+                        cardRepository.addCard(rawData, default = true)
+                    } catch (e: SQLiteConstraintException) {
+                        cardRepository.addCard(rawData, default = false)
+                    }
+
                     _uiState.update {
                         it.copy(
                             snackbar = SDCATCardReaderSnackbar.SAVING_SUCCESS,
