@@ -20,5 +20,5 @@ data class SDCATCardRawDataEntity(
     override val type: SDCATCardType,
     @ColumnInfo("raw_message") override val rawMessage: List<Byte>,
     @ColumnInfo("raw_certificate") override val rawCertificate: List<Byte>,
-    override val default: Boolean? = false,
+    override val default: Boolean? = null,
 ) : SDCATCardRawDataEntityInterface

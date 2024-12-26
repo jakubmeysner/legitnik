@@ -197,7 +197,7 @@ class SDCATCardReaderViewModel @Inject constructor(
                     try {
                         cardRepository.addCard(rawData, default = true)
                     } catch (e: SQLiteConstraintException) {
-                        cardRepository.addCard(rawData, default = false)
+                        cardRepository.addCard(rawData)
                     }
 
                     _uiState.update {
