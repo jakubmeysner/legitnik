@@ -23,6 +23,7 @@ class SettingsViewModel @Inject constructor(
 
     init {
         loadParkingLots()
+        loadSavedParkingLabels()
     }
 
     private fun loadParkingLots(forceRefresh: Boolean = false) {
@@ -37,6 +38,19 @@ class SettingsViewModel @Inject constructor(
         }
     }
 
+    private fun loadSavedParkingLabels() {
+        viewModelScope.launch {
+            combine(
+                settingsRepository.getSavedLabelsForCategory(CategoryType.NOTIFICATION),
+                settingsRepository.getSavedLabelsForCategory(CategoryType.ONGOING)
+            ) { notificationLabels, ongoingLabels ->
+                (notificationLabels + ongoingLabels).distinct()
+            }.collect { combinedLabels ->
+                _uiState.update { it.copy(savedParkingLabels = combinedLabels) }
+            }
+        }
+    }
+
     fun isCategoryEnabled(category: CategoryType): Flow<Boolean> =
         settingsRepository.getCategoryState(category)
 
@@ -44,14 +58,18 @@ class SettingsViewModel @Inject constructor(
         settingsRepository.toggleCategory(category, isEnabled)
     }
 
-    fun isSettingEnabled(label: String, category: CategoryType): Flow<Boolean> =
+    private fun isSettingEnabled(label: String, category: CategoryType): Flow<Boolean> =
         settingsRepository.isSettingEnabled(label, category)
 
     suspend fun toggleSetting(label: String, category: CategoryType, isEnabled: Boolean) {
         settingsRepository.toggleSetting(label, category, isEnabled)
     }
 
-    fun getLabelsFromSettingsCategory(category: CategoryType): Flow<List<String>> {
-        return settingsRepository.getSavedLabelsForCategory(category)
+    fun getSettingsStateForCategory(category: CategoryType, labels: List<String>): Flow<Map<String, Boolean>> {
+        return combine(
+            labels.map { label ->
+                isSettingEnabled(label, category).map { state -> label to state }
+            }
+        ) { states -> states.toMap() }
     }
 }

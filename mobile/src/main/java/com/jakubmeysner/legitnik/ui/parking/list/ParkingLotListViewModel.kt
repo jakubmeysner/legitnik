@@ -15,7 +15,8 @@ import javax.inject.Inject
 data class ParkingLotUiState(
     val parkingLots: List<ParkingLot>? = null,
     val loading: Boolean = true,
-    val error: Boolean = false
+    val error: Boolean = false,
+    val savedParkingLabels: List<String> = emptyList()
 )
 
 @HiltViewModel

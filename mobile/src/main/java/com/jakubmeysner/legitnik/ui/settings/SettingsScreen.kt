@@ -14,19 +14,24 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.jakubmeysner.legitnik.R
-import kotlinx.coroutines.flow.Flow
 import com.jakubmeysner.legitnik.data.settings.*
 import kotlinx.coroutines.launch
 
 @Composable
 fun SettingsScreen(viewModel: SettingsViewModel = hiltViewModel()) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
-    val savedParkingLabels = (viewModel.getLabelsFromSettingsCategory(CategoryType.NOTIFICATION).collectAsState(initial = emptyList()).value +
-        viewModel.getLabelsFromSettingsCategory(CategoryType.ONGOING).collectAsState(initial = emptyList()).value).distinct()
-    val parkingLabels = uiState.parkingLots?.map { it.symbol } ?: savedParkingLabels
+    val parkingLabels = uiState.parkingLots?.map { it.symbol } ?: uiState.savedParkingLabels
 
     val isNotificationCategoryEnabled by viewModel.isCategoryEnabled(CategoryType.NOTIFICATION).collectAsState(false)
     val isTrackingCategoryEnabled by viewModel.isCategoryEnabled(CategoryType.ONGOING).collectAsState(false)
+
+    val notificationSettingsState by viewModel
+        .getSettingsStateForCategory(CategoryType.NOTIFICATION, parkingLabels)
+        .collectAsState(initial = emptyMap())
+
+    val ongoingSettingsState by viewModel
+        .getSettingsStateForCategory(CategoryType.ONGOING, parkingLabels)
+        .collectAsState(initial = emptyMap())
 
     val coroutineScope = rememberCoroutineScope()
 
@@ -45,7 +50,7 @@ fun SettingsScreen(viewModel: SettingsViewModel = hiltViewModel()) {
                     }
                 },
                 parkingLabels = parkingLabels,
-                getSettingState = { label -> viewModel.isSettingEnabled(label, CategoryType.NOTIFICATION) },
+                settingsState = notificationSettingsState,
                 onToggleSetting = { label, newValue ->
                     coroutineScope.launch {
                         viewModel.toggleSetting(label, CategoryType.NOTIFICATION, newValue)
@@ -71,7 +76,7 @@ fun SettingsScreen(viewModel: SettingsViewModel = hiltViewModel()) {
                     }
                 },
                 parkingLabels = parkingLabels,
-                getSettingState = { label -> viewModel.isSettingEnabled(label, CategoryType.ONGOING) },
+                settingsState = ongoingSettingsState,
                 onToggleSetting = { label, newValue ->
                     coroutineScope.launch {
                         viewModel.toggleSetting(label, CategoryType.ONGOING, newValue)
@@ -88,7 +93,7 @@ fun SettingsCategory(
     isEnabled: Boolean,
     onToggle: (Boolean) -> Unit,
     parkingLabels: List<String>,
-    getSettingState: (String) -> Flow<Boolean>,
+    settingsState: Map<String, Boolean>,
     onToggleSetting: (String, Boolean) -> Unit
 ) {
     Column {
@@ -111,7 +116,7 @@ fun SettingsCategory(
                 ToggleItem(
                     label = label,
                     index = index,
-                    getSettingState = getSettingState,
+                    isChecked = settingsState[label] ?: false,
                     onToggle = onToggleSetting
                 )
             }
@@ -123,31 +128,27 @@ fun SettingsCategory(
 fun ToggleItem(
     label: String,
     index: Int,
-    getSettingState: (String) -> Flow<Boolean>,
+    isChecked: Boolean,
     onToggle: (String, Boolean) -> Unit
 ) {
-    val isCheckedState by getSettingState(label).collectAsState(initial = null)
-
-    if (isCheckedState != null) {
-        Row(
-            modifier = Modifier
-                .background(
-                    if (index % 2 == 0) MaterialTheme.colorScheme.surfaceTint.copy(alpha = 0.05f)
-                    else MaterialTheme.colorScheme.background
-                )
-                .fillMaxWidth()
-                .padding(horizontal = 16.dp, vertical = 8.dp),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Text(
-                text = label,
-                style = MaterialTheme.typography.bodyMedium
+    Row(
+        modifier = Modifier
+            .background(
+                if (index % 2 == 0) MaterialTheme.colorScheme.surfaceTint.copy(alpha = 0.05f)
+                else MaterialTheme.colorScheme.background
             )
-            Switch(
-                checked = isCheckedState!!,
-                onCheckedChange = { newValue -> onToggle(label, newValue) }
-            )
-        }
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp, vertical = 8.dp),
+        horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Text(
+            text = label,
+            style = MaterialTheme.typography.bodyMedium
+        )
+        Switch(
+            checked = isChecked,
+            onCheckedChange = { newValue -> onToggle(label, newValue) }
+        )
     }
 }
