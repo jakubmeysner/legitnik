@@ -77,4 +77,7 @@
     <string name="sdcat_card_validation_details_qualification_errors">Qualification errors</string>
     <string name="sdcat_card_validation_details_qualification_warnings">Qualification warnings</string>
     <string name="sdcat_card_validation_details_qualification_infos">Qualification infos</string>
+    <string name="navigation_bar_sdcat_card_saved">Saved Cards</string>
+    <string name="sdcat_card_saved_list_prompt_title">You haven\'t saved any cards yet!</string>
+    <string name="sdcat_card_saved_list_prompt_subtitle">Save your first card using the reader.</string>
 </resources>

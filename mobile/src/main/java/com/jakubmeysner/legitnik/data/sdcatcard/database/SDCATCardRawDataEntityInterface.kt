@@ -4,5 +4,6 @@ import com.jakubmeysner.legitnik.data.sdcatcard.SDCATCardRawDataInterface
 import java.util.UUID
 
 interface SDCATCardRawDataEntityInterface : SDCATCardRawDataInterface {
-    val uuid: UUID
+    val id: UUID
+    val default: Boolean?
 }

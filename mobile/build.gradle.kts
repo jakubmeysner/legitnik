@@ -8,6 +8,7 @@ plugins {
     alias(libs.plugins.secrets.gradle.plugin)
     alias(libs.plugins.google.gms.google.services)
     alias(libs.plugins.ksp)
+    alias(libs.plugins.room)
 }
 
 android {
@@ -57,6 +58,10 @@ android {
             excludes += "META-INF/*"
             pickFirsts += "xsd/*"
         }
+    }
+
+    room {
+        schemaDirectory("$projectDir/schemas")
     }
 }
 
