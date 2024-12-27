@@ -83,4 +83,6 @@
     <string name="navigation_bar_sdcat_card_saved">Zapisane EL</string>
     <string name="sdcat_card_saved_list_prompt_title">Nie zapisałeś jeszcze żadnych legitymacji!</string>
     <string name="sdcat_card_saved_list_prompt_subtitle">Zapisz swoją pierwszą Elektroniczną Legitymację używając czytnika.</string>
+    <string name="settings_notification_category">Włącz powiadomienia o dostępnych miejscach parkingowych na wybranych parkingach</string>
+    <string name="settings_ongoing_notification_category">Włącz powiadomienie stałe śledzące liczbę dostępnych miejsc parkingowych na wybranych parkingach</string>
 </resources>

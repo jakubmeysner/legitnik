@@ -80,4 +80,6 @@
     <string name="navigation_bar_sdcat_card_saved">Saved Cards</string>
     <string name="sdcat_card_saved_list_prompt_title">You haven\'t saved any cards yet!</string>
     <string name="sdcat_card_saved_list_prompt_subtitle">Save your first card using the reader.</string>
+    <string name="settings_notification_category">Enable notifications of available parking spaces in selected parking lots</string>
+    <string name="settings_ongoing_notification_category">Enable an ongoing notification that tracks the number of available parking spaces in selected parking lots</string>
 </resources>

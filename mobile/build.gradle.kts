@@ -9,6 +9,7 @@ plugins {
     alias(libs.plugins.google.gms.google.services)
     alias(libs.plugins.ksp)
     alias(libs.plugins.room)
+    alias(libs.plugins.protobuf)
 }
 
 android {
@@ -117,6 +118,8 @@ dependencies {
     androidTestImplementation(libs.androidx.ui.test.junit4)
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
+    implementation(libs.datastore.protobuf)
+    implementation(libs.protobuf.lite)
 }
 
 kapt {
@@ -128,3 +131,19 @@ secrets {
     defaultPropertiesFileName = "local.defaults.properties"
     ignoreList.add("sdk.*")
 }
+
+protobuf {
+    protoc {
+        artifact = "com.google.protobuf:protoc:3.25.3"
+    }
+    generateProtoTasks {
+        all().forEach { task ->
+            task.builtins {
+                register("java") {
+                    option("lite")
+                }
+            }
+        }
+    }
+}
+
