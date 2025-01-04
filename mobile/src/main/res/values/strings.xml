@@ -82,4 +82,6 @@
     <string name="sdcat_card_saved_list_prompt_subtitle">Save your first card using the reader.</string>
     <string name="settings_notification_category">Enable notifications of available parking spaces in selected parking lots</string>
     <string name="settings_ongoing_notification_category">Enable an ongoing notification that tracks the number of available parking spaces in selected parking lots</string>
+    <string name="apdu_service_description">S/DC/AT Card Emulation</string>
+    <string name="apdu_service_aid_group_description">S/DC/AT Card</string>
 </resources>

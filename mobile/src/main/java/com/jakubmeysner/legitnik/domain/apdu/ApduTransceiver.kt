@@ -55,7 +55,7 @@ interface ApduTransceiver {
             sw1 = response[response.lastIndex - 1]
             sw2 = response.last()
 
-            if (sw1 != SW1_OK || sw2 != SW2_OK) {
+            if (sw1 != okSw[0] || sw2 != okSw[1]) {
                 break
             }
         }
@@ -63,8 +63,7 @@ interface ApduTransceiver {
         return if (data.isEmpty()) {
             byteArrayOf(sw1, sw2)
         } else {
-            data.add(SW1_OK)
-            data.add(SW2_OK)
+            data.addAll(okSw)
             data.toByteArray()
         }
     }
@@ -83,8 +82,19 @@ interface ApduTransceiver {
 
         val LE_DEFAULT = 0x00.b
 
-        val SW1_OK = 0x90.b
-        val SW2_OK = 0x00.b
+        val selectFileByDfNameCommandPrefix = listOf(
+            CLA, INS_SELECT_FILE, P1_SELECT_FILE_BY_DF_NAME, P2_SELECT_FILE_BY_DF_NAME
+        )
+
+        val selectFileByEfIdentifierCommandPrefix = listOf(
+            CLA, INS_SELECT_FILE, P1_SELECT_FILE_BY_EF_IDENTIFIER, P2_SELECT_FILE_BY_EF_IDENTIFIER
+        )
+
+        val readBinaryCommandPrefix = listOf(CLA, INS_READ_BINARY)
+
+        val okSw: List<Byte> = listOf(0x90.b, 0x00)
+        val functionNotSupportedSw: List<Byte> = listOf(0x6a, 0x81.b)
+        val fileNotFoundSw: List<Byte> = listOf(0x6a, 0x82.b)
 
         fun createCommand(
             cla: Byte,
@@ -112,7 +122,7 @@ interface ApduTransceiver {
         fun isApduResponseOk(apduResponse: ByteArray): Boolean {
             val sw1 = apduResponse[apduResponse.lastIndex - 1]
             val sw2 = apduResponse.last()
-            return sw1 == SW1_OK && sw2 == SW2_OK
+            return sw1 == okSw[0] && sw2 == okSw[1]
         }
     }
 }
