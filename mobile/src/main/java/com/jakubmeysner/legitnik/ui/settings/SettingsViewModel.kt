@@ -55,14 +55,18 @@ class SettingsViewModel @Inject constructor(
         settingsRepository.getCategoryState(category)
 
     suspend fun toggleCategory(category: CategoryType, isEnabled: Boolean) {
-        settingsRepository.toggleCategory(category, isEnabled)
+        viewModelScope.launch {
+            settingsRepository.toggleCategory(category, isEnabled)
+        }
     }
 
     private fun isSettingEnabled(label: String, category: CategoryType): Flow<Boolean> =
         settingsRepository.isSettingEnabled(label, category)
 
     suspend fun toggleSetting(label: String, category: CategoryType, isEnabled: Boolean) {
-        settingsRepository.toggleSetting(label, category, isEnabled)
+        viewModelScope.launch {
+            settingsRepository.toggleSetting(label, category, isEnabled)
+        }
     }
 
     fun getSettingsStateForCategory(category: CategoryType, labels: List<String>): Flow<Map<String, Boolean>> {
@@ -71,5 +75,29 @@ class SettingsViewModel @Inject constructor(
                 isSettingEnabled(label, category).map { state -> label to state }
             }
         ) { states -> states.toMap() }
+    }
+
+    fun subscribeToFcmTopicsOnTokenRefresh() {
+        viewModelScope.launch {
+            settingsRepository.getCategoryState(CategoryType.NOTIFICATION).collect { isEnabled ->
+                settingsRepository.toggleCategory(CategoryType.NOTIFICATION, isEnabled)
+            }
+
+            settingsRepository.getCategoryState(CategoryType.ONGOING).collect { isEnabled ->
+                settingsRepository.toggleCategory(CategoryType.ONGOING, isEnabled)
+            }
+
+            combine(
+                settingsRepository.getSavedLabelsForCategory(CategoryType.NOTIFICATION),
+                settingsRepository.getSavedLabelsForCategory(CategoryType.ONGOING)
+            ) { notificationLabels, ongoingLabels ->
+                notificationLabels.forEach { label ->
+                    settingsRepository.toggleSetting(label, CategoryType.NOTIFICATION, true)
+                }
+                ongoingLabels.forEach { label ->
+                    settingsRepository.toggleSetting(label, CategoryType.ONGOING, true)
+                }
+            }.collect()
+        }
     }
 }

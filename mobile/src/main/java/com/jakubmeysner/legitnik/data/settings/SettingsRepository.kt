@@ -6,6 +6,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 import dagger.hilt.android.qualifiers.ApplicationContext
+import com.google.firebase.messaging.FirebaseMessaging
 
 enum class CategoryType {
     NOTIFICATION,
@@ -13,7 +14,8 @@ enum class CategoryType {
 }
 
 class SettingsRepository @Inject constructor(
-    @ApplicationContext private val context: Context
+    @ApplicationContext private val context: Context,
+    private val firebaseMessaging: FirebaseMessaging
 ) {
     private val settingsFlow: Flow<Settings> = context.settingsDataStore.data
 
@@ -26,7 +28,7 @@ class SettingsRepository @Inject constructor(
 
     suspend fun toggleCategory(category: CategoryType, isEnabled: Boolean) {
         context.settingsDataStore.updateData { currentSettings ->
-            when (category) {
+            val updatedSettings = when (category) {
                 CategoryType.NOTIFICATION -> currentSettings.toBuilder()
                     .setNotificationCategoryEnabled(isEnabled)
                     .build()
@@ -34,6 +36,8 @@ class SettingsRepository @Inject constructor(
                     .setOngoingCategoryEnabled(isEnabled)
                     .build()
             }
+            manageFcmSubscription(category, isEnabled)
+            updatedSettings
         }
     }
 
@@ -52,6 +56,7 @@ class SettingsRepository @Inject constructor(
                 CategoryType.NOTIFICATION -> builder.putNotificationSettings(label, isEnabled)
                 CategoryType.ONGOING -> builder.putOngoingSettings(label, isEnabled)
             }
+            manageFcmSubscriptionForSetting(label, category, isEnabled)
             builder.build()
         }
     }
@@ -62,6 +67,30 @@ class SettingsRepository @Inject constructor(
                 CategoryType.NOTIFICATION -> settings.notificationSettingsMap.keys.toList()
                 CategoryType.ONGOING -> settings.ongoingSettingsMap.keys.toList()
             }
+        }
+    }
+
+    private suspend fun manageFcmSubscription(category: CategoryType, isEnabled: Boolean) {
+        val topic = when (category) {
+            CategoryType.NOTIFICATION -> "notifications"
+            CategoryType.ONGOING -> "ongoing"
+        }
+        if (isEnabled) {
+            firebaseMessaging.subscribeToTopic(topic)
+        } else {
+            firebaseMessaging.unsubscribeFromTopic(topic)
+        }
+    }
+
+    private suspend fun manageFcmSubscriptionForSetting(label: String, category: CategoryType, isEnabled: Boolean) {
+        val topic = when (category) {
+            CategoryType.NOTIFICATION -> "notification_$label"
+            CategoryType.ONGOING -> "ongoing_$label"
+        }
+        if (isEnabled) {
+            firebaseMessaging.subscribeToTopic(topic)
+        } else {
+            firebaseMessaging.unsubscribeFromTopic(topic)
         }
     }
 }
