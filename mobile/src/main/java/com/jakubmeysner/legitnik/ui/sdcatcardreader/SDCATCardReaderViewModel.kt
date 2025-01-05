@@ -240,7 +240,7 @@ class SDCATCardReaderViewModel @Inject constructor(
     fun removeCard() {
         viewModelScope.launch {
             val rawData = _uiState.value.cardData?.rawData
-            val cardUUID = _uiState.value.cardId
+            val cardUUID = uiState.value.cardId
             if (rawData != null && cardUUID != null) {
                 cardRepository.removeCard(cardUUID)
                 _uiState.update {

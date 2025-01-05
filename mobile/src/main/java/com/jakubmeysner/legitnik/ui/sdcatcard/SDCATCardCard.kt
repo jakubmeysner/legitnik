@@ -187,7 +187,6 @@ fun SDCATCardCard(
                 if (isSaved) {
                     OutlinedButton(
                         onClick = removeCard,
-                        enabled = valid != null
                     ) {
                         Text(
                             stringResource(

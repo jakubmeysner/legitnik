@@ -12,13 +12,18 @@ import java.util.UUID
 object SDCATCardSavedRoute
 
 fun NavGraphBuilder.sdcatCardSavedDestination(
+    navigateToSDCATCardList: () -> Unit,
     navigateToSDCATCardSavedDetails: (id: UUID) -> Unit,
+    popBackStack: () -> Boolean,
 ) {
     navigation<SDCATCardSavedRoute>(startDestination = SDCATCardSavedListRoute) {
         sdcatCardSavedListDestination(
             navigateToSDCATCardSavedDetails = navigateToSDCATCardSavedDetails,
         )
 
-        sdcatCardSavedDetailsDestination()
+        sdcatCardSavedDetailsDestination(
+            navigateToSDCATCardList = navigateToSDCATCardList,
+            popBackStack = popBackStack,
+        )
     }
 }

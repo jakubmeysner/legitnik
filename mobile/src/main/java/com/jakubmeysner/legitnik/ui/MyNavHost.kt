@@ -41,6 +41,7 @@ import com.jakubmeysner.legitnik.ui.sdcatcardreader.SDCATCardReaderRoute
 import com.jakubmeysner.legitnik.ui.sdcatcardreader.sdcatCardReaderDestination
 import com.jakubmeysner.legitnik.ui.sdcatcardsaved.SDCATCardSavedRoute
 import com.jakubmeysner.legitnik.ui.sdcatcardsaved.details.navigateToSDCATCardSavedDetails
+import com.jakubmeysner.legitnik.ui.sdcatcardsaved.list.navigateToSDCATCardSavedList
 import com.jakubmeysner.legitnik.ui.sdcatcardsaved.sdcatCardSavedDestination
 import com.jakubmeysner.legitnik.ui.settings.SettingsRoute
 import com.jakubmeysner.legitnik.ui.settings.settingsDestination
@@ -165,7 +166,9 @@ fun MyNavHost() {
             )
 
             sdcatCardSavedDestination(
+                navigateToSDCATCardList = navController::navigateToSDCATCardSavedList,
                 navigateToSDCATCardSavedDetails = navController::navigateToSDCATCardSavedDetails,
+                popBackStack = navController::popBackStack,
             )
 
             settingsDestination()

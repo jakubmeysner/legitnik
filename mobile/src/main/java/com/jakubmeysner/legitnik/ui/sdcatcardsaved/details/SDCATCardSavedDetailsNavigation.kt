@@ -11,9 +11,15 @@ data class SDCATCardSavedDetailsRoute(
     val idString: String,
 )
 
-fun NavGraphBuilder.sdcatCardSavedDetailsDestination() {
+fun NavGraphBuilder.sdcatCardSavedDetailsDestination(
+    navigateToSDCATCardList: () -> Unit,
+    popBackStack: () -> Boolean,
+) {
     composable<SDCATCardSavedDetailsRoute> {
-        SDCATCardSavedDetailsScreen()
+        SDCATCardSavedDetailsScreen(
+            navigateToSDCATCardList = navigateToSDCATCardList,
+            popBackStack = popBackStack,
+        )
     }
 }
 
