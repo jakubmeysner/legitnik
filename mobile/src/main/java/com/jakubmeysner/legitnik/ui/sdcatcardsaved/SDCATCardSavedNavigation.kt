@@ -6,13 +6,19 @@ import com.jakubmeysner.legitnik.ui.sdcatcardsaved.details.sdcatCardSavedDetails
 import com.jakubmeysner.legitnik.ui.sdcatcardsaved.list.SDCATCardSavedListRoute
 import com.jakubmeysner.legitnik.ui.sdcatcardsaved.list.sdcatCardSavedListDestination
 import kotlinx.serialization.Serializable
+import java.util.UUID
 
 @Serializable
 object SDCATCardSavedRoute
 
-fun NavGraphBuilder.sdcatCardSavedDestination() {
+fun NavGraphBuilder.sdcatCardSavedDestination(
+    navigateToSDCATCardSavedDetails: (id: UUID) -> Unit,
+) {
     navigation<SDCATCardSavedRoute>(startDestination = SDCATCardSavedListRoute) {
-        sdcatCardSavedListDestination()
+        sdcatCardSavedListDestination(
+            navigateToSDCATCardSavedDetails = navigateToSDCATCardSavedDetails,
+        )
+
         sdcatCardSavedDetailsDestination()
     }
 }

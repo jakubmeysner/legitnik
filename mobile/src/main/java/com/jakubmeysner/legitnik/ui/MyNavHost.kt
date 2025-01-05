@@ -40,6 +40,7 @@ import com.jakubmeysner.legitnik.ui.parking.parkingDestination
 import com.jakubmeysner.legitnik.ui.sdcatcardreader.SDCATCardReaderRoute
 import com.jakubmeysner.legitnik.ui.sdcatcardreader.sdcatCardReaderDestination
 import com.jakubmeysner.legitnik.ui.sdcatcardsaved.SDCATCardSavedRoute
+import com.jakubmeysner.legitnik.ui.sdcatcardsaved.details.navigateToSDCATCardSavedDetails
 import com.jakubmeysner.legitnik.ui.sdcatcardsaved.sdcatCardSavedDestination
 import com.jakubmeysner.legitnik.ui.settings.SettingsRoute
 import com.jakubmeysner.legitnik.ui.settings.settingsDestination
@@ -163,7 +164,9 @@ fun MyNavHost() {
                 onShowSnackbar = onShowSnackbar,
             )
 
-            sdcatCardSavedDestination()
+            sdcatCardSavedDestination(
+                navigateToSDCATCardSavedDetails = navController::navigateToSDCATCardSavedDetails,
+            )
 
             settingsDestination()
         }
