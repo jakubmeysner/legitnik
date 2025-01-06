@@ -53,6 +53,7 @@ fun SDCATCardSavedDetailsScreen(
                 valid = uiState.validationResult?.valid,
                 isSaved = true,
                 saveCard = {},
+                default = card.rawData.default,
                 removeCard = {
                     scope.launch {
                         viewModel.viewModelScope.async {
@@ -64,6 +65,7 @@ fun SDCATCardSavedDetailsScreen(
                         }
                     }
                 },
+                toggleDefault = viewModel::toggleDefault,
                 onShowValidationDetails = {
                     showValidationDetails = true
                 },

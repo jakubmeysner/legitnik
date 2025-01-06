@@ -46,6 +46,14 @@ class SDCATCardRepository @Inject constructor(private val sdcatCardRawDao: SDCAT
         )
     }
 
+    suspend fun unsetDefaultCard() {
+        sdcatCardRawDao.unsetDefault()
+    }
+
+    suspend fun replaceDefaultCard(id: UUID) {
+        sdcatCardRawDao.replaceDefault(id)
+    }
+
     suspend fun removeCard(id: UUID) {
         sdcatCardRawDao.getOne(id)?.let {
             sdcatCardRawDao.delete(

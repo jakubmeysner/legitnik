@@ -4,6 +4,7 @@ import androidx.room.Dao
 import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.Query
+import androidx.room.Transaction
 import kotlinx.coroutines.flow.Flow
 import java.util.UUID
 
@@ -29,6 +30,18 @@ interface SDCATCardRawDao {
 
     @Insert
     suspend fun insert(card: SDCATCardRawDataEntity)
+
+    @Query("UPDATE sdcat_card_raw_data SET `default` = 0 WHERE `default` = 1")
+    suspend fun unsetDefault()
+
+    @Query("UPDATE sdcat_card_raw_data SET `default` = 1 WHERE uuid = :id")
+    suspend fun setDefault(id: UUID)
+
+    @Transaction
+    suspend fun replaceDefault(id: UUID) {
+        unsetDefault()
+        setDefault(id)
+    }
 
     @Delete
     suspend fun delete(card: SDCATCardRawDataEntity)

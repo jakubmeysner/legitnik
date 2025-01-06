@@ -20,6 +20,7 @@ import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.mapLatest
 import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.util.UUID
 import javax.inject.Inject
@@ -86,6 +87,18 @@ class SDCATCardSavedDetailsViewModel @Inject constructor(
         started = SharingStarted.Eagerly,
         initialValue = SDCATCardSavedDetailsUiState(),
     )
+
+    fun toggleDefault() {
+        viewModelScope.launch {
+            val card = card.value ?: return@launch
+
+            if (card.rawData.default == true) {
+                cardRepository.unsetDefaultCard()
+            } else {
+                cardRepository.replaceDefaultCard(card.rawData.id)
+            }
+        }
+    }
 
     suspend fun removeCard() {
         cardRepository.removeCard(id)
