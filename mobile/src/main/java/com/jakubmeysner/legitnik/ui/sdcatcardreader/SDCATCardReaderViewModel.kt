@@ -32,6 +32,7 @@ import com.jakubmeysner.legitnik.domain.sdcatcard.toParsed
 import com.jakubmeysner.legitnik.util.ClassSimpleNameLoggingTag
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -44,6 +45,7 @@ import kotlinx.coroutines.flow.mapLatest
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import kotlinx.serialization.Serializable
 import java.util.UUID
 import javax.inject.Inject
@@ -164,35 +166,37 @@ class SDCATCardReaderViewModel @Inject constructor(
     }
 
     fun onTagDiscovered(nfcTag: Tag) {
-        try {
-            _uiState.update { it.copy(reading = true) }
-            val isoDepAvailable = nfcTag.techList.contains(IsoDep::class.qualifiedName)
+        viewModelScope.launch {
+            try {
+                _uiState.update { it.copy(reading = true) }
+                val isoDepAvailable = nfcTag.techList.contains(IsoDep::class.qualifiedName)
 
-            if (!isoDepAvailable) {
+                if (!isoDepAvailable) {
+                    _uiState.update {
+                        it.copy(
+                            reading = false,
+                            snackbar = SDCATCardReaderSnackbar.NFC_UNSUPPORTED_CARD,
+                        )
+                    }
+                    return@launch
+                }
+
+                IsoDep.get(nfcTag).use { isoDep ->
+                    isoDep.connect()
+                    val apduTransceiver = IsoDepApduTransceiver(isoDep)
+                    scanCard(apduTransceiver)
+                }
+
+                _uiState.update { it.copy(reading = false) }
+                validateCard()
+            } catch (exception: Exception) {
+                Log.e(tag, "An exception occurred while trying to read card", exception)
                 _uiState.update {
                     it.copy(
                         reading = false,
-                        snackbar = SDCATCardReaderSnackbar.NFC_UNSUPPORTED_CARD,
+                        snackbar = SDCATCardReaderSnackbar.READING_INTERFACE_ERROR,
                     )
                 }
-                return
-            }
-
-            IsoDep.get(nfcTag).use { isoDep ->
-                isoDep.connect()
-                val apduTransceiver = IsoDepApduTransceiver(isoDep)
-                scanCard(apduTransceiver)
-            }
-
-            _uiState.update { it.copy(reading = false) }
-            validateCard()
-        } catch (exception: Exception) {
-            Log.e(tag, "An exception occurred while trying to read card", exception)
-            _uiState.update {
-                it.copy(
-                    reading = false,
-                    snackbar = SDCATCardReaderSnackbar.READING_INTERFACE_ERROR,
-                )
             }
         }
     }
@@ -252,7 +256,7 @@ class SDCATCardReaderViewModel @Inject constructor(
         }
     }
 
-    private fun onCardInserted(slotNum: Int) {
+    private suspend fun onCardInserted(slotNum: Int) {
         try {
             Log.d(tag, "Card inserted into slot $slotNum")
 
@@ -297,7 +301,7 @@ class SDCATCardReaderViewModel @Inject constructor(
         }
     }
 
-    private fun validateCard() {
+    private suspend fun validateCard() {
         try {
             _uiState.update {
                 it.copy(
@@ -307,7 +311,11 @@ class SDCATCardReaderViewModel @Inject constructor(
             }
 
             val data = _uiState.value.cardData ?: return
-            val result = cardValidator.getValidationResult(data)
+
+            val result = withContext(Dispatchers.Default) {
+                cardValidator.getValidationResult(data)
+            }
+
             _uiState.update { it.copy(cardValidationResult = result) }
         } catch (exception: Exception) {
             Log.e(tag, "An exception occurred while validating the card", exception)
@@ -316,8 +324,10 @@ class SDCATCardReaderViewModel @Inject constructor(
     }
 
     private fun onUsbReaderStateChange(slotNum: Int, previousState: Int, currentState: Int) {
-        if (previousState == Reader.CARD_ABSENT && currentState == Reader.CARD_PRESENT) {
-            onCardInserted(slotNum)
+        viewModelScope.launch {
+            if (previousState == Reader.CARD_ABSENT && currentState == Reader.CARD_PRESENT) {
+                onCardInserted(slotNum)
+            }
         }
     }
 

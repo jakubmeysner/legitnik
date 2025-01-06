@@ -15,6 +15,8 @@ import eu.europa.esig.dss.spi.x509.CommonCertificateSource
 import eu.europa.esig.dss.validation.CommonCertificateVerifier
 import eu.europa.esig.dss.validation.SignedDocumentValidator
 import eu.europa.esig.dss.validation.reports.Reports
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import org.bouncycastle.cms.CMSSignedData
 import java.io.File
 import java.security.cert.X509Certificate
@@ -41,23 +43,25 @@ class MessageSignatureValidator @Inject constructor(
 
     private val cachedCrlSource = OnlineCRLSource(crlDataLoader)
 
-    private fun prepare() {
-        ocspDataLoader.setFileCacheDirectory(
-            File(
-                applicationContext.cacheDir,
-                OCSP_FILE_CACHE_DIRECTORY_NAME
+    private suspend fun prepare() {
+        withContext(Dispatchers.IO) {
+            ocspDataLoader.setFileCacheDirectory(
+                File(
+                    applicationContext.cacheDir,
+                    OCSP_FILE_CACHE_DIRECTORY_NAME
+                )
             )
-        )
 
-        crlDataLoader.setFileCacheDirectory(
-            File(
-                applicationContext.cacheDir,
-                CRL_FILE_CACHE_DIRECTORY_NAME
+            crlDataLoader.setFileCacheDirectory(
+                File(
+                    applicationContext.cacheDir,
+                    CRL_FILE_CACHE_DIRECTORY_NAME
+                )
             )
-        )
+        }
     }
 
-    fun validate(message: CMSSignedData, certificate: X509Certificate): Reports {
+    suspend fun validate(message: CMSSignedData, certificate: X509Certificate): Reports {
         prepare()
         val document = CMSSignedDocument(message)
 
@@ -76,8 +80,10 @@ class MessageSignatureValidator @Inject constructor(
             setCertificateVerifier(certificateVerifier)
         }
 
-        return applicationContext.resources.openRawResource(R.raw.dss_validation_policy).use {
-            documentValidator.validateDocument(it)
+        return withContext(Dispatchers.IO) {
+            applicationContext.resources.openRawResource(R.raw.dss_validation_policy).use {
+                documentValidator.validateDocument(it)
+            }
         }
     }
 

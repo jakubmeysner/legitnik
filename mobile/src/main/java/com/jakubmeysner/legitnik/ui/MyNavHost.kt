@@ -99,7 +99,7 @@ fun MyNavHost() {
     val navController = rememberNavController()
     val snackbarHostState = remember { SnackbarHostState() }
 
-    val onShowSnackbar: suspend (visuals: SnackbarVisuals) -> SnackbarResult = { visuals ->
+    val showSnackbar: suspend (visuals: SnackbarVisuals) -> SnackbarResult = { visuals ->
         snackbarHostState.showSnackbar(visuals)
     }
 
@@ -158,17 +158,18 @@ fun MyNavHost() {
             parkingDestination(
                 navigateToParkingLotMap = navController::navigateToParkingLotMap,
                 onNavigateToParkingLotDetails = navController::navigateToParkingLotDetails,
-                onShowSnackbar = onShowSnackbar
+                onShowSnackbar = showSnackbar
             )
 
             sdcatCardReaderDestination(
-                onShowSnackbar = onShowSnackbar,
+                onShowSnackbar = showSnackbar,
             )
 
             sdcatCardSavedDestination(
                 navigateToSDCATCardList = navController::navigateToSDCATCardSavedList,
                 navigateToSDCATCardSavedDetails = navController::navigateToSDCATCardSavedDetails,
                 popBackStack = navController::popBackStack,
+                showSnackbar = showSnackbar,
             )
 
             settingsDestination()

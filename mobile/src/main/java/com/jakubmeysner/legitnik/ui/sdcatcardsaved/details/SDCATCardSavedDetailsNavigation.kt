@@ -1,5 +1,7 @@
 package com.jakubmeysner.legitnik.ui.sdcatcardsaved.details
 
+import androidx.compose.material3.SnackbarResult
+import androidx.compose.material3.SnackbarVisuals
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
@@ -14,11 +16,13 @@ data class SDCATCardSavedDetailsRoute(
 fun NavGraphBuilder.sdcatCardSavedDetailsDestination(
     navigateToSDCATCardList: () -> Unit,
     popBackStack: () -> Boolean,
+    showSnackbar: suspend (visuals: SnackbarVisuals) -> SnackbarResult,
 ) {
     composable<SDCATCardSavedDetailsRoute> {
         SDCATCardSavedDetailsScreen(
             navigateToSDCATCardList = navigateToSDCATCardList,
             popBackStack = popBackStack,
+            showSnackbar = showSnackbar,
         )
     }
 }
