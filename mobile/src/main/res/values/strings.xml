@@ -90,4 +90,5 @@
     <string name="sdcat_card_saved_details_validation_error_snackbar_message">An error occurred while validating card data!</string>
     <string name="sdcat_card_card_default">Default</string>
     <string name="sdcat_card_card_mark_as_default">Mark as default</string>
+    <string name="sdcat_card_saved_details_active_for_emulation">Active for emulation</string>
 </resources>

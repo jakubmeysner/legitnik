@@ -6,10 +6,11 @@ import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
 
 @Database(
-    version = 2,
+    version = 3,
     entities = [SDCATCardRawDataEntity::class],
     autoMigrations = [
         AutoMigration(from = 1, to = 2),
+        AutoMigration(from = 2, to = 3),
     ],
 )
 @TypeConverters(Converters::class)

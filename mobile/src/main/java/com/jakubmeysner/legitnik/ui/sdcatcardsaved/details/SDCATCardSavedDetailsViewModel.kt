@@ -103,4 +103,16 @@ class SDCATCardSavedDetailsViewModel @Inject constructor(
     suspend fun removeCard() {
         cardRepository.removeCard(id)
     }
+
+    fun setActive() {
+        viewModelScope.launch {
+            card.value?.rawData?.id?.let { cardRepository.replaceActiveCard(it) }
+        }
+    }
+
+    fun unsetActive() {
+        viewModelScope.launch {
+            cardRepository.unsetActiveCard()
+        }
+    }
 }

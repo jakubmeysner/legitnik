@@ -12,6 +12,7 @@ import java.util.UUID
     indices = [
         Index(value = ["hash"], unique = true),
         Index(value = ["default"], unique = true),
+        Index(value = ["active"], unique = true),
     ],
 )
 data class SDCATCardRawDataEntity(
@@ -21,4 +22,5 @@ data class SDCATCardRawDataEntity(
     @ColumnInfo("raw_message") override val rawMessage: List<Byte>,
     @ColumnInfo("raw_certificate") override val rawCertificate: List<Byte>,
     override val default: Boolean? = null,
+    override val active: Boolean? = null,
 ) : SDCATCardRawDataEntityInterface

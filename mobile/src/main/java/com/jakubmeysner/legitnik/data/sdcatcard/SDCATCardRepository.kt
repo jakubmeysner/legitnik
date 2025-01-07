@@ -3,12 +3,15 @@ package com.jakubmeysner.legitnik.data.sdcatcard
 import com.jakubmeysner.legitnik.data.sdcatcard.database.SDCATCardRawDao
 import com.jakubmeysner.legitnik.data.sdcatcard.database.SDCATCardRawDataEntity
 import com.jakubmeysner.legitnik.data.sdcatcard.database.SDCATCardRawDataEntityInterface
+import com.jakubmeysner.legitnik.util.ClassSimpleNameLoggingTag
 import kotlinx.coroutines.flow.Flow
 import java.util.UUID
 import javax.inject.Inject
 
 
-class SDCATCardRepository @Inject constructor(private val sdcatCardRawDao: SDCATCardRawDao) {
+class SDCATCardRepository @Inject constructor(
+    private val sdcatCardRawDao: SDCATCardRawDao,
+) : ClassSimpleNameLoggingTag {
     suspend fun getAllCards(): List<SDCATCardRawDataEntityInterface> {
         return sdcatCardRawDao.getAll()
     }
@@ -37,6 +40,10 @@ class SDCATCardRepository @Inject constructor(private val sdcatCardRawDao: SDCAT
         return sdcatCardRawDao.getDefault()
     }
 
+    suspend fun getActiveOrDefaultCard(): SDCATCardRawDataEntityInterface? {
+        return sdcatCardRawDao.getActiveOrDefault()
+    }
+
     suspend fun addCard(sdcatCardRawData: SDCATCardRawDataInterface, default: Boolean? = null) {
         sdcatCardRawDao.insert(
             SDCATCardRawDataEntity(
@@ -56,6 +63,14 @@ class SDCATCardRepository @Inject constructor(private val sdcatCardRawDao: SDCAT
 
     suspend fun replaceDefaultCard(id: UUID) {
         sdcatCardRawDao.replaceDefault(id)
+    }
+
+    suspend fun unsetActiveCard() {
+        sdcatCardRawDao.unsetActive()
+    }
+
+    suspend fun replaceActiveCard(id: UUID) {
+        sdcatCardRawDao.replaceActive(id)
     }
 
     suspend fun removeCard(id: UUID) {

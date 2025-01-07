@@ -39,7 +39,7 @@ class MyHostApduService(
             Log.d(tag, "Received APDU: $commandApduString")
 
             try {
-                val card = sdcatCardRepository.getDefaultCard()
+                val card = sdcatCardRepository.getActiveOrDefaultCard()
 
                 if (card == null) {
                     sendResponseApdu(ApduTransceiver.fileNotFoundSw.toByteArray())

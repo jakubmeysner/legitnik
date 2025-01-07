@@ -93,4 +93,5 @@
     <string name="sdcat_card_saved_details_validation_error_snackbar_message">Wystąpił błąd przy walidowaniu danych karty!</string>
     <string name="sdcat_card_card_default">Domyślna</string>
     <string name="sdcat_card_card_mark_as_default">Ustaw jako domyślną</string>
+    <string name="sdcat_card_saved_details_active_for_emulation">Aktywna do emulacji</string>
 </resources>
