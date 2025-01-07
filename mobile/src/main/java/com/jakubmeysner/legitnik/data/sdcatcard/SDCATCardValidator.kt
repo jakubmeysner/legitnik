@@ -11,7 +11,7 @@ import javax.inject.Singleton
 class SDCATCardValidator @Inject constructor(
     private val messageSignatureValidator: MessageSignatureValidator,
 ) {
-    fun getValidationResult(data: SDCATCardDataInterface): SDCATCardValidationResult {
+    suspend fun getValidationResult(data: SDCATCardDataInterface): SDCATCardValidationResult {
         val signatureValidationReports = messageSignatureValidator.validate(
             data.parsedData.message,
             data.parsedData.certificate

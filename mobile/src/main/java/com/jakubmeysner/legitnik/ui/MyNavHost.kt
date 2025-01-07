@@ -40,6 +40,8 @@ import com.jakubmeysner.legitnik.ui.parking.parkingDestination
 import com.jakubmeysner.legitnik.ui.sdcatcardreader.SDCATCardReaderRoute
 import com.jakubmeysner.legitnik.ui.sdcatcardreader.sdcatCardReaderDestination
 import com.jakubmeysner.legitnik.ui.sdcatcardsaved.SDCATCardSavedRoute
+import com.jakubmeysner.legitnik.ui.sdcatcardsaved.details.navigateToSDCATCardSavedDetails
+import com.jakubmeysner.legitnik.ui.sdcatcardsaved.list.navigateToSDCATCardSavedList
 import com.jakubmeysner.legitnik.ui.sdcatcardsaved.sdcatCardSavedDestination
 import com.jakubmeysner.legitnik.ui.settings.SettingsRoute
 import com.jakubmeysner.legitnik.ui.settings.settingsDestination
@@ -97,7 +99,7 @@ fun MyNavHost() {
     val navController = rememberNavController()
     val snackbarHostState = remember { SnackbarHostState() }
 
-    val onShowSnackbar: suspend (visuals: SnackbarVisuals) -> SnackbarResult = { visuals ->
+    val showSnackbar: suspend (visuals: SnackbarVisuals) -> SnackbarResult = { visuals ->
         snackbarHostState.showSnackbar(visuals)
     }
 
@@ -156,14 +158,19 @@ fun MyNavHost() {
             parkingDestination(
                 navigateToParkingLotMap = navController::navigateToParkingLotMap,
                 onNavigateToParkingLotDetails = navController::navigateToParkingLotDetails,
-                onShowSnackbar = onShowSnackbar
+                onShowSnackbar = showSnackbar
             )
 
             sdcatCardReaderDestination(
-                onShowSnackbar = onShowSnackbar,
+                onShowSnackbar = showSnackbar,
             )
 
-            sdcatCardSavedDestination()
+            sdcatCardSavedDestination(
+                navigateToSDCATCardList = navController::navigateToSDCATCardSavedList,
+                navigateToSDCATCardSavedDetails = navController::navigateToSDCATCardSavedDetails,
+                popBackStack = navController::popBackStack,
+                showSnackbar = showSnackbar,
+            )
 
             settingsDestination()
         }

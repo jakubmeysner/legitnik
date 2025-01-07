@@ -12,12 +12,15 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.CheckCircle
+import androidx.compose.material.icons.filled.Check
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.FilledTonalIconButton
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
@@ -42,8 +45,10 @@ fun SDCATCardCard(
     content: SDCATCardParsedContent,
     valid: Boolean?,
     isSaved: Boolean,
+    default: Boolean? = null,
     saveCard: () -> Unit,
     removeCard: () -> Unit,
+    toggleDefault: (() -> Unit)? = null,
     onShowValidationDetails: () -> Unit,
 ) {
     val context = LocalContext.current
@@ -147,19 +152,26 @@ fun SDCATCardCard(
                 }
 
                 if (valid != null) {
-                    Icon(
-                        imageVector = if (valid) Icons.Default.CheckCircle else ImageVector
-                            .vectorResource(R.drawable.mdi_alert_octagram_outline),
-                        contentDescription = if (valid) stringResource(
-                            R.string.sdcat_card_card_valid
-                        ) else stringResource(
-                            R.string.sdcat_card_card_invalid
-                        ),
-                        modifier = Modifier
-                            .size(size = 32.dp),
-                        tint = if (valid) MaterialTheme.colorScheme.primary
-                        else LocalContentColor.current
-                    )
+                    FilledTonalIconButton(
+                        onClick = {
+                            onShowValidationDetails()
+                        },
+                        colors = if (valid) IconButtonDefaults.filledTonalIconButtonColors(
+                            containerColor = MaterialTheme.colorScheme.primary,
+                        ) else IconButtonDefaults.filledTonalIconButtonColors(
+                            containerColor = MaterialTheme.colorScheme.error,
+                        )
+                    ) {
+                        Icon(
+                            imageVector = if (valid) Icons.Default.Check else ImageVector
+                                .vectorResource(R.drawable.mdi_alert_octagram_outline),
+                            contentDescription = if (valid) stringResource(
+                                R.string.sdcat_card_card_valid
+                            ) else stringResource(
+                                R.string.sdcat_card_card_invalid
+                            ),
+                        )
+                    }
                 } else {
                     CircularProgressIndicator(
                         modifier = Modifier.size(size = 32.dp),
@@ -177,17 +189,37 @@ fun SDCATCardCard(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
-                TextButton(
-                    onClick = onShowValidationDetails,
-                    enabled = valid != null,
-                ) {
-                    Text(stringResource(R.string.sdcat_card_card_validation_details_button))
+                if (default != null) {
+                    if (default) {
+                        Button(
+                            onClick = toggleDefault ?: {},
+                            enabled = toggleDefault != null,
+                        ) {
+                            Text(text = stringResource(R.string.sdcat_card_card_default))
+                        }
+                    } else {
+                        OutlinedButton(
+                            onClick = toggleDefault ?: {},
+                            enabled = toggleDefault != null,
+                        ) {
+                            Text(text = stringResource(R.string.sdcat_card_card_mark_as_default))
+                        }
+                    }
+                } else {
+                    TextButton(
+                        onClick = onShowValidationDetails,
+                        enabled = valid != null,
+                    ) {
+                        Text(stringResource(R.string.sdcat_card_card_validation_details_button))
+                    }
                 }
 
                 if (isSaved) {
                     OutlinedButton(
                         onClick = removeCard,
-                        enabled = valid != null
+                        colors = ButtonDefaults.outlinedButtonColors(
+                            contentColor = MaterialTheme.colorScheme.error,
+                        ),
                     ) {
                         Text(
                             stringResource(

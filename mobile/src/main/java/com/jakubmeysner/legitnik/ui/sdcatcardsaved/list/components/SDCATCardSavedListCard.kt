@@ -1,5 +1,6 @@
 package com.jakubmeysner.legitnik.ui.sdcatcardsaved.list.components
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -22,10 +23,12 @@ import androidx.compose.ui.unit.dp
 import com.jakubmeysner.legitnik.R
 import com.jakubmeysner.legitnik.data.sdcatcard.SDCATCardDataEntity
 import com.jakubmeysner.legitnik.data.sdcatcard.SDCATCardParsedContent
+import java.util.UUID
 
 @Composable
 fun SDCATCardSavedListCard(
     data: SDCATCardDataEntity,
+    navigateToSDCATCardSavedDetails: (id: UUID) -> Unit,
 ) {
     val cardColors = if (data.rawData.default == true) {
         CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.primaryContainer)
@@ -48,7 +51,11 @@ fun SDCATCardSavedListCard(
     val subtitle = "$type (${data.parsedData.content.universityOrIssuerName})"
 
     Card(
-        modifier = Modifier.fillMaxWidth(),
+        modifier = Modifier
+            .fillMaxWidth()
+            .clickable {
+                navigateToSDCATCardSavedDetails(data.rawData.id)
+            },
         colors = cardColors,
     ) {
         Row(
