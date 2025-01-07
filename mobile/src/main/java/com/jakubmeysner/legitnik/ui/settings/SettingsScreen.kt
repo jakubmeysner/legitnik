@@ -20,20 +20,22 @@ import kotlinx.coroutines.launch
 @Composable
 fun SettingsScreen(viewModel: SettingsViewModel = hiltViewModel()) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
-    val parkingLabels = uiState.parkingLots?.map { it.symbol } ?: uiState.savedParkingLabels
+    val parkingIds = uiState.parkingLots?.map { it.id } ?: uiState.savedParkingIds
 
     val isNotificationCategoryEnabled by viewModel.isCategoryEnabled(CategoryType.NOTIFICATION).collectAsState(false)
     val isTrackingCategoryEnabled by viewModel.isCategoryEnabled(CategoryType.ONGOING).collectAsState(false)
 
     val notificationSettingsState by viewModel
-        .getSettingsStateForCategory(CategoryType.NOTIFICATION, parkingLabels)
+        .getSettingsStateForCategory(CategoryType.NOTIFICATION, parkingIds)
         .collectAsState(initial = emptyMap())
 
     val ongoingSettingsState by viewModel
-        .getSettingsStateForCategory(CategoryType.ONGOING, parkingLabels)
+        .getSettingsStateForCategory(CategoryType.ONGOING, parkingIds)
         .collectAsState(initial = emptyMap())
 
     val coroutineScope = rememberCoroutineScope()
+
+    val getLabelFromId: (String) -> String = { id -> viewModel.getLabelFromId(id) }
 
     LazyColumn(
         modifier = Modifier
@@ -49,13 +51,14 @@ fun SettingsScreen(viewModel: SettingsViewModel = hiltViewModel()) {
                         viewModel.toggleCategory(CategoryType.NOTIFICATION, newValue)
                     }
                 },
-                parkingLabels = parkingLabels,
+                parkingIds = parkingIds,
                 settingsState = notificationSettingsState,
-                onToggleSetting = { label, newValue ->
+                onToggleSetting = { id, newValue ->
                     coroutineScope.launch {
-                        viewModel.toggleSetting(label, CategoryType.NOTIFICATION, newValue)
+                        viewModel.toggleSetting(id, CategoryType.NOTIFICATION, newValue)
                     }
-                }
+                },
+                getLabel = getLabelFromId
             )
         }
 
@@ -75,13 +78,14 @@ fun SettingsScreen(viewModel: SettingsViewModel = hiltViewModel()) {
                         viewModel.toggleCategory(CategoryType.ONGOING, newValue)
                     }
                 },
-                parkingLabels = parkingLabels,
+                parkingIds = parkingIds,
                 settingsState = ongoingSettingsState,
-                onToggleSetting = { label, newValue ->
+                onToggleSetting = { id, newValue ->
                     coroutineScope.launch {
-                        viewModel.toggleSetting(label, CategoryType.ONGOING, newValue)
+                        viewModel.toggleSetting(id, CategoryType.ONGOING, newValue)
                     }
-                }
+                },
+                getLabel = getLabelFromId
             )
         }
     }
@@ -92,9 +96,10 @@ fun SettingsCategory(
     title: String,
     isEnabled: Boolean,
     onToggle: (Boolean) -> Unit,
-    parkingLabels: List<String>,
+    parkingIds: List<String>,
     settingsState: Map<String, Boolean>,
-    onToggleSetting: (String, Boolean) -> Unit
+    onToggleSetting: (String, Boolean) -> Unit,
+    getLabel: (String) -> String
 ) {
     Column {
         Row(
@@ -112,12 +117,13 @@ fun SettingsCategory(
             )
         }
         if (isEnabled) {
-            parkingLabels.forEachIndexed { index, label ->
+            parkingIds.forEachIndexed { index, id ->
                 ToggleItem(
-                    label = label,
+                    id = id,
                     index = index,
-                    isChecked = settingsState[label] ?: false,
-                    onToggle = onToggleSetting
+                    isChecked = settingsState[id] ?: false,
+                    onToggle = onToggleSetting,
+                    getLabel = getLabel
                 )
             }
         }
@@ -126,10 +132,11 @@ fun SettingsCategory(
 
 @Composable
 fun ToggleItem(
-    label: String,
+    id: String,
     index: Int,
     isChecked: Boolean,
-    onToggle: (String, Boolean) -> Unit
+    onToggle: (String, Boolean) -> Unit,
+    getLabel: (String) -> String
 ) {
     Row(
         modifier = Modifier
@@ -143,12 +150,12 @@ fun ToggleItem(
         verticalAlignment = Alignment.CenterVertically
     ) {
         Text(
-            text = label,
+            text = getLabel(id),
             style = MaterialTheme.typography.bodyMedium
         )
         Switch(
             checked = isChecked,
-            onCheckedChange = { newValue -> onToggle(label, newValue) }
+            onCheckedChange = { newValue -> onToggle(id, newValue) }
         )
     }
 }

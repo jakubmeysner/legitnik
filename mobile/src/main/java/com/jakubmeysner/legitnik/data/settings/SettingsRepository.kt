@@ -41,32 +41,50 @@ class SettingsRepository @Inject constructor(
                     .setOngoingCategoryEnabled(isEnabled)
                     .build()
             }
-            manageFcmSubscription(category, isEnabled)
             updatedSettings
+        }
+
+        val categoryIds = getSavedIdsForCategory(category).firstOrNull() ?: emptyList()
+
+        if(!isEnabled) {
+            categoryIds.forEach { id ->
+                isSettingEnabled(id, category).firstOrNull()?.let { isEnabled ->
+                    if (isEnabled)
+                        manageFcmSubscriptionForSetting(id, category, false)
+                }
+            }
+        }
+        else {
+            categoryIds.forEach { id ->
+                isSettingEnabled(id, category).firstOrNull()?.let { isEnabled ->
+                    if (isEnabled)
+                        toggleSetting(id, category, true)
+                }
+            }
         }
     }
 
-    fun isSettingEnabled(label: String, category: CategoryType): Flow<Boolean> =
+    fun isSettingEnabled(id: String, category: CategoryType): Flow<Boolean> =
         settingsFlow.map { settings ->
             when (category) {
-                CategoryType.NOTIFICATION -> settings.notificationSettingsMap[label] ?: false
-                CategoryType.ONGOING -> settings.ongoingSettingsMap[label] ?: false
+                CategoryType.NOTIFICATION -> settings.notificationSettingsMap[id] ?: false
+                CategoryType.ONGOING -> settings.ongoingSettingsMap[id] ?: false
             }
         }
 
-    suspend fun toggleSetting(label: String, category: CategoryType, isEnabled: Boolean) {
+    suspend fun toggleSetting(id: String, category: CategoryType, isEnabled: Boolean) {
         context.settingsDataStore.updateData { currentSettings ->
             val builder = currentSettings.toBuilder()
             when (category) {
-                CategoryType.NOTIFICATION -> builder.putNotificationSettings(label, isEnabled)
-                CategoryType.ONGOING -> builder.putOngoingSettings(label, isEnabled)
+                CategoryType.NOTIFICATION -> builder.putNotificationSettings(id, isEnabled)
+                CategoryType.ONGOING -> builder.putOngoingSettings(id, isEnabled)
             }
-            manageFcmSubscriptionForSetting(label, category, isEnabled)
+            manageFcmSubscriptionForSetting(id, category, isEnabled)
             builder.build()
         }
     }
 
-    fun getSavedLabelsForCategory(category: CategoryType): Flow<List<String>> {
+    fun getSavedIdsForCategory(category: CategoryType): Flow<List<String>> {
         return settingsFlow.map { settings ->
             when (category) {
                 CategoryType.NOTIFICATION -> settings.notificationSettingsMap.keys.toList()
@@ -75,24 +93,10 @@ class SettingsRepository @Inject constructor(
         }
     }
 
-    private fun manageFcmSubscription(category: CategoryType, isEnabled: Boolean) {
+    private fun manageFcmSubscriptionForSetting(id: String, category: CategoryType, isEnabled: Boolean) {
         val topic = when (category) {
-            CategoryType.NOTIFICATION -> "notifications"
-            CategoryType.ONGOING -> "ongoing"
-        }
-        if (isEnabled) {
-            firebaseMessaging.subscribeToTopic(topic)
-            Log.d("FCM", "Subscribed to: $topic")
-        } else {
-            firebaseMessaging.unsubscribeFromTopic(topic)
-            Log.d("FCM", "Unsubscribed from: $topic")
-        }
-    }
-
-    private fun manageFcmSubscriptionForSetting(label: String, category: CategoryType, isEnabled: Boolean) {
-        val topic = when (category) {
-            CategoryType.NOTIFICATION -> "notification_$label"
-            CategoryType.ONGOING -> "ongoing_$label"
+            CategoryType.NOTIFICATION -> "PARKING_LOT_FREE_PLACES_BECAME_NON_ZERO-$id"
+            CategoryType.ONGOING -> "PARKING_LOT_FREE_PLACES_CHANGED-$id"
         }
         if (isEnabled) {
             firebaseMessaging.subscribeToTopic(topic)
@@ -119,17 +123,17 @@ class SettingsRepository @Inject constructor(
         }
 
         combine(
-            getSavedLabelsForCategory(CategoryType.NOTIFICATION),
-            getSavedLabelsForCategory(CategoryType.ONGOING)
-        ) { notificationLabels, ongoingLabels ->
-            notificationLabels.forEach { label ->
-                isSettingEnabled(label, CategoryType.NOTIFICATION).firstOrNull()?.let { isEnabled ->
-                    toggleSetting(label, CategoryType.NOTIFICATION, isEnabled)
+            getSavedIdsForCategory(CategoryType.NOTIFICATION),
+            getSavedIdsForCategory(CategoryType.ONGOING)
+        ) { notificationIds, ongoingIds ->
+            notificationIds.forEach { id ->
+                isSettingEnabled(id, CategoryType.NOTIFICATION).firstOrNull()?.let { isEnabled ->
+                    toggleSetting(id, CategoryType.NOTIFICATION, isEnabled)
                 }
             }
-            ongoingLabels.forEach { label ->
-                isSettingEnabled(label, CategoryType.ONGOING).firstOrNull()?.let { isEnabled ->
-                    toggleSetting(label, CategoryType.ONGOING, isEnabled)
+            ongoingIds.forEach { id ->
+                isSettingEnabled(id, CategoryType.ONGOING).firstOrNull()?.let { isEnabled ->
+                    toggleSetting(id, CategoryType.ONGOING, isEnabled)
                 }
             }
         }.firstOrNull()
