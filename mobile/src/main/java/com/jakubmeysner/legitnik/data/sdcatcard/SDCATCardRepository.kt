@@ -21,8 +21,16 @@ class SDCATCardRepository @Inject constructor(private val sdcatCardRawDao: SDCAT
         return sdcatCardRawDao.getOne(uuid)
     }
 
+    fun getCardFlow(id: UUID): Flow<SDCATCardRawDataEntityInterface?> {
+        return sdcatCardRawDao.getOneFlow(id)
+    }
+
     suspend fun getCardByHash(hash: ByteArray): SDCATCardRawDataEntityInterface? {
         return sdcatCardRawDao.getOneByHash(hash.toList())
+    }
+
+    fun getCardByHashFlow(hash: List<Byte>): Flow<SDCATCardRawDataEntityInterface?> {
+        return sdcatCardRawDao.getOneByHashFlow(hash)
     }
 
     suspend fun addCard(sdcatCardRawData: SDCATCardRawDataInterface, default: Boolean? = null) {
@@ -38,8 +46,16 @@ class SDCATCardRepository @Inject constructor(private val sdcatCardRawDao: SDCAT
         )
     }
 
-    suspend fun removeCard(uuid: UUID) {
-        sdcatCardRawDao.getOne(uuid)?.let {
+    suspend fun unsetDefaultCard() {
+        sdcatCardRawDao.unsetDefault()
+    }
+
+    suspend fun replaceDefaultCard(id: UUID) {
+        sdcatCardRawDao.replaceDefault(id)
+    }
+
+    suspend fun removeCard(id: UUID) {
+        sdcatCardRawDao.getOne(id)?.let {
             sdcatCardRawDao.delete(
                 it
             )

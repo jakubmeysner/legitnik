@@ -17,10 +17,12 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.jakubmeysner.legitnik.R
 import com.jakubmeysner.legitnik.ui.components.FullScreenPrompt
 import com.jakubmeysner.legitnik.ui.sdcatcardsaved.list.components.SDCATCardSavedListCard
+import java.util.UUID
 
 @Composable
 fun SDCATCardSavedListScreen(
     viewModel: SDCATCardSavedListViewModel = hiltViewModel(),
+    navigateToSDCATCardSavedDetails: (id: UUID) -> Unit,
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val cards = uiState.cards
@@ -39,6 +41,7 @@ fun SDCATCardSavedListScreen(
                         item(data.rawData.id) {
                             SDCATCardSavedListCard(
                                 data = data,
+                                navigateToSDCATCardSavedDetails = navigateToSDCATCardSavedDetails,
                             )
                         }
                     }
