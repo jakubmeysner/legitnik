@@ -32,6 +32,7 @@ class SettingsViewModel @Inject constructor(
                 _uiState.update { it.copy(loading = true, error = false) }
                 val parkingLots = parkingLotRepository.getParkingLots(forceRefresh)
                 _uiState.update { it.copy(loading = false, parkingLots = parkingLots, error = false) }
+                settingsRepository.cacheParkingLotSymbols(parkingLots)
             } catch (e: Exception) {
                 _uiState.update { it.copy(loading = false, error = true) }
             }
@@ -75,6 +76,11 @@ class SettingsViewModel @Inject constructor(
                 isSettingEnabled(id, category).map { state -> id to state }
             }
         ) { states -> states.toMap() }
+    }
+
+    suspend fun getLabelFromCache(id: String): String {
+        val cachedSymbol = settingsRepository.getCachedParkingLotSymbol(id).firstOrNull()
+        return cachedSymbol ?: id
     }
 
     fun getLabelFromId(id: String): String {

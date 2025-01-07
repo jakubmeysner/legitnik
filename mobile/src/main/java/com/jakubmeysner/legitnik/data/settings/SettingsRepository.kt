@@ -8,6 +8,7 @@ import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 import dagger.hilt.android.qualifiers.ApplicationContext
 import com.google.firebase.messaging.FirebaseMessaging
+import com.jakubmeysner.legitnik.data.parking.ParkingLot
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.firstOrNull
@@ -137,5 +138,21 @@ class SettingsRepository @Inject constructor(
                 }
             }
         }.firstOrNull()
+    }
+
+    suspend fun cacheParkingLotSymbols(parkingLots: List<ParkingLot>) {
+        context.settingsDataStore.updateData { currentSettings ->
+            val builder = currentSettings.toBuilder()
+            parkingLots.forEach { parkingLot ->
+                builder.putParkingLotSymbols(parkingLot.id, parkingLot.symbol)
+            }
+            builder.build()
+        }
+    }
+
+    fun getCachedParkingLotSymbol(id: String): Flow<String?> {
+        return settingsFlow.map { settings ->
+            settings.parkingLotSymbols.getOrDefault(id, null)
+        }
     }
 }

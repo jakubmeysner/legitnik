@@ -35,7 +35,20 @@ fun SettingsScreen(viewModel: SettingsViewModel = hiltViewModel()) {
 
     val coroutineScope = rememberCoroutineScope()
 
-    val getLabelFromId: (String) -> String = { id -> viewModel.getLabelFromId(id) }
+    val parkingLotSymbols = remember { mutableStateOf<Map<String, String>>(emptyMap()) }
+
+    LaunchedEffect(uiState.error, parkingIds) {
+        if (uiState.error) {
+            parkingLotSymbols.value = parkingIds.associateWith { id ->
+                viewModel.getLabelFromCache(id)
+            }
+        }
+        else {
+            parkingLotSymbols.value = parkingIds.associateWith { id ->
+                viewModel.getLabelFromId(id)
+            }
+        }
+    }
 
     LazyColumn(
         modifier = Modifier
@@ -58,7 +71,7 @@ fun SettingsScreen(viewModel: SettingsViewModel = hiltViewModel()) {
                         viewModel.toggleSetting(id, CategoryType.NOTIFICATION, newValue)
                     }
                 },
-                getLabel = getLabelFromId
+                getLabel = { id -> parkingLotSymbols.value[id] ?: id }
             )
         }
 
@@ -85,7 +98,7 @@ fun SettingsScreen(viewModel: SettingsViewModel = hiltViewModel()) {
                         viewModel.toggleSetting(id, CategoryType.ONGOING, newValue)
                     }
                 },
-                getLabel = getLabelFromId
+                getLabel = { id -> parkingLotSymbols.value[id] ?: id }
             )
         }
     }
