@@ -10,7 +10,7 @@ import com.jakubmeysner.legitnik.ui.components.FullScreenPrompt
 @Composable
 fun SDCATCardReaderInterfaceNfcPrompt() {
     FullScreenPrompt(
-        icon = ImageVector.vectorResource(R.drawable.contactless_payment_circle),
+        icon = ImageVector.vectorResource(R.drawable.mdi_contactless_payment_circle),
         title = stringResource(R.string.sdcat_card_reader_interface_nfc_prompt),
         subtitle = stringResource(R.string.sdcat_card_reader_interface_nfc_prompt_disclaimer),
     )

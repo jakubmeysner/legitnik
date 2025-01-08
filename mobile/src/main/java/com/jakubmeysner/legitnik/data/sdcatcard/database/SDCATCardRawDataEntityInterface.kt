@@ -6,4 +6,5 @@ import java.util.UUID
 interface SDCATCardRawDataEntityInterface : SDCATCardRawDataInterface {
     val id: UUID
     val default: Boolean?
+    val active: Boolean?
 }
