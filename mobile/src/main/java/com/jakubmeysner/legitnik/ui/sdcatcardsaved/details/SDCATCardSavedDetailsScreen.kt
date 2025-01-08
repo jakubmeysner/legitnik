@@ -79,7 +79,7 @@ fun SDCATCardSavedDetailsScreen(
                 valid = uiState.validationResult?.valid,
                 isSaved = true,
                 saveCard = {},
-                default = card.rawData.default,
+                default = card.rawData.default ?: false,
                 removeCard = {
                     scope.launch {
                         viewModel.removeCard().join()

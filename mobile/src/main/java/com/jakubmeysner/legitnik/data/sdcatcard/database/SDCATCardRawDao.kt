@@ -37,7 +37,7 @@ interface SDCATCardRawDao {
     @Insert
     suspend fun insert(card: SDCATCardRawDataEntity)
 
-    @Query("UPDATE sdcat_card_raw_data SET `default` = 0 WHERE `default` = 1")
+    @Query("UPDATE sdcat_card_raw_data SET `default` = null WHERE `default` = 1")
     suspend fun unsetDefault()
 
     @Query("UPDATE sdcat_card_raw_data SET `default` = 1 WHERE uuid = :id")
@@ -49,7 +49,7 @@ interface SDCATCardRawDao {
         setDefault(id)
     }
 
-    @Query("UPDATE sdcat_card_raw_data SET active = 0 WHERE active = 1")
+    @Query("UPDATE sdcat_card_raw_data SET active = null WHERE active = 1")
     suspend fun unsetActive()
 
     @Query("UPDATE sdcat_card_raw_data SET active = 1 WHERE uuid = :id")
