@@ -1,17 +1,18 @@
 package com.jakubmeysner.legitnik
 
 import android.util.Log
+import com.jakubmeysner.legitnik.util.NotificationHelper
 import com.google.firebase.messaging.FirebaseMessagingService
 import com.google.firebase.messaging.RemoteMessage
-import com.jakubmeysner.legitnik.util.ClassSimpleNameLoggingTag
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
 import com.jakubmeysner.legitnik.data.settings.SettingsRepository
+import com.jakubmeysner.legitnik.util.ClassSimpleNameLoggingTag
 import com.jakubmeysner.legitnik.util.NotificationHelper
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.launch
 import javax.inject.Inject
-import com.jakubmeysner.legitnik.util.MessageData
+import kotlin.coroutines.CoroutineContext
 
 
 enum class EventType(val value: String) {
@@ -20,16 +21,20 @@ enum class EventType(val value: String) {
 }
 
 @AndroidEntryPoint
-class MyFirebaseMessagingService @Inject constructor(private val notificationHelper: NotificationHelper): FirebaseMessagingService(), ClassSimpleNameLoggingTag {
+class MyFirebaseMessagingService @Inject constructor(
+    private val notificationHelper: NotificationHelper,
+    coroutineContext: CoroutineContext = SupervisorJob(),
+) : FirebaseMessagingService(), ClassSimpleNameLoggingTag {
 
     @Inject
     lateinit var settingsRepository: SettingsRepository
 
+    private val scope = CoroutineScope(coroutineContext)
+
     override fun onNewToken(token: String) {
-        super.onNewToken(token)
         Log.d(tag, "Refreshed token: $token")
 
-        CoroutineScope(Dispatchers.IO).launch {
+        scope.launch {
             settingsRepository.subscribeToFcmTopicsOnTokenRefresh()
         }
     }
@@ -64,5 +69,10 @@ class MyFirebaseMessagingService @Inject constructor(private val notificationHel
             }
 
         }
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        scope.cancel()
     }
 }
