@@ -82,4 +82,8 @@
     <string name="sdcat_card_saved_list_prompt_subtitle">Save your first card using the reader.</string>
     <string name="settings_notification_category">Enable notifications of available parking spaces in selected parking lots</string>
     <string name="settings_ongoing_notification_category">Enable an ongoing notification that tracks the number of available parking spaces in selected parking lots</string>
+    <string name="notification_helper_channel_free_places_changed_name">Parking lot free places changed</string>
+    <string name="notification_helper_channel_free_places_non_zero_name">Parking lot free places became non zero</string>
+    <string name="notification_helper_channel_free_places_changed_description">Ongoing notification displaying number of free places on parking lot</string>
+    <string name="notification_helper_channel_free_places_non_zero_description">Notification informs about vacant places on parking lot</string>
 </resources>

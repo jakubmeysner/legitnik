@@ -85,4 +85,8 @@
     <string name="sdcat_card_saved_list_prompt_subtitle">Zapisz swoją pierwszą Elektroniczną Legitymację używając czytnika.</string>
     <string name="settings_notification_category">Włącz powiadomienia o dostępnych miejscach parkingowych na wybranych parkingach</string>
     <string name="settings_ongoing_notification_category">Włącz powiadomienie stałe śledzące liczbę dostępnych miejsc parkingowych na wybranych parkingach</string>
+    <string name="notification_helper_channel_free_places_changed_name">Wolne miejsca na parkingu uległy zmianie</string>
+    <string name="notification_helper_channel_free_places_non_zero_name">Pojawiły się wolne miejsca na parkingu</string>
+    <string name="notification_helper_channel_free_places_changed_description">Trwałe powiadomienie wyświetlające aktualną liczbę miejsc na parkingu</string>
+    <string name="notification_helper_channel_free_places_non_zero_description">Powiadomienie informujące o zwolnieniu się miejsc na parkingu</string>
 </resources>
