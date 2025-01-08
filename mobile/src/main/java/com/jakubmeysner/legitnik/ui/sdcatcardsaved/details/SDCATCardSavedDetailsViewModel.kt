@@ -14,6 +14,7 @@ import com.jakubmeysner.legitnik.util.ClassSimpleNameLoggingTag
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.catch
@@ -100,8 +101,10 @@ class SDCATCardSavedDetailsViewModel @Inject constructor(
         }
     }
 
-    suspend fun removeCard() {
-        cardRepository.removeCard(id)
+    fun removeCard(): Job {
+        return viewModelScope.launch {
+            cardRepository.removeCard(id)
+        }
     }
 
     fun setActive() {

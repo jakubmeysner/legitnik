@@ -32,13 +32,11 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.LifecycleResumeEffect
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.lifecycle.viewModelScope
 import com.jakubmeysner.legitnik.R
 import com.jakubmeysner.legitnik.ui.components.FullScreenPrompt
 import com.jakubmeysner.legitnik.ui.sdcatcard.SDCATCardCard
 import com.jakubmeysner.legitnik.ui.sdcatcard.SDCATCardValidationDetailsDialog
 import com.jakubmeysner.legitnik.util.SnackbarVisualsData
-import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
 
 @Composable
@@ -84,9 +82,7 @@ fun SDCATCardSavedDetailsScreen(
                 default = card.rawData.default,
                 removeCard = {
                     scope.launch {
-                        viewModel.viewModelScope.async {
-                            viewModel.removeCard()
-                        }.await()
+                        viewModel.removeCard().join()
 
                         if (!popBackStack()) {
                             navigateToSDCATCardList()
