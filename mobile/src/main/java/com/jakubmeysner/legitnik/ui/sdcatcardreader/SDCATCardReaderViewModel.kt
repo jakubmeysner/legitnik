@@ -32,13 +32,20 @@ import com.jakubmeysner.legitnik.domain.sdcatcard.toParsed
 import com.jakubmeysner.legitnik.util.ClassSimpleNameLoggingTag
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.flow.mapLatest
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import kotlinx.serialization.Serializable
 import java.util.UUID
 import javax.inject.Inject
@@ -109,14 +116,29 @@ class SDCATCardReaderViewModel @Inject constructor(
         SELECTED_INTERFACE_KEY, SDCATCardReaderInterface.NFC
     )
 
-    private var _uiState = MutableStateFlow(SDCATCardReaderUiState())
+    private val _uiState = MutableStateFlow(SDCATCardReaderUiState())
+
+    @OptIn(ExperimentalCoroutinesApi::class)
+    private val _cardId = _uiState.flatMapLatest {
+        it.cardData?.rawData?.getHash()?.toList()
+            ?.let { hash -> cardRepository.getCardByHashFlow(hash).mapLatest { card -> card?.id } }
+            ?: flowOf(null)
+    }.catch {
+        Log.e(tag, "An exception occurred while loading card ID", it)
+    }.stateIn(
+        scope = viewModelScope,
+        started = SharingStarted.Eagerly,
+        initialValue = null,
+    )
 
     val uiState: StateFlow<SDCATCardReaderUiState> = combine(
         _uiState,
         _selectedInterface,
-    ) { uiState, selectedInterface ->
+        _cardId,
+    ) { uiState, selectedInterface, cardId ->
         uiState.copy(
             selectedInterface = selectedInterface,
+            cardId = cardId,
             hasNfcFeature = nfcAdapter != null,
             hasUsbHostFeature = hasUsbHostFeature,
         )
@@ -144,35 +166,37 @@ class SDCATCardReaderViewModel @Inject constructor(
     }
 
     fun onTagDiscovered(nfcTag: Tag) {
-        try {
-            _uiState.update { it.copy(reading = true) }
-            val isoDepAvailable = nfcTag.techList.contains(IsoDep::class.qualifiedName)
+        viewModelScope.launch {
+            try {
+                _uiState.update { it.copy(reading = true) }
+                val isoDepAvailable = nfcTag.techList.contains(IsoDep::class.qualifiedName)
 
-            if (!isoDepAvailable) {
+                if (!isoDepAvailable) {
+                    _uiState.update {
+                        it.copy(
+                            reading = false,
+                            snackbar = SDCATCardReaderSnackbar.NFC_UNSUPPORTED_CARD,
+                        )
+                    }
+                    return@launch
+                }
+
+                IsoDep.get(nfcTag).use { isoDep ->
+                    isoDep.connect()
+                    val apduTransceiver = IsoDepApduTransceiver(isoDep)
+                    scanCard(apduTransceiver)
+                }
+
+                _uiState.update { it.copy(reading = false) }
+                validateCard()
+            } catch (exception: Exception) {
+                Log.e(tag, "An exception occurred while trying to read card", exception)
                 _uiState.update {
                     it.copy(
                         reading = false,
-                        snackbar = SDCATCardReaderSnackbar.NFC_UNSUPPORTED_CARD,
+                        snackbar = SDCATCardReaderSnackbar.READING_INTERFACE_ERROR,
                     )
                 }
-                return
-            }
-
-            IsoDep.get(nfcTag).use { isoDep ->
-                isoDep.connect()
-                val apduTransceiver = IsoDepApduTransceiver(isoDep)
-                scanCard(apduTransceiver)
-            }
-
-            _uiState.update { it.copy(reading = false) }
-            validateCard()
-        } catch (exception: Exception) {
-            Log.e(tag, "An exception occurred while trying to read card", exception)
-            _uiState.update {
-                it.copy(
-                    reading = false,
-                    snackbar = SDCATCardReaderSnackbar.READING_INTERFACE_ERROR,
-                )
             }
         }
     }
@@ -203,7 +227,6 @@ class SDCATCardReaderViewModel @Inject constructor(
                     _uiState.update {
                         it.copy(
                             snackbar = SDCATCardReaderSnackbar.SAVING_SUCCESS,
-                            cardId = cardRepository.getCardByHash(rawData.getHash())?.id
                         )
                     }
                 }
@@ -221,12 +244,11 @@ class SDCATCardReaderViewModel @Inject constructor(
     fun removeCard() {
         viewModelScope.launch {
             val rawData = _uiState.value.cardData?.rawData
-            val cardUUID = _uiState.value.cardId
+            val cardUUID = uiState.value.cardId
             if (rawData != null && cardUUID != null) {
                 cardRepository.removeCard(cardUUID)
                 _uiState.update {
                     it.copy(
-                        cardId = null,
                         snackbar = SDCATCardReaderSnackbar.REMOVING_SUCCESS
                     )
                 }
@@ -234,24 +256,7 @@ class SDCATCardReaderViewModel @Inject constructor(
         }
     }
 
-    private fun checkIfCardIsSaved() {
-        viewModelScope.launch {
-            val rawData = _uiState.value.cardData?.rawData
-            if (rawData != null) {
-                val card = cardRepository.getCardByHash(rawData.getHash())
-                if (card != null) {
-                    _uiState.update {
-                        it.copy(
-                            cardId = card.id,
-                        )
-                    }
-                }
-            }
-        }
-    }
-
-
-    private fun onCardInserted(slotNum: Int) {
+    private suspend fun onCardInserted(slotNum: Int) {
         try {
             Log.d(tag, "Card inserted into slot $slotNum")
 
@@ -290,14 +295,13 @@ class SDCATCardReaderViewModel @Inject constructor(
                     cardData = SDCATCardData(rawData, parsedData),
                 )
             }
-            checkIfCardIsSaved()
         } catch (exception: Exception) {
             Log.e(tag, "An exception occurred while reading card", exception)
             _uiState.update { it.copy(snackbar = SDCATCardReaderSnackbar.READING_ERROR) }
         }
     }
 
-    private fun validateCard() {
+    private suspend fun validateCard() {
         try {
             _uiState.update {
                 it.copy(
@@ -307,7 +311,11 @@ class SDCATCardReaderViewModel @Inject constructor(
             }
 
             val data = _uiState.value.cardData ?: return
-            val result = cardValidator.getValidationResult(data)
+
+            val result = withContext(Dispatchers.Default) {
+                cardValidator.getValidationResult(data)
+            }
+
             _uiState.update { it.copy(cardValidationResult = result) }
         } catch (exception: Exception) {
             Log.e(tag, "An exception occurred while validating the card", exception)
@@ -316,8 +324,10 @@ class SDCATCardReaderViewModel @Inject constructor(
     }
 
     private fun onUsbReaderStateChange(slotNum: Int, previousState: Int, currentState: Int) {
-        if (previousState == Reader.CARD_ABSENT && currentState == Reader.CARD_PRESENT) {
-            onCardInserted(slotNum)
+        viewModelScope.launch {
+            if (previousState == Reader.CARD_ABSENT && currentState == Reader.CARD_PRESENT) {
+                onCardInserted(slotNum)
+            }
         }
     }
 
