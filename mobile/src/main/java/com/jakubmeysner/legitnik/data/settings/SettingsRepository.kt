@@ -96,8 +96,8 @@ class SettingsRepository @Inject constructor(
 
     private fun manageFcmSubscriptionForSetting(id: String, category: CategoryType, isEnabled: Boolean) {
         val topic = when (category) {
-            CategoryType.NOTIFICATION -> "PARKING_LOT_FREE_PLACES_BECAME_NON_ZERO-$id"
-            CategoryType.ONGOING -> "PARKING_LOT_FREE_PLACES_CHANGED-$id"
+            CategoryType.NOTIFICATION -> "parking-lots-non-zero-$id"
+            CategoryType.ONGOING -> "parking-lots-free-places-changed-$id"
         }
         if (isEnabled) {
             firebaseMessaging.subscribeToTopic(topic)
