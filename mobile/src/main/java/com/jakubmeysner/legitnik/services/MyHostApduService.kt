@@ -7,7 +7,6 @@ import com.jakubmeysner.legitnik.data.sdcatcard.SDCATCardApdu
 import com.jakubmeysner.legitnik.data.sdcatcard.SDCATCardRepository
 import com.jakubmeysner.legitnik.domain.apdu.ApduTransceiver
 import com.jakubmeysner.legitnik.util.ClassSimpleNameLoggingTag
-import com.jakubmeysner.legitnik.util.startsWith
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.SupervisorJob
@@ -39,46 +38,58 @@ class MyHostApduService(
             Log.d(tag, "Received APDU: $commandApduString")
 
             try {
+                val (cla, ins, p1) = commandApduList
                 val card = sdcatCardRepository.getActiveOrDefaultCard()
 
-                if (card == null) {
-                    sendResponseApdu(ApduTransceiver.fileNotFoundSw.toByteArray())
-                } else if (
-                    commandApduList.startsWith(ApduTransceiver.selectFileByDfNameCommandPrefix)
-                ) {
-                    val cardDfName = SDCATCardApdu.typeToDfName[card.type]
-                    val dataLength = commandApduList[4]
-                    val data = commandApduList.subList(5, 5 + dataLength)
-
-                    if (cardDfName != data) {
+                if (cla != ApduTransceiver.CLA) {
+                    sendResponseApdu(ApduTransceiver.classNotSupportedSw.toByteArray())
+                } else if (ins == ApduTransceiver.INS_SELECT_FILE) {
+                    if (card == null) {
                         sendResponseApdu(ApduTransceiver.fileNotFoundSw.toByteArray())
-                    } else {
-                        sendResponseApdu(ApduTransceiver.okSw.toByteArray())
+                        return@launch
                     }
-                } else if (
-                    commandApduList.startsWith(
-                        ApduTransceiver.selectFileByEfIdentifierCommandPrefix
-                    )
-                ) {
-                    val dataLength = commandApduList[4]
-                    val data = commandApduList.subList(5, 5 + dataLength)
 
-                    when (data) {
-                        SDCATCardApdu.messageEfIdentifier -> {
-                            certificateEfSelected = false
-                            sendResponseApdu(ApduTransceiver.okSw.toByteArray())
-                        }
+                    if (p1 == ApduTransceiver.P1_SELECT_FILE_BY_DF_NAME) {
+                        val cardDfName = SDCATCardApdu.typeToDfName[card.type]
+                        val dataLength = commandApduList[4]
+                        val data = commandApduList.subList(5, 5 + dataLength)
 
-                        SDCATCardApdu.certificateEfIdentifier -> {
-                            certificateEfSelected = true
-                            sendResponseApdu(ApduTransceiver.okSw.toByteArray())
-                        }
-
-                        else -> {
+                        if (cardDfName != data) {
                             sendResponseApdu(ApduTransceiver.fileNotFoundSw.toByteArray())
+                        } else {
+                            sendResponseApdu(ApduTransceiver.okSw.toByteArray())
                         }
+                    } else if (p1 == ApduTransceiver.P1_SELECT_FILE_BY_EF_IDENTIFIER) {
+                        val dataLength = commandApduList[4]
+                        val data = commandApduList.subList(5, 5 + dataLength)
+
+                        when (data) {
+                            SDCATCardApdu.messageEfIdentifier -> {
+                                certificateEfSelected = false
+                                sendResponseApdu(ApduTransceiver.okSw.toByteArray())
+                            }
+
+                            SDCATCardApdu.certificateEfIdentifier -> {
+                                certificateEfSelected = true
+                                sendResponseApdu(ApduTransceiver.okSw.toByteArray())
+                            }
+
+                            else -> {
+                                sendResponseApdu(ApduTransceiver.fileNotFoundSw.toByteArray())
+                            }
+                        }
+                    } else {
+                        sendResponseApdu(ApduTransceiver.functionNotSupportedSw.toByteArray())
                     }
-                } else if (commandApduList.startsWith(ApduTransceiver.readBinaryCommandPrefix)) {
+                } else if (ins == ApduTransceiver.INS_READ_BINARY) {
+                    if (card == null) {
+                        sendResponseApdu(
+                            ApduTransceiver.commandNotAllowedNoCurrentEfSw.toByteArray()
+                        )
+
+                        return@launch
+                    }
+
                     val offset = (
                         (commandApduList[2].toInt() and 0xff) shl 8
                             or (commandApduList[3].toInt() and 0xff)

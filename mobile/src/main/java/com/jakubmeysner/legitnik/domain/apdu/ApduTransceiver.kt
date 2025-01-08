@@ -5,27 +5,25 @@ import com.jakubmeysner.legitnik.util.b
 interface ApduTransceiver {
     fun transceive(data: ByteArray): ByteArray
 
-    fun selectFileDf(dfName: ByteArray): ByteArray {
+    fun selectFileDfNoResponseData(dfName: ByteArray): ByteArray {
         val command = createCommand(
             cla = CLA,
             ins = INS_SELECT_FILE,
             p1 = P1_SELECT_FILE_BY_DF_NAME,
-            p2 = P2_SELECT_FILE_BY_DF_NAME,
+            p2 = P2_SELECT_FILE_NO_RESPONSE_DATA,
             data = dfName,
-            le = LE_DEFAULT,
         )
 
         return transceive(command)
     }
 
-    fun selectFileEf(efIdentifier: ByteArray): ByteArray {
+    fun selectFileEfNoResponseData(efIdentifier: ByteArray): ByteArray {
         val command = createCommand(
             cla = CLA,
             ins = INS_SELECT_FILE,
             p1 = P1_SELECT_FILE_BY_EF_IDENTIFIER,
-            p2 = P2_SELECT_FILE_BY_EF_IDENTIFIER,
+            p2 = P2_SELECT_FILE_NO_RESPONSE_DATA,
             data = efIdentifier,
-            le = LE_DEFAULT,
         )
 
         return transceive(command)
@@ -75,45 +73,44 @@ interface ApduTransceiver {
         val INS_READ_BINARY = 0xB0.b
 
         val P1_SELECT_FILE_BY_DF_NAME = 0x04.b
-        val P2_SELECT_FILE_BY_DF_NAME = 0x00.b
-
         val P1_SELECT_FILE_BY_EF_IDENTIFIER = 0x02.b
-        val P2_SELECT_FILE_BY_EF_IDENTIFIER = 0x00.b
+        val P2_SELECT_FILE_RESPONSE_FCI = 0x00.b
+        val P2_SELECT_FILE_NO_RESPONSE_DATA = 0x0C.b
 
         val LE_DEFAULT = 0x00.b
-
-        val selectFileByDfNameCommandPrefix = listOf(
-            CLA, INS_SELECT_FILE, P1_SELECT_FILE_BY_DF_NAME, P2_SELECT_FILE_BY_DF_NAME
-        )
-
-        val selectFileByEfIdentifierCommandPrefix = listOf(
-            CLA, INS_SELECT_FILE, P1_SELECT_FILE_BY_EF_IDENTIFIER, P2_SELECT_FILE_BY_EF_IDENTIFIER
-        )
-
-        val readBinaryCommandPrefix = listOf(CLA, INS_READ_BINARY)
 
         val okSw: List<Byte> = listOf(0x90.b, 0x00)
         val functionNotSupportedSw: List<Byte> = listOf(0x6a, 0x81.b)
         val fileNotFoundSw: List<Byte> = listOf(0x6a, 0x82.b)
+        val classNotSupportedSw: List<Byte> = listOf(0x6E, 0x00)
+        val commandNotAllowedNoCurrentEfSw: List<Byte> = listOf(0x69, 0x86.b)
 
         fun createCommand(
             cla: Byte,
             ins: Byte,
             p1: Byte,
             p2: Byte,
-            data: ByteArray?,
-            le: Byte,
+            data: ByteArray? = null,
+            le: Byte? = null,
         ): ByteArray {
-            val command = ByteArray(5 + if (data != null) 1 + data.size else 0)
+            val command = ByteArray(
+                4
+                    + (if (data != null) 1 + data.size else 0)
+                    + if (le != null) 1 else 0
+            )
+
             command[0] = cla
             command[1] = ins
             command[2] = p1
             command[3] = p2
-            command[command.lastIndex] = le
 
             if (data != null) {
                 command[4] = data.size.toByte()
                 data.copyInto(command, 5)
+            }
+
+            if (le != null) {
+                command[command.lastIndex] = le
             }
 
             return command

@@ -10,7 +10,7 @@ fun readSDCATCard(apduTransceiver: ApduTransceiver): SDCATCardRawData {
     lateinit var selectDfResponse: ByteArray
 
     for ((dfType, dfName) in SDCATCardApdu.typeToDfName) {
-        selectDfResponse = apduTransceiver.selectFileDf(dfName.toByteArray())
+        selectDfResponse = apduTransceiver.selectFileDfNoResponseData(dfName.toByteArray())
         val sw1 = selectDfResponse[selectDfResponse.lastIndex - 1]
         val sw2 = selectDfResponse.last()
 
@@ -24,7 +24,7 @@ fun readSDCATCard(apduTransceiver: ApduTransceiver): SDCATCardRawData {
         throw SDCATCardReadException("Couldn't select any SDCAT DF: $selectDfResponse")
     }
 
-    val selectMessageEfResponse = apduTransceiver.selectFileEf(
+    val selectMessageEfResponse = apduTransceiver.selectFileEfNoResponseData(
         SDCATCardApdu.messageEfIdentifier.toByteArray()
     )
 
@@ -38,7 +38,7 @@ fun readSDCATCard(apduTransceiver: ApduTransceiver): SDCATCardRawData {
         throw SDCATCardReadException("Couldn't read message EF: $readMessageEfResponse")
     }
 
-    val selectCertificateEfResponse = apduTransceiver.selectFileEf(
+    val selectCertificateEfResponse = apduTransceiver.selectFileEfNoResponseData(
         SDCATCardApdu.certificateEfIdentifier.toByteArray()
     )
 
