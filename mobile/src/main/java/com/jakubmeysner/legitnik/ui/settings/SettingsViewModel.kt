@@ -1,5 +1,7 @@
 package com.jakubmeysner.legitnik.ui.settings
 
+import android.content.Context
+import android.content.Intent
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -10,6 +12,8 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 import com.jakubmeysner.legitnik.data.parking.ParkingLotRepository
 import com.jakubmeysner.legitnik.data.settings.*
+import android.provider.Settings
+import androidx.core.app.NotificationManagerCompat
 
 @HiltViewModel
 class SettingsViewModel @Inject constructor(
@@ -86,5 +90,36 @@ class SettingsViewModel @Inject constructor(
     fun getLabelFromId(id: String): String {
         val parkingLot = _uiState.value.parkingLots?.find { it.id == id }
         return parkingLot?.symbol ?: id
+    }
+
+    fun checkNotificationPermissionAndToggleSetting(
+        context: Context,
+        id: String,
+        category: CategoryType,
+        isEnabled: Boolean
+    ) {
+        val notificationManager = NotificationManagerCompat.from(context)
+        val areNotificationsEnabled = notificationManager.areNotificationsEnabled()
+
+        if (areNotificationsEnabled) {
+            toggleSetting(id, category, isEnabled)
+        } else {
+            requestNotificationPermission(context)
+        }
+    }
+
+    private fun requestNotificationPermission(context: Context) {
+        val notificationManager = NotificationManagerCompat.from(context)
+        val areNotificationsEnabled = notificationManager.areNotificationsEnabled()
+
+        if (areNotificationsEnabled) {
+            return
+        }
+        else {
+            // Tak jest git?
+            val intent = Intent(Settings.ACTION_APP_NOTIFICATION_SETTINGS)
+                .putExtra(Settings.EXTRA_APP_PACKAGE, context.packageName)
+            context.startActivity(intent)
+        }
     }
 }

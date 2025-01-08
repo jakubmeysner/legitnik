@@ -11,6 +11,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.jakubmeysner.legitnik.R
@@ -36,6 +37,8 @@ fun SettingsScreen(viewModel: SettingsViewModel = hiltViewModel()) {
     val coroutineScope = rememberCoroutineScope()
 
     val parkingLotSymbols = remember { mutableStateOf<Map<String, String>>(emptyMap()) }
+
+    val context = LocalContext.current
 
     LaunchedEffect(uiState.error, parkingIds) {
         if (uiState.error) {
@@ -68,7 +71,7 @@ fun SettingsScreen(viewModel: SettingsViewModel = hiltViewModel()) {
                 settingsState = notificationSettingsState,
                 onToggleSetting = { id, newValue ->
                     coroutineScope.launch {
-                        viewModel.toggleSetting(id, CategoryType.NOTIFICATION, newValue)
+                        viewModel.checkNotificationPermissionAndToggleSetting(context, id, CategoryType.NOTIFICATION, newValue)
                     }
                 },
                 getLabel = { id -> parkingLotSymbols.value[id] ?: id }
@@ -95,7 +98,7 @@ fun SettingsScreen(viewModel: SettingsViewModel = hiltViewModel()) {
                 settingsState = ongoingSettingsState,
                 onToggleSetting = { id, newValue ->
                     coroutineScope.launch {
-                        viewModel.toggleSetting(id, CategoryType.ONGOING, newValue)
+                        viewModel.checkNotificationPermissionAndToggleSetting(context, id, CategoryType.ONGOING, newValue)
                     }
                 },
                 getLabel = { id -> parkingLotSymbols.value[id] ?: id }
