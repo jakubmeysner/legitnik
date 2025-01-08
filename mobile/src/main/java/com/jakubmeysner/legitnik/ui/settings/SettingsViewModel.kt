@@ -54,15 +54,19 @@ class SettingsViewModel @Inject constructor(
     fun isCategoryEnabled(category: CategoryType): Flow<Boolean> =
         settingsRepository.getCategoryState(category)
 
-    suspend fun toggleCategory(category: CategoryType, isEnabled: Boolean) {
-        settingsRepository.toggleCategory(category, isEnabled)
+    fun toggleCategory(category: CategoryType, isEnabled: Boolean) {
+        viewModelScope.launch {
+            settingsRepository.toggleCategory(category, isEnabled)
+        }
     }
 
     private fun isSettingEnabled(label: String, category: CategoryType): Flow<Boolean> =
         settingsRepository.isSettingEnabled(label, category)
 
-    suspend fun toggleSetting(label: String, category: CategoryType, isEnabled: Boolean) {
-        settingsRepository.toggleSetting(label, category, isEnabled)
+    fun toggleSetting(label: String, category: CategoryType, isEnabled: Boolean) {
+        viewModelScope.launch {
+            settingsRepository.toggleSetting(label, category, isEnabled)
+        }
     }
 
     fun getSettingsStateForCategory(category: CategoryType, labels: List<String>): Flow<Map<String, Boolean>> {
