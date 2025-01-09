@@ -2,17 +2,17 @@ package com.jakubmeysner.legitnik.data.settings
 
 import android.content.Context
 import android.util.Log
-import com.jakubmeysner.legitnik.data.settings.SettingsProto.Settings
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.map
-import javax.inject.Inject
-import dagger.hilt.android.qualifiers.ApplicationContext
 import com.google.firebase.messaging.FirebaseMessaging
 import com.jakubmeysner.legitnik.data.parking.ParkingLot
+import com.jakubmeysner.legitnik.data.settings.SettingsProto.Settings
+import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.firstOrNull
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
 enum class CategoryType {
     NOTIFICATION,
@@ -21,9 +21,9 @@ enum class CategoryType {
 
 class SettingsRepository @Inject constructor(
     @ApplicationContext private val context: Context,
-    private val firebaseMessaging: FirebaseMessaging
+    private val firebaseMessaging: FirebaseMessaging,
 ) {
-    private val settingsFlow: Flow<Settings> = context.settingsDataStore.data
+    val settingsFlow: Flow<Settings> = context.settingsDataStore.data
 
     fun getCategoryState(category: CategoryType): Flow<Boolean> = settingsFlow.map { settings ->
         when (category) {

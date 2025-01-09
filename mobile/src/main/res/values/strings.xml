@@ -92,4 +92,7 @@
     <string name="notification_helper_channel_free_places_non_zero_name">Parking lot free places became non zero</string>
     <string name="notification_helper_channel_free_places_changed_description">Ongoing notification displaying number of free places on parking lot</string>
     <string name="notification_helper_channel_free_places_non_zero_description">Notification informs about vacant places on parking lot</string>
+    <string name="notification_helper_changed_notification_title">Free places on parking lots</string>
+    <string name="notification_helper_non_zero_notification_title">Free places available on parking %1$s</string>
+    <string name="notification_helper_non_zero_notification_text">Free places = %1$d</string>
 </resources>

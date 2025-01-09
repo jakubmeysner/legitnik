@@ -95,4 +95,7 @@
     <string name="notification_helper_channel_free_places_non_zero_name">Pojawiły się wolne miejsca na parkingu</string>
     <string name="notification_helper_channel_free_places_changed_description">Trwałe powiadomienie wyświetlające aktualną liczbę miejsc na parkingu</string>
     <string name="notification_helper_channel_free_places_non_zero_description">Powiadomienie informujące o zwolnieniu się miejsc na parkingu</string>
+    <string name="notification_helper_changed_notification_title">Wolne miejsca na parkingach</string>
+    <string name="notification_helper_non_zero_notification_title">Pojawiły się wolne miejsca na parkingu %1$s</string>
+    <string name="notification_helper_non_zero_notification_text">Wolne miejsca = %1$d</string>
 </resources>
