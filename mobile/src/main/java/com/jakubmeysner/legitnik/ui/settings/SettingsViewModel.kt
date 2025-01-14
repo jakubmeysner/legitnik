@@ -7,13 +7,10 @@ import androidx.core.app.NotificationManagerCompat
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.jakubmeysner.legitnik.EventType
 import com.jakubmeysner.legitnik.data.parking.ParkingLotRepository
 import com.jakubmeysner.legitnik.data.settings.CategoryType
 import com.jakubmeysner.legitnik.data.settings.SettingsRepository
 import com.jakubmeysner.legitnik.ui.parking.list.ParkingLotUiState
-import com.jakubmeysner.legitnik.util.MessageData
-import com.jakubmeysner.legitnik.util.NotificationHelper
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -30,7 +27,6 @@ class SettingsViewModel @Inject constructor(
     private val savedStateHandle: SavedStateHandle,
     private val parkingLotRepository: ParkingLotRepository,
     private val settingsRepository: SettingsRepository,
-    private val notificationHelper: NotificationHelper,
 ) : ViewModel() {
     private val _uiState = MutableStateFlow(ParkingLotUiState())
     val uiState: StateFlow<ParkingLotUiState> = _uiState
@@ -72,7 +68,6 @@ class SettingsViewModel @Inject constructor(
     fun toggleCategory(category: CategoryType, isEnabled: Boolean) {
         viewModelScope.launch {
             settingsRepository.toggleCategory(category, isEnabled)
-            notificationHelper.removeFreePlacesChangedNotification()
         }
     }
 
@@ -82,15 +77,6 @@ class SettingsViewModel @Inject constructor(
     private fun toggleSetting(id: String, category: CategoryType, isEnabled: Boolean) {
         viewModelScope.launch {
             settingsRepository.toggleSetting(id, category, isEnabled)
-
-            notificationHelper.showNotification(
-                MessageData(
-                    event = EventType.CHANGED.value,
-                    id = id,
-                    previousFreePlaces = 0,
-                    freePlaces = 0,
-                )
-            )
         }
     }
 
