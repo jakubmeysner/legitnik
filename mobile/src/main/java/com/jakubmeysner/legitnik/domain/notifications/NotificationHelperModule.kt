@@ -1,4 +1,4 @@
-package com.jakubmeysner.legitnik.util
+package com.jakubmeysner.legitnik.domain.notifications
 
 import android.content.Context
 import com.jakubmeysner.legitnik.data.parking.ParkingLotRepository

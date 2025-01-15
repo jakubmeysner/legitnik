@@ -1,4 +1,4 @@
-package com.jakubmeysner.legitnik.util
+package com.jakubmeysner.legitnik.domain.notifications
 
 import android.app.NotificationChannel
 import android.app.NotificationManager
@@ -14,6 +14,7 @@ import com.jakubmeysner.legitnik.R
 import com.jakubmeysner.legitnik.data.parking.ParkingLot
 import com.jakubmeysner.legitnik.data.parking.ParkingLotRepository
 import com.jakubmeysner.legitnik.data.settings.SettingsRepository
+import com.jakubmeysner.legitnik.util.ClassSimpleNameLoggingTag
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers

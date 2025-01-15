@@ -4,9 +4,9 @@ import android.util.Log
 import com.google.firebase.messaging.FirebaseMessagingService
 import com.google.firebase.messaging.RemoteMessage
 import com.jakubmeysner.legitnik.data.settings.SettingsRepository
+import com.jakubmeysner.legitnik.domain.notifications.MessageData
+import com.jakubmeysner.legitnik.domain.notifications.NotificationHelper
 import com.jakubmeysner.legitnik.util.ClassSimpleNameLoggingTag
-import com.jakubmeysner.legitnik.util.MessageData
-import com.jakubmeysner.legitnik.util.NotificationHelper
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.SupervisorJob
