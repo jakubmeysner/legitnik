@@ -5,13 +5,11 @@ import android.util.Log
 import com.google.firebase.messaging.FirebaseMessaging
 import com.jakubmeysner.legitnik.data.parking.ParkingLot
 import com.jakubmeysner.legitnik.data.settings.SettingsProto.Settings
+import com.jakubmeysner.legitnik.util.ClassSimpleNameLoggingTag
 import dagger.hilt.android.qualifiers.ApplicationContext
-import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 enum class CategoryType {
@@ -21,8 +19,8 @@ enum class CategoryType {
 
 class SettingsRepository @Inject constructor(
     @ApplicationContext private val context: Context,
-    private val firebaseMessaging: FirebaseMessaging,
-) {
+    private val firebaseMessaging: FirebaseMessaging
+) : ClassSimpleNameLoggingTag {
     val settingsFlow: Flow<Settings> = context.settingsDataStore.data
 
     fun getCategoryState(category: CategoryType): Flow<Boolean> = settingsFlow.map { settings ->
@@ -38,6 +36,7 @@ class SettingsRepository @Inject constructor(
                 CategoryType.NOTIFICATION -> currentSettings.toBuilder()
                     .setNotificationCategoryEnabled(isEnabled)
                     .build()
+
                 CategoryType.ONGOING -> currentSettings.toBuilder()
                     .setOngoingCategoryEnabled(isEnabled)
                     .build()
@@ -47,15 +46,14 @@ class SettingsRepository @Inject constructor(
 
         val categoryIds = getSavedIdsForCategory(category).firstOrNull() ?: emptyList()
 
-        if(!isEnabled) {
+        if (!isEnabled) {
             categoryIds.forEach { id ->
                 isSettingEnabled(id, category).firstOrNull()?.let { isEnabled ->
                     if (isEnabled)
                         manageFcmSubscriptionForSetting(id, category, false)
                 }
             }
-        }
-        else {
+        } else {
             categoryIds.forEach { id ->
                 isSettingEnabled(id, category).firstOrNull()?.let { isEnabled ->
                     if (isEnabled)
@@ -101,43 +99,34 @@ class SettingsRepository @Inject constructor(
         }
         if (isEnabled) {
             firebaseMessaging.subscribeToTopic(topic)
-            Log.d("FCM", "Subscribed to: $topic")
+            Log.d(tag, "Subscribed to: $topic")
         } else {
             firebaseMessaging.unsubscribeFromTopic(topic)
-            Log.d("FCM", "Unsubscribed from: $topic")
+            Log.d(tag, "Unsubscribed from: $topic")
         }
     }
 
     suspend fun subscribeToFcmTopicsOnTokenRefresh() {
-        coroutineScope {
-            launch {
-                getCategoryState(CategoryType.NOTIFICATION).firstOrNull()?.let { isEnabled ->
-                    toggleCategory(CategoryType.NOTIFICATION, isEnabled)
-                }
-            }
+        val isNotificationEnabled = getCategoryState(CategoryType.NOTIFICATION).firstOrNull() ?: false
+        val isOngoingEnabled = getCategoryState(CategoryType.ONGOING).firstOrNull() ?: false
 
-            launch {
-                getCategoryState(CategoryType.ONGOING).firstOrNull()?.let { isEnabled ->
-                    toggleCategory(CategoryType.ONGOING, isEnabled)
-                }
-            }
-        }
-
-        combine(
-            getSavedIdsForCategory(CategoryType.NOTIFICATION),
-            getSavedIdsForCategory(CategoryType.ONGOING)
-        ) { notificationIds, ongoingIds ->
+        if (isNotificationEnabled) {
+            val notificationIds = getSavedIdsForCategory(CategoryType.NOTIFICATION).firstOrNull() ?: emptyList()
             notificationIds.forEach { id ->
                 isSettingEnabled(id, CategoryType.NOTIFICATION).firstOrNull()?.let { isEnabled ->
                     toggleSetting(id, CategoryType.NOTIFICATION, isEnabled)
                 }
             }
+        }
+
+        if (isOngoingEnabled) {
+            val ongoingIds = getSavedIdsForCategory(CategoryType.ONGOING).firstOrNull() ?: emptyList()
             ongoingIds.forEach { id ->
                 isSettingEnabled(id, CategoryType.ONGOING).firstOrNull()?.let { isEnabled ->
                     toggleSetting(id, CategoryType.ONGOING, isEnabled)
                 }
             }
-        }.firstOrNull()
+        }
     }
 
     suspend fun cacheParkingLotSymbols(parkingLots: List<ParkingLot>) {

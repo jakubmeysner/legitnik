@@ -81,7 +81,7 @@ fun SDCATCardSavedListCard(
 
             if (data.rawData.default == true) {
                 Icon(
-                    imageVector = ImageVector.vectorResource(R.drawable.contactless_payment_circle),
+                    imageVector = ImageVector.vectorResource(R.drawable.mdi_contactless_payment_circle),
                     contentDescription = "Default",
                     modifier = Modifier.size(size = 32.dp),
                 )

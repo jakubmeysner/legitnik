@@ -24,7 +24,7 @@ private val sdcatCardReaderInterfaceSelectOptions = listOf(
     SDCATCardReaderInterfaceSelectOption(
         SDCATCardReaderInterface.NFC,
         R.string.sdcat_card_reader_interface_nfc,
-        R.drawable.contactless_payment
+        R.drawable.mdi_contactless_payment
     ),
     SDCATCardReaderInterfaceSelectOption(
         SDCATCardReaderInterface.USB,

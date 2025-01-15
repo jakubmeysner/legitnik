@@ -11,17 +11,24 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.Alignment
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.google.accompanist.permissions.ExperimentalPermissionsApi
+import com.google.accompanist.permissions.PermissionStatus
+import com.google.accompanist.permissions.rememberPermissionState
 import com.jakubmeysner.legitnik.R
 import com.jakubmeysner.legitnik.data.settings.*
 import kotlinx.coroutines.launch
 
+@OptIn(ExperimentalPermissionsApi::class)
 @Composable
 fun SettingsScreen(viewModel: SettingsViewModel = hiltViewModel()) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val parkingIds = uiState.parkingLots?.map { it.id } ?: uiState.savedParkingIds
+
+    val notificationPermissionState = rememberPermissionState(
+        permission = android.Manifest.permission.POST_NOTIFICATIONS
+    )
 
     val isNotificationCategoryEnabled by viewModel.isCategoryEnabled(CategoryType.NOTIFICATION).collectAsState(false)
     val isTrackingCategoryEnabled by viewModel.isCategoryEnabled(CategoryType.ONGOING).collectAsState(false)
@@ -37,8 +44,6 @@ fun SettingsScreen(viewModel: SettingsViewModel = hiltViewModel()) {
     val coroutineScope = rememberCoroutineScope()
 
     val parkingLotSymbols = remember { mutableStateOf<Map<String, String>>(emptyMap()) }
-
-    val context = LocalContext.current
 
     LaunchedEffect(uiState.error, parkingIds) {
         if (uiState.error) {
@@ -70,8 +75,12 @@ fun SettingsScreen(viewModel: SettingsViewModel = hiltViewModel()) {
                 parkingIds = parkingIds,
                 settingsState = notificationSettingsState,
                 onToggleSetting = { id, newValue ->
-                    coroutineScope.launch {
-                        viewModel.checkNotificationPermissionAndToggleSetting(context, id, CategoryType.NOTIFICATION, newValue)
+                    if (notificationPermissionState.status == PermissionStatus.Granted) {
+                        coroutineScope.launch {
+                            viewModel.toggleSetting(id, CategoryType.NOTIFICATION, newValue)
+                        }
+                    } else {
+                        notificationPermissionState.launchPermissionRequest()
                     }
                 },
                 getLabel = { id -> parkingLotSymbols.value[id] ?: id }
@@ -97,8 +106,12 @@ fun SettingsScreen(viewModel: SettingsViewModel = hiltViewModel()) {
                 parkingIds = parkingIds,
                 settingsState = ongoingSettingsState,
                 onToggleSetting = { id, newValue ->
-                    coroutineScope.launch {
-                        viewModel.checkNotificationPermissionAndToggleSetting(context, id, CategoryType.ONGOING, newValue)
+                    if (notificationPermissionState.status == PermissionStatus.Granted) {
+                        coroutineScope.launch {
+                            viewModel.toggleSetting(id, CategoryType.ONGOING, newValue)
+                        }
+                    } else {
+                        notificationPermissionState.launchPermissionRequest()
                     }
                 },
                 getLabel = { id -> parkingLotSymbols.value[id] ?: id }

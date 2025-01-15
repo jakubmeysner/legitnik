@@ -8,12 +8,12 @@ import android.content.Intent
 import android.os.Build
 import androidx.core.app.NotificationCompat
 import androidx.core.content.getSystemService
-import com.jakubmeysner.legitnik.EventType
 import com.jakubmeysner.legitnik.MainActivity
 import com.jakubmeysner.legitnik.R
 import com.jakubmeysner.legitnik.data.parking.ParkingLot
 import com.jakubmeysner.legitnik.data.parking.ParkingLotRepository
 import com.jakubmeysner.legitnik.data.settings.SettingsRepository
+import com.jakubmeysner.legitnik.services.EventType
 import com.jakubmeysner.legitnik.util.ClassSimpleNameLoggingTag
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.CoroutineScope

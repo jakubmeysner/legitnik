@@ -1,35 +1,20 @@
 package com.jakubmeysner.legitnik.domain.sdcatcard
 
+import com.jakubmeysner.legitnik.data.sdcatcard.SDCATCardApdu
 import com.jakubmeysner.legitnik.data.sdcatcard.SDCATCardRawData
 import com.jakubmeysner.legitnik.data.sdcatcard.SDCATCardType
 import com.jakubmeysner.legitnik.domain.apdu.ApduTransceiver
-import com.jakubmeysner.legitnik.util.b
-
-
-private val rid = byteArrayOf(0xD6.b, 0x16, 0x00, 0x00, 0x30)
-private val studentDfName = byteArrayOf(*rid, 0x01, 0x01)
-private val doctoralCandidateDfName = byteArrayOf(*rid, 0x01, 0x02)
-private val academicTeacherDfName = byteArrayOf(*rid, 0x01, 0x03)
-
-private val typeToDfName = mapOf(
-    SDCATCardType.STUDENT to studentDfName,
-    SDCATCardType.DOCTORAL_CANDIDATE to doctoralCandidateDfName,
-    SDCATCardType.ACADEMIC_TEACHER to academicTeacherDfName,
-)
-
-private val messageEfIdentifier = byteArrayOf(0x00, 0x02)
-private val certificateEfIdentifier = byteArrayOf(0x00, 0x01)
 
 fun readSDCATCard(apduTransceiver: ApduTransceiver): SDCATCardRawData {
     var type: SDCATCardType? = null
     lateinit var selectDfResponse: ByteArray
 
-    for ((dfType, dfName) in typeToDfName) {
-        selectDfResponse = apduTransceiver.selectFileDf(dfName)
+    for ((dfType, dfName) in SDCATCardApdu.typeToDfName) {
+        selectDfResponse = apduTransceiver.selectFileDfNoResponseData(dfName.toByteArray())
         val sw1 = selectDfResponse[selectDfResponse.lastIndex - 1]
         val sw2 = selectDfResponse.last()
 
-        if (sw1 == ApduTransceiver.SW1_OK && sw2 == ApduTransceiver.SW2_OK) {
+        if (sw1 == ApduTransceiver.okSw[0] && sw2 == ApduTransceiver.okSw[1]) {
             type = dfType
             break
         }
@@ -39,7 +24,9 @@ fun readSDCATCard(apduTransceiver: ApduTransceiver): SDCATCardRawData {
         throw SDCATCardReadException("Couldn't select any SDCAT DF: $selectDfResponse")
     }
 
-    val selectMessageEfResponse = apduTransceiver.selectFileEf(messageEfIdentifier)
+    val selectMessageEfResponse = apduTransceiver.selectFileEfNoResponseData(
+        SDCATCardApdu.messageEfIdentifier.toByteArray()
+    )
 
     if (!ApduTransceiver.isApduResponseOk(selectMessageEfResponse)) {
         throw SDCATCardReadException("Couldn't select message EF: $selectMessageEfResponse")
@@ -51,7 +38,9 @@ fun readSDCATCard(apduTransceiver: ApduTransceiver): SDCATCardRawData {
         throw SDCATCardReadException("Couldn't read message EF: $readMessageEfResponse")
     }
 
-    val selectCertificateEfResponse = apduTransceiver.selectFileEf(certificateEfIdentifier)
+    val selectCertificateEfResponse = apduTransceiver.selectFileEfNoResponseData(
+        SDCATCardApdu.certificateEfIdentifier.toByteArray()
+    )
 
     if (!ApduTransceiver.isApduResponseOk(selectCertificateEfResponse)) {
         throw SDCATCardReadException("Couldn't select certificate EF: $selectCertificateEfResponse")

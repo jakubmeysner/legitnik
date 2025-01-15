@@ -1,4 +1,4 @@
-package com.jakubmeysner.legitnik
+package com.jakubmeysner.legitnik.services
 
 import android.util.Log
 import com.google.firebase.messaging.FirebaseMessagingService
