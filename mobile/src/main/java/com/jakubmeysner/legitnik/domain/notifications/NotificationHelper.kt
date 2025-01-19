@@ -6,6 +6,7 @@ import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
 import android.os.Build
+import android.util.Log
 import androidx.core.app.NotificationCompat
 import androidx.core.content.getSystemService
 import com.jakubmeysner.legitnik.MainActivity
@@ -17,7 +18,6 @@ import com.jakubmeysner.legitnik.services.EventType
 import com.jakubmeysner.legitnik.util.ClassSimpleNameLoggingTag
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -32,6 +32,7 @@ data class MessageData(
 
 class NotificationHelper @Inject constructor(
     @ApplicationContext context: Context,
+    externalScope: CoroutineScope,
     private val parkingLotRepository: ParkingLotRepository,
     private val settingsRepository: SettingsRepository,
 ) : ClassSimpleNameLoggingTag {
@@ -46,9 +47,6 @@ class NotificationHelper @Inject constructor(
     private val notificationManager: NotificationManager =
         context.getSystemService() ?: throw IllegalStateException()
 
-
-    private val scope = CoroutineScope(Dispatchers.Main)
-
     private val parkingLotCache = mutableMapOf<String, ParkingLotCache>()
 
     private data class ParkingLotCache(
@@ -59,8 +57,11 @@ class NotificationHelper @Inject constructor(
     )
 
     init {
+        Log.d(tag, "Initializing NotificationHelper: init {} block")
         setUpNotificationChannels()
-        observeSettingsChanges()
+        externalScope.launch {
+            observeSettingsChanges()
+        }
     }
 
     private fun setUpNotificationChannels() {
@@ -185,19 +186,18 @@ class NotificationHelper @Inject constructor(
         }
     }
 
-    private fun observeSettingsChanges() {
-        scope.launch {
-            settingsRepository.settingsFlow.collect { settings ->
-                if (settings.ongoingCategoryEnabled) {
-                    initializeCache()
-                    buildOngoingNotification()
-                } else {
-                    parkingLotCache.clear()
-                    removeOngoingNotification()
-                }
+    private suspend fun observeSettingsChanges() {
+        settingsRepository.settingsFlow.collect { settings ->
+            if (settings.ongoingCategoryEnabled) {
+                initializeCache()
+                buildOngoingNotification()
+            } else {
+                parkingLotCache.clear()
+                removeOngoingNotification()
             }
         }
     }
+
 
     private fun removeOngoingNotification() {
         notificationManager.cancel(FREE_PLACES_CHANGED_NOTIFICATION_ID)

@@ -8,6 +8,7 @@ import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
+import kotlinx.coroutines.CoroutineScope
 import javax.inject.Singleton
 
 @Module
@@ -17,9 +18,10 @@ object NotificationHelperModule {
     @Singleton
     fun providesNotificationHelper(
         @ApplicationContext context: Context,
+        externalScope: CoroutineScope,
         parkingLotRepository: ParkingLotRepository,
         settingsRepository: SettingsRepository,
     ): NotificationHelper {
-        return NotificationHelper(context, parkingLotRepository, settingsRepository)
+        return NotificationHelper(context, externalScope, parkingLotRepository, settingsRepository)
     }
 }
