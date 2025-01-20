@@ -1,9 +1,11 @@
-package com.jakubmeysner.legitnik.data.sdcatcard.database
+package com.jakubmeysner.legitnik.data.database
 
 import androidx.room.AutoMigration
 import androidx.room.Database
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
+import com.jakubmeysner.legitnik.data.sdcatcard.database.SDCATCardRawDao
+import com.jakubmeysner.legitnik.data.sdcatcard.database.SDCATCardRawDataEntity
 
 @Database(
     version = 3,
