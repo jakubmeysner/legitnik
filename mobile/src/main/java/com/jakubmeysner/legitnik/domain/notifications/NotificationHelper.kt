@@ -155,7 +155,11 @@ class NotificationHelper @Inject constructor(
             .setStyle(
                 NotificationCompat.BigTextStyle().bigText(
                     parkingLotCache.values
-                        .joinToString(separator = "\n") { "${it.symbol} - ${it.freePlaces} (${it.freePlaces - it.previousFreePlaces})" }
+                        .joinToString(separator = "\n")
+                        {
+                            "${it.symbol} - ${it.freePlaces} (${if (it.freePlaces - it.previousFreePlaces > 0) "+" else ""}" +
+                                "${(it.freePlaces - it.previousFreePlaces)})"
+                        }
                 )
             )
             .setContentIntent(pendingIntent)
