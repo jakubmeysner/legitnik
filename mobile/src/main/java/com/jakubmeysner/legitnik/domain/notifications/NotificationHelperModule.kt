@@ -1,6 +1,7 @@
 package com.jakubmeysner.legitnik.domain.notifications
 
 import android.content.Context
+import com.jakubmeysner.legitnik.data.notifications.database.ParkingLotCacheDao
 import com.jakubmeysner.legitnik.data.parking.ParkingLotRepository
 import com.jakubmeysner.legitnik.data.settings.SettingsRepository
 import dagger.Module
@@ -21,7 +22,14 @@ object NotificationHelperModule {
         externalScope: CoroutineScope,
         parkingLotRepository: ParkingLotRepository,
         settingsRepository: SettingsRepository,
+        parkingLotCacheDao: ParkingLotCacheDao,
     ): NotificationHelper {
-        return NotificationHelper(context, externalScope, parkingLotRepository, settingsRepository)
+        return NotificationHelper(
+            context,
+            externalScope,
+            parkingLotRepository,
+            settingsRepository,
+            parkingLotCacheDao
+        )
     }
 }

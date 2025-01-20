@@ -11,7 +11,9 @@ import androidx.core.app.NotificationCompat
 import androidx.core.content.getSystemService
 import com.jakubmeysner.legitnik.MainActivity
 import com.jakubmeysner.legitnik.R
-import com.jakubmeysner.legitnik.data.parking.ParkingLot
+import com.jakubmeysner.legitnik.data.notifications.ParkingLotCache
+import com.jakubmeysner.legitnik.data.notifications.database.ParkingLotCacheDao
+import com.jakubmeysner.legitnik.data.notifications.database.ParkingLotCacheEntity
 import com.jakubmeysner.legitnik.data.parking.ParkingLotRepository
 import com.jakubmeysner.legitnik.data.settings.SettingsRepository
 import com.jakubmeysner.legitnik.services.EventType
@@ -35,6 +37,7 @@ class NotificationHelper @Inject constructor(
     externalScope: CoroutineScope,
     private val parkingLotRepository: ParkingLotRepository,
     private val settingsRepository: SettingsRepository,
+    private val parkingLotCacheDao: ParkingLotCacheDao,
 ) : ClassSimpleNameLoggingTag {
     companion object {
         private const val CHANNEL_FREE_PLACES_NON_ZERO = "free_places_non_zero"
@@ -47,22 +50,22 @@ class NotificationHelper @Inject constructor(
     private val notificationManager: NotificationManager =
         context.getSystemService() ?: throw IllegalStateException()
 
-    private val parkingLotCache = mutableMapOf<String, ParkingLotCache>()
+    private val scope = externalScope
 
-    private data class ParkingLotCache(
-        val id: String,
-        val symbol: String,
-        var freePlaces: Int,
-        var previousFreePlaces: Int,
-    )
 
     init {
         Log.d(tag, "Initializing NotificationHelper: init {} block")
         setUpNotificationChannels()
         externalScope.launch {
+
+            if (parkingLotCacheDao.getAllFlow().first().isEmpty()) {
+                //seed database
+                initFollowedParkingLots()
+            }
             observeSettingsChanges()
         }
     }
+
 
     private fun setUpNotificationChannels() {
         if (notificationManager.getNotificationChannel(CHANNEL_FREE_PLACES_NON_ZERO) == null) {
@@ -83,34 +86,69 @@ class NotificationHelper @Inject constructor(
         }
     }
 
-    suspend fun showNotification(messageData: MessageData) {
-        when (messageData.event) {
-            EventType.NON_ZERO.value -> {
-                showNonZeroNotification(messageData)
-            }
+    fun showNotification(messageData: MessageData) {
+        scope.launch {
+            Log.d(tag, "Received notification request: $messageData")
+            when (messageData.event) {
+                EventType.NON_ZERO.value -> {
+                    showNonZeroNotification(messageData)
+                }
 
-            EventType.CHANGED.value -> {
-                showOngoingNotification(messageData)
+                EventType.CHANGED.value -> {
+                    Log.d(tag, "Processing CHANGED event")
+                    try {
+                        val parkingLotsBeforeUpdate = getFollowedParkingLots()
+                        Log.d(tag, "Current followed parking lots: $parkingLotsBeforeUpdate")
+
+                        showOngoingNotification(messageData)
+
+                        val parkingLotsAfterUpdate = getFollowedParkingLots()
+                        Log.d(tag, "Updated followed parking lots: $parkingLotsAfterUpdate")
+                    } catch (e: Exception) {
+                        Log.e(tag, "Error in showOngoingNotification: ${e.message}", e)
+                        throw e
+                    }
+                }
             }
         }
+
     }
 
-    private fun showOngoingNotification(messageData: MessageData) {
-        if (parkingLotCache.isEmpty()) {
+    private suspend fun showOngoingNotification(messageData: MessageData) {
+        Log.d(tag, "Starting showOngoingNotification")
+        val parkingLotsCache = getFollowedParkingLots()
+        Log.d(tag, "Retrieved ${parkingLotsCache.size} followed parking lots")
+        if (parkingLotsCache.isEmpty()) {
+            Log.d(tag, "No followed parking lots found, removing ongoing notification")
             removeOngoingNotification()
             return
         }
 
-        parkingLotCache[messageData.id]?.let { cached ->
-            cached.freePlaces = messageData.freePlaces
-            cached.previousFreePlaces = messageData.previousFreePlaces ?: messageData.freePlaces
-        }
+        try {
+            val parkingLotCache = parkingLotCacheDao.getOne(messageData.id)
+                ?: throw Error("Parking lot cache not found with id = ${messageData.id}")
+            Log.d(tag, "Found parking lot cache: $parkingLotCache")
+            parkingLotCacheDao.update(
+                ParkingLotCacheEntity(
+                    messageData.id,
+                    parkingLotCache.symbol,
+                    messageData.freePlaces,
+                    messageData.previousFreePlaces ?: messageData.freePlaces,
+                    isFollowed = true
+                )
+            )
+            Log.d(tag, "Updated parking lot cache in database")
 
-        buildOngoingNotification()
+            buildOngoingNotification()
+            Log.d(tag, "Built and displayed ongoing notification")
+        } catch (e: Exception) {
+            Log.e(tag, "Error updating parking lot cache: ${e.message}", e)
+            throw e
+        }
     }
 
-    private suspend fun showNonZeroNotification(messageData: MessageData) {
-        val parkingLot = parkingLotRepository.getParkingLot(messageData.id)
+    private fun showNonZeroNotification(messageData: MessageData) {
+        val parkingLot = parkingLotCacheDao.getOne(messageData.id)
         val pendingIntent = PendingIntent.getActivity(
             applicationContext,
             0,
@@ -133,75 +171,102 @@ class NotificationHelper @Inject constructor(
         notificationManager.notify(133712331 + messageData.id.toInt(), builder.build())
     }
 
-    private fun buildOngoingNotification() {
-        val pendingIntent = PendingIntent.getActivity(
-            applicationContext,
-            0,
-            Intent(applicationContext, MainActivity::class.java),
-            flagUpdateCurrent(mutable = true)
-        )
+    private suspend fun buildOngoingNotification() {
+        Log.d(tag, "Starting buildOngoingNotification")
+        val followedParkingLots = getFollowedParkingLots()
+        Log.d(tag, "Retrieved ${followedParkingLots.size} parking lots for notification")
+        try {
+            val pendingIntent = PendingIntent.getActivity(
+                applicationContext,
+                0,
+                Intent(applicationContext, MainActivity::class.java),
+                flagUpdateCurrent(mutable = true)
+            )
+            val builder =
+                NotificationCompat.Builder(applicationContext, CHANNEL_FREE_PLACES_CHANGED)
+                    .setSmallIcon(R.drawable.ic_launcher_foreground)
+                    .setContentTitle(
+                        applicationContext.getString(
+                            R.string.notification_helper_changed_notification_title
+                        )
+                    )
+                    .setContentText(
+                        followedParkingLots
+                            .joinToString(separator = ", ") { "${it.symbol} - ${it.freePlaces}" }
+                    )
+                    .setStyle(
+                        NotificationCompat.BigTextStyle().bigText(
+                            followedParkingLots
+                                .joinToString(separator = "\n")
+                                {
+                                    "${it.symbol} - ${it.freePlaces} (${if (it.freePlaces - it.previousFreePlaces > 0) "+" else ""}" +
+                                        "${(it.freePlaces - it.previousFreePlaces)})"
+                                }
+                        )
+                    )
+                    .setContentIntent(pendingIntent)
+                    .setSilent(true)
+                    .setOngoing(true)
 
-        val builder = NotificationCompat.Builder(applicationContext, CHANNEL_FREE_PLACES_CHANGED)
-            .setSmallIcon(R.drawable.ic_launcher_foreground)
-            .setContentTitle(
-                applicationContext.getString(
-                    R.string.notification_helper_changed_notification_title
-                )
-            )
-            .setContentText(
-                parkingLotCache.values
-                    .joinToString(separator = ", ") { "${it.symbol} - ${it.freePlaces}" }
-            )
-            .setStyle(
-                NotificationCompat.BigTextStyle().bigText(
-                    parkingLotCache.values
-                        .joinToString(separator = "\n")
-                        {
-                            "${it.symbol} - ${it.freePlaces} (${if (it.freePlaces - it.previousFreePlaces > 0) "+" else ""}" +
-                                "${(it.freePlaces - it.previousFreePlaces)})"
-                        }
-                )
-            )
-            .setContentIntent(pendingIntent)
-            .setSilent(true)
-            .setOngoing(true)
+            notificationManager.notify(FREE_PLACES_CHANGED_NOTIFICATION_ID, builder.build())
+            Log.d(tag, "Notification updated!")
+        } catch (e: Exception) {
+            Log.e(tag, "Error building notification: ${e.message}", e)
+            throw e
+        }
 
-        notificationManager.notify(FREE_PLACES_CHANGED_NOTIFICATION_ID, builder.build())
     }
 
-    private suspend fun getFollowedParkingLots(): List<ParkingLot> {
-        val parkingLots = parkingLotRepository.getParkingLots()
+    private suspend fun getFollowedParkingLots(): List<ParkingLotCache> {
+        return parkingLotCacheDao.getAllFlow().first().filter { it.isFollowed }
+            .map { ParkingLotCache(it.id, it.symbol, it.freePlaces, it.previousFreePlaces) }
+    }
+
+    private suspend fun initFollowedParkingLots() {
+        val parkingLots = parkingLotRepository.getParkingLots(false)
         val settings = settingsRepository.settingsFlow.first()
         val followedParkingLots = parkingLots
-            .filter { settings.ongoingSettingsMap[it.id] ?: false }
-        return followedParkingLots
+            .map { parkingLot ->
+                ParkingLotCacheEntity(
+                    parkingLot.id,
+                    parkingLot.symbol,
+                    parkingLot.freePlaces,
+                    parkingLot.freePlaces,
+                    settings.ongoingSettingsMap[parkingLot.id] ?: false
+                )
+            }
+        parkingLotCacheDao.insertParkingLots(followedParkingLots)
     }
 
-    private suspend fun initializeCache() {
-        val followedParkingLots = getFollowedParkingLots()
-        parkingLotCache.clear()
-        followedParkingLots.forEach { parkingLot ->
-            parkingLotCache[parkingLot.id] = ParkingLotCache(
-                id = parkingLot.id,
-                symbol = parkingLot.symbol,
-                freePlaces = parkingLot.freePlaces,
-                previousFreePlaces = parkingLot.freePlaces
+    private suspend fun updateCache() {
+        val settings = settingsRepository.settingsFlow.first()
+        Log.d(tag, "Updating cache")
+        parkingLotCacheDao.updateParkingLots(parkingLotCacheDao.getAllFlow().first().map {
+            Log.d(
+                tag,
+                "Updating parking ${it.symbol} | isFollowed = ${settings.ongoingSettingsMap[it.id] ?: false}"
             )
-        }
+            ParkingLotCacheEntity(
+                it.id,
+                it.symbol,
+                it.freePlaces,
+                it.previousFreePlaces,
+                settings.ongoingSettingsMap[it.id] ?: false
+            )
+        })
     }
+
 
     private suspend fun observeSettingsChanges() {
         settingsRepository.settingsFlow.collect { settings ->
+            updateCache()
             if (settings.ongoingCategoryEnabled) {
-                initializeCache()
                 buildOngoingNotification()
             } else {
-                parkingLotCache.clear()
                 removeOngoingNotification()
             }
         }
     }
-
 
     private fun removeOngoingNotification() {
         notificationManager.cancel(FREE_PLACES_CHANGED_NOTIFICATION_ID)

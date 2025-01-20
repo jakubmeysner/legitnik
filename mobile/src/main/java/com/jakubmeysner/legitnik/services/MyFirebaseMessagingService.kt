@@ -76,6 +76,7 @@ class MyFirebaseMessagingService() : FirebaseMessagingService(), ClassSimpleName
     }
 
     override fun onDestroy() {
+        Log.d(tag, "Destroying FCM service!")
         super.onDestroy()
         scope.cancel()
     }
