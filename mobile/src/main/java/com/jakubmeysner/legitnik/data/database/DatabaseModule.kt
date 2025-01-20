@@ -2,6 +2,7 @@ package com.jakubmeysner.legitnik.data.database
 
 import android.content.Context
 import androidx.room.Room
+import com.jakubmeysner.legitnik.data.notifications.database.ParkingLotCacheDao
 import com.jakubmeysner.legitnik.data.sdcatcard.database.SDCATCardRawDao
 import dagger.Module
 import dagger.Provides
@@ -23,5 +24,11 @@ object DatabaseModule {
     @Singleton
     fun provideSDCATCardRawDao(database: AppDatabase): SDCATCardRawDao {
         return database.sdcatCardRawDao()
+    }
+
+    @Provides
+    @Singleton
+    fun provideParkingLotCacheDao(database: AppDatabase): ParkingLotCacheDao {
+        return database.parkingLotCacheDao()
     }
 }
