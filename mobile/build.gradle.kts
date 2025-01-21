@@ -57,6 +57,7 @@ android {
         resources {
             excludes += "META-INF/versions/9/OSGI-INF/MANIFEST.MF"
             excludes += "META-INF/*"
+            merges += "META-INF/androidx.compose.*.version"
             pickFirsts += "xsd/*"
         }
     }
