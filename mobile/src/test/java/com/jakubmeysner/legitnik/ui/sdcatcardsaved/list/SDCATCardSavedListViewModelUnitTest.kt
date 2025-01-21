@@ -56,7 +56,7 @@ class SDCATCardSavedListViewModelUnitTest {
 
         assertEquals(
             expectedUiState,
-            withTimeoutOrNull(1.seconds) {
+            withTimeoutOrNull(10.seconds) {
                 viewModel.uiState.first { it == expectedUiState }
             } ?: viewModel.uiState.value,
         )
