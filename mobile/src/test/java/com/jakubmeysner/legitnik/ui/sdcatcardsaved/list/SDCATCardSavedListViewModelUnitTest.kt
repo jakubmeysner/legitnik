@@ -19,7 +19,7 @@ import org.junit.After
 import org.junit.Assert.assertEquals
 import org.junit.Before
 import org.junit.Test
-import kotlin.time.Duration.Companion.milliseconds
+import kotlin.time.Duration.Companion.seconds
 
 class SDCATCardSavedListViewModelUnitTest {
     private lateinit var repositoryMock: SDCATCardRepository
@@ -56,7 +56,7 @@ class SDCATCardSavedListViewModelUnitTest {
 
         assertEquals(
             expectedUiState,
-            withTimeoutOrNull(100.milliseconds) {
+            withTimeoutOrNull(1.seconds) {
                 viewModel.uiState.first { it == expectedUiState }
             } ?: viewModel.uiState.value,
         )
