@@ -65,6 +65,18 @@ android {
     room {
         schemaDirectory("$projectDir/schemas")
     }
+
+    testOptions {
+        managedDevices {
+            localDevices {
+                create("pixel5api30") {
+                    device = "Pixel 5"
+                    apiLevel = 30
+                    systemImageSource = "google"
+                }
+            }
+        }
+    }
 }
 
 dependencies {
