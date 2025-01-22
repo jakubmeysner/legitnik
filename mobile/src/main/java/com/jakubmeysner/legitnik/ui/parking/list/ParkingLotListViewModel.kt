@@ -16,7 +16,7 @@ data class ParkingLotUiState(
     val parkingLots: List<ParkingLot>? = null,
     val loading: Boolean = true,
     val error: Boolean = false,
-    val savedParkingLabels: List<String> = emptyList()
+    val savedParkingIds: List<String> = emptyList()
 )
 
 @HiltViewModel
