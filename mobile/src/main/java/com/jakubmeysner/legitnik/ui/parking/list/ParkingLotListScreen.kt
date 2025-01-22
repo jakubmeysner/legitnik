@@ -40,6 +40,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
@@ -54,6 +55,7 @@ import com.google.android.gms.common.GoogleApiAvailability
 import com.jakubmeysner.legitnik.R
 import com.jakubmeysner.legitnik.data.parking.ParkingLot
 import com.jakubmeysner.legitnik.util.SnackbarVisualsData
+import com.jakubmeysner.legitnik.util.TestTags
 
 @OptIn(ExperimentalMaterial3Api::class)
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
@@ -167,7 +169,8 @@ fun ParkingItem(
                 MaterialTheme.colorScheme.surfaceContainerHighest,
                 shape = RoundedCornerShape(16.dp)
             )
-            .clickable { onClick(parkingLot.id) },
+            .clickable { onClick(parkingLot.id) }
+            .testTag(TestTags.PARKING_ITEM),
         verticalAlignment = Alignment.CenterVertically
     ) {
         Column(
