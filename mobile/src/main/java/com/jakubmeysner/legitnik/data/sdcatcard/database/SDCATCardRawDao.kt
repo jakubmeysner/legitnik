@@ -1,7 +1,6 @@
 package com.jakubmeysner.legitnik.data.sdcatcard.database
 
 import androidx.room.Dao
-import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.Query
 import androidx.room.Transaction
@@ -61,6 +60,6 @@ interface SDCATCardRawDao {
         setActive(id)
     }
 
-    @Delete
-    suspend fun delete(card: SDCATCardRawDataEntity)
+    @Query("DELETE FROM sdcat_card_raw_data WHERE uuid = :id")
+    suspend fun delete(id: UUID)
 }
