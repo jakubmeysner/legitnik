@@ -91,4 +91,11 @@
     <string name="sdcat_card_card_default">Default</string>
     <string name="sdcat_card_card_mark_as_default">Mark as default</string>
     <string name="sdcat_card_saved_details_active_for_emulation">Active for emulation</string>
+    <string name="notification_helper_channel_free_places_changed_name">Parking lot free places changed</string>
+    <string name="notification_helper_channel_free_places_non_zero_name">Parking lot free places became non zero</string>
+    <string name="notification_helper_channel_free_places_changed_description">Ongoing notification displaying number of free places on parking lot</string>
+    <string name="notification_helper_channel_free_places_non_zero_description">Notification informs about vacant places on parking lot</string>
+    <string name="notification_helper_changed_notification_title">Free places on parking lots</string>
+    <string name="notification_helper_non_zero_notification_title">Free places available on parking %1$s</string>
+    <string name="notification_helper_non_zero_notification_text">Free places = %1$d</string>
 </resources>
