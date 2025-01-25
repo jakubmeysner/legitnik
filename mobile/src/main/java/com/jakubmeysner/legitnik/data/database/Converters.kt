@@ -1,4 +1,4 @@
-package com.jakubmeysner.legitnik.data.sdcatcard.database
+package com.jakubmeysner.legitnik.data.database
 
 import androidx.room.TypeConverter
 

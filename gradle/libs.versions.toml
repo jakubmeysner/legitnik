@@ -41,6 +41,9 @@ protobuf = "0.9.4"
 junitKtx = "1.2.1"
 uiTestJunit4Android = "1.7.6"
 hiltAndroidTesting = "2.51.1"
+mockk = "1.13.16"
+kotlinx-coroutines-test = "1.10.1"
+compose-screenshot = "0.0.1-alpha07"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -99,6 +102,10 @@ protobuf-lite = { group = "com.google.protobuf", name = "protobuf-kotlin-lite", 
 androidx-room-compiler = { group = "androidx.room", name = "room-compiler", version.ref = "room" }
 androidx-room-ktx = { group = "androidx.room", name = "room-ktx", version.ref = "room" }
 androidx-room-runtime = { group = "androidx.room", name = "room-runtime", version.ref = "room" }
+mockk-android = { group = "io.mockk", name = "mockk-android", version.ref = "mockk" }
+mockk-agent = { group = "io.mockk", name = "mockk-agent", version.ref = "mockk" }
+kotlinx-coroutines-test = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-test", version.ref = "kotlinx-coroutines-test" }
+androidx-compose-ui-tooling = { group = "androidx.compose.ui", name = "ui-tooling" }
 androidx-junit-ktx = { group = "androidx.test.ext", name = "junit-ktx", version.ref = "junitKtx" }
 androidx-ui-test-junit4-android = { group = "androidx.compose.ui", name = "ui-test-junit4-android", version.ref = "uiTestJunit4Android" }
 hilt-android-testing = { group = "com.google.dagger", name = "hilt-android-testing", version.ref = "hiltAndroidTesting" }
@@ -115,3 +122,4 @@ google-gms-google-services = { id = "com.google.gms.google-services", version.re
 ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
 room = { id = "androidx.room", version.ref = "room" }
 protobuf = { id = "com.google.protobuf", version.ref = "protobuf" }
+compose-screenshot = { id = "com.android.compose.screenshot", version.ref = "compose-screenshot" }

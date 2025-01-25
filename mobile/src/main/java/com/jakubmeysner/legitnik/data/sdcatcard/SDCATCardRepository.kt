@@ -74,10 +74,6 @@ class SDCATCardRepository @Inject constructor(
     }
 
     suspend fun removeCard(id: UUID) {
-        sdcatCardRawDao.getOne(id)?.let {
-            sdcatCardRawDao.delete(
-                it
-            )
-        }
+        sdcatCardRawDao.delete(id)
     }
 }
