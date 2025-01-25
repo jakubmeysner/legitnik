@@ -1,19 +1,5 @@
 package com.jakubmeysner.legitnik.data.parking
 
-import dagger.Module
-import dagger.Provides
-import dagger.hilt.components.SingletonComponent
-import dagger.hilt.testing.TestInstallIn
-import okhttp3.Interceptor
-import okhttp3.MediaType.Companion.toMediaTypeOrNull
-import okhttp3.OkHttpClient
-import okhttp3.Protocol
-import okhttp3.Response
-import okhttp3.ResponseBody.Companion.toResponseBody
-import okio.Buffer
-import retrofit2.Retrofit
-import retrofit2.converter.gson.GsonConverterFactory
-
 object TestResponses {
     val PARKING_LOT_DATA_RESPONSE = """
         {
@@ -293,51 +279,4 @@ object TestResponses {
         ]
     }
 }""".trimIndent()
-}
-
-
-@Module
-@TestInstallIn(components = [SingletonComponent::class], replaces = [RetrofitModule::class])
-object TestRetrofitModule {
-    @Provides
-    fun provideFakeApiService(): ParkingLotApi {
-        val mockInterceptor = Interceptor { chain ->
-            val request = chain.request()
-
-            val buffer = Buffer()
-            request.body?.writeTo(buffer)
-            val bodyString = buffer.readUtf8()
-
-            val responseString = when {
-                bodyString.contains("\"o\":\"get_parks\"") -> TestResponses.PARKING_LOT_DATA_RESPONSE
-
-                bodyString.contains("\"o\":\"get_today_chart\"") -> TestResponses.PARKING_LOT_FREE_PLACES_HISTORY_RESPONSE
-
-                else -> """{"status": "error", "message": "Unknown operation"}"""
-            }
-
-            Response.Builder()
-                .code(200)
-                .message("OK")
-                .request(request)
-                .protocol(Protocol.HTTP_1_1)
-                .body(
-                    responseString
-                        .toResponseBody("application/json".toMediaTypeOrNull())
-                )
-                .addHeader("content-type", "application/json")
-                .build()
-        }
-
-        val client = OkHttpClient.Builder()
-            .addInterceptor(mockInterceptor)
-            .build()
-
-        return Retrofit.Builder()
-            .baseUrl("https://iparking.pwr.edu.pl")
-            .client(client)
-            .addConverterFactory(GsonConverterFactory.create())
-            .build()
-            .create(ParkingLotApi::class.java)
-    }
 }
