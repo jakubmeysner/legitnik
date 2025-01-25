@@ -94,4 +94,11 @@
     <string name="sdcat_card_card_default">Domyślna</string>
     <string name="sdcat_card_card_mark_as_default">Ustaw jako domyślną</string>
     <string name="sdcat_card_saved_details_active_for_emulation">Aktywna do emulacji</string>
+    <string name="notification_helper_channel_free_places_changed_name">Wolne miejsca na parkingu uległy zmianie</string>
+    <string name="notification_helper_channel_free_places_non_zero_name">Pojawiły się wolne miejsca na parkingu</string>
+    <string name="notification_helper_channel_free_places_changed_description">Trwałe powiadomienie wyświetlające aktualną liczbę miejsc na parkingu</string>
+    <string name="notification_helper_channel_free_places_non_zero_description">Powiadomienie informujące o zwolnieniu się miejsc na parkingu</string>
+    <string name="notification_helper_changed_notification_title">Wolne miejsca na parkingach</string>
+    <string name="notification_helper_non_zero_notification_title">Pojawiły się wolne miejsca na parkingu %1$s</string>
+    <string name="notification_helper_non_zero_notification_text">Wolne miejsca = %1$d</string>
 </resources>
