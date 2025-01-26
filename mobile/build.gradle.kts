@@ -58,12 +58,25 @@ android {
         resources {
             excludes += "META-INF/versions/9/OSGI-INF/MANIFEST.MF"
             excludes += "META-INF/*"
+            merges += "META-INF/androidx.compose.*.version"
             pickFirsts += "xsd/*"
         }
     }
 
     room {
         schemaDirectory("$projectDir/schemas")
+    }
+
+    testOptions {
+        managedDevices {
+            localDevices {
+                create("pixel5api30") {
+                    device = "Pixel 5"
+                    apiLevel = 30
+                    systemImageSource = "google"
+                }
+            }
+        }
     }
 
     experimentalProperties["android.experimental.enableScreenshotTest"] = true
@@ -125,6 +138,8 @@ dependencies {
     androidTestImplementation(libs.androidx.espresso.core)
     androidTestImplementation(platform(libs.androidx.compose.bom))
     androidTestImplementation(libs.androidx.ui.test.junit4)
+    androidTestImplementation(libs.hilt.testing)
+    kaptAndroidTest(libs.hilt.compiler)
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
     implementation(libs.datastore.protobuf)

@@ -11,10 +11,12 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.jakubmeysner.legitnik.R
 import com.jakubmeysner.legitnik.ui.theme.Typography
+import com.jakubmeysner.legitnik.util.TestTags
 import com.patrykandpatrick.vico.compose.cartesian.CartesianChartHost
 import com.patrykandpatrick.vico.compose.cartesian.axis.rememberAxisLabelComponent
 import com.patrykandpatrick.vico.compose.cartesian.axis.rememberBottom
@@ -125,6 +127,7 @@ fun ParkingLotDetailsChartCard(
                         persistentMarkers = rememberExtraLambda(marker) { marker at xs.size - 1 },
                     ),
                     modelProducer,
+                    modifier = Modifier.testTag(TestTags.FREE_PLACES_CHART)
                 )
             }
         }
