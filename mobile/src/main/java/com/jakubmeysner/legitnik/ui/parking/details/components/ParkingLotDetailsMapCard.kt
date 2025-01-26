@@ -23,6 +23,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.unit.dp
@@ -37,6 +38,7 @@ import com.google.maps.android.compose.Marker
 import com.google.maps.android.compose.rememberCameraPositionState
 import com.google.maps.android.compose.rememberMarkerState
 import com.jakubmeysner.legitnik.R
+import com.jakubmeysner.legitnik.util.TestTags
 
 @Composable
 fun ParkingLotDetailsMapCard(
@@ -79,7 +81,8 @@ fun ParkingLotDetailsMapCard(
                 GoogleMap(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .height(300.dp),
+                        .height(300.dp)
+                        .testTag(TestTags.GOOGLE_MAP),
                     cameraPositionState = cameraPosition,
                     mapColorScheme = ComposeMapColorScheme.FOLLOW_SYSTEM,
                 ) {
