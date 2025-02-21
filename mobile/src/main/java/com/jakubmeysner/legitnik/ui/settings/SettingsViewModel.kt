@@ -3,7 +3,7 @@ package com.jakubmeysner.legitnik.ui.settings
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.jakubmeysner.legitnik.ui.parking.list.ParkingLotUiState
+import com.jakubmeysner.legitnik.ui.parking.list.ParkingLotListUiState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
@@ -18,8 +18,8 @@ class SettingsViewModel @Inject constructor(
     private val settingsRepository: SettingsRepository
 ) : ViewModel() {
 
-    private val _uiState = MutableStateFlow(ParkingLotUiState())
-    val uiState: StateFlow<ParkingLotUiState> = _uiState
+    private val _uiState = MutableStateFlow(ParkingLotListUiState())
+    val uiState: StateFlow<ParkingLotListUiState> = _uiState
 
     init {
         loadParkingLots()

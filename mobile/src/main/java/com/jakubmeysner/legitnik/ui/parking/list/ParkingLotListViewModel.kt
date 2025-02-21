@@ -12,7 +12,7 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
-data class ParkingLotUiState(
+data class ParkingLotListUiState(
     val parkingLots: List<ParkingLot>? = null,
     val loading: Boolean = true,
     val error: Boolean = false,
@@ -24,7 +24,7 @@ class ParkingLotListViewModel @Inject constructor(
     private val savedStateHandle: SavedStateHandle,
     private val parkingLotRepository: ParkingLotRepository
 ) : ViewModel() {
-    private val _uiState = MutableStateFlow(ParkingLotUiState())
+    private val _uiState = MutableStateFlow(ParkingLotListUiState())
     val uiState = _uiState.asStateFlow()
 
     init {

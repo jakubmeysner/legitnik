@@ -20,6 +20,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -57,11 +58,30 @@ import com.jakubmeysner.legitnik.data.parking.ParkingLot
 import com.jakubmeysner.legitnik.util.SnackbarVisualsData
 import com.jakubmeysner.legitnik.util.TestTags
 
+@Composable
+fun ParkingLotListScreen(
+    viewModel: ParkingLotListViewModel = hiltViewModel(),
+    navigateToParkingLotMap: () -> Unit,
+    onNavigateToParkingLotDetails: (id: String) -> Unit,
+    onShowSnackbar: suspend (visuals: SnackbarVisuals) -> SnackbarResult,
+) {
+    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+
+    ParkingLotListScreen(
+        uiState = uiState,
+        loadParkingLots = viewModel::loadParkingLots,
+        navigateToParkingLotMap = navigateToParkingLotMap,
+        onNavigateToParkingLotDetails = onNavigateToParkingLotDetails,
+        onShowSnackbar = onShowSnackbar,
+    )
+}
+
 @OptIn(ExperimentalMaterial3Api::class)
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
 fun ParkingLotListScreen(
-    viewModel: ParkingLotListViewModel = hiltViewModel(),
+    uiState: ParkingLotListUiState,
+    loadParkingLots: (forceRefresh: Boolean) -> Unit,
     navigateToParkingLotMap: () -> Unit,
     onNavigateToParkingLotDetails: (id: String) -> Unit,
     onShowSnackbar: suspend (visuals: SnackbarVisuals) -> SnackbarResult,
@@ -73,12 +93,11 @@ fun ParkingLotListScreen(
             .isGooglePlayServicesAvailable(context) == ConnectionResult.SUCCESS
     }
 
-    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val pullToRefreshState = rememberPullToRefreshState()
     val errorMessage = stringResource(R.string.parking_lot_list_snack_error)
 
     val onRefresh: () -> Unit = {
-        viewModel.loadParkingLots(forceRefresh = true)
+        loadParkingLots(true)
     }
 
     LaunchedEffect(uiState.error) {
@@ -234,7 +253,7 @@ fun ErrorIndicator(
                 textAlign = TextAlign.Center
             )
             Spacer(modifier = Modifier.height(16.dp))
-            androidx.compose.material3.FilledTonalButton(
+            FilledTonalButton(
                 onClick = onRetry,
             ) {
                 Text(text = stringResource(R.string.parking_lot_list_refresh))
