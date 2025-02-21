@@ -4,10 +4,11 @@ import androidx.compose.material3.SnackbarResult
 import androidx.compose.material3.SnackbarVisuals
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
+import com.jakubmeysner.legitnik.ui.Route
 import kotlinx.serialization.Serializable
 
 @Serializable
-object ParkingLotListRoute
+object ParkingLotListRoute : Route
 
 fun NavGraphBuilder.parkingLotListDestination(
     navigateToParkingLotMap: () -> Unit,

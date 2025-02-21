@@ -46,7 +46,9 @@ import com.jakubmeysner.legitnik.ui.sdcatcardsaved.sdcatCardSavedDestination
 import com.jakubmeysner.legitnik.ui.settings.SettingsRoute
 import com.jakubmeysner.legitnik.ui.settings.settingsDestination
 
-data class TopLevelRoute<T : Any>(
+interface Route
+
+data class TopLevelRouteInfo<T : Route>(
     val route: T,
     val nameResourceId: Int,
     val selectedIcon: ImageVectorOrResourceId,
@@ -66,32 +68,61 @@ sealed class ImageVectorOrResourceId {
     }
 }
 
-val topLevelRoutes = listOf(
-    TopLevelRoute(
+val topLevelRouteInfos = listOf(
+    TopLevelRouteInfo(
         ParkingRoute,
         R.string.navigation_bar_parking,
         ImageVectorOrResourceId.Vector(Icons.Default.Place),
         ImageVectorOrResourceId.Vector(Icons.Outlined.Place)
     ),
-    TopLevelRoute(
+    TopLevelRouteInfo(
         SDCATCardReaderRoute,
         R.string.navigation_bar_sdcat_card_reader,
         ImageVectorOrResourceId.VectorResourceId(R.drawable.mdi_smart_card_reader),
         ImageVectorOrResourceId.VectorResourceId(R.drawable.smart_card_reader_outline)
     ),
-    TopLevelRoute(
+    TopLevelRouteInfo(
         SDCATCardSavedRoute,
         R.string.navigation_bar_sdcat_card_saved,
         ImageVectorOrResourceId.VectorResourceId(R.drawable.mdi_card_multiple),
         ImageVectorOrResourceId.VectorResourceId(R.drawable.mdi_card_multiple_outline),
     ),
-    TopLevelRoute(
+    TopLevelRouteInfo(
         SettingsRoute,
         R.string.navigation_bar_settings,
         ImageVectorOrResourceId.Vector(Icons.Default.Settings),
         ImageVectorOrResourceId.Vector(Icons.Outlined.Settings)
     )
 )
+
+@Composable
+fun MyNavigationBar(
+    selectedTopLevelRoute: Route?,
+    navigate: (topLevelRoute: Route) -> Unit,
+) {
+    NavigationBar {
+        topLevelRouteInfos.forEach { topLevelRoute ->
+            val selected = topLevelRoute.route == selectedTopLevelRoute
+
+            NavigationBarItem(
+                icon = {
+                    Icon(
+                        if (selected) topLevelRoute.selectedIcon.getImageVector()
+                        else topLevelRoute.notSelectedIcon.getImageVector(),
+                        contentDescription = null
+                    )
+                },
+                label = {
+                    Text(stringResource(topLevelRoute.nameResourceId))
+                },
+                selected = selected,
+                onClick = {
+                    navigate(topLevelRoute.route)
+                }
+            )
+        }
+    }
+}
 
 @SuppressLint("RestrictedApi")
 @Composable
@@ -108,40 +139,28 @@ fun MyNavHost() {
             SnackbarHost(hostState = snackbarHostState)
         },
         bottomBar = {
-            NavigationBar {
-                val navBackStackEntry by navController.currentBackStackEntryAsState()
-                val currentDestination = navBackStackEntry?.destination
+            val navBackStackEntry by navController.currentBackStackEntryAsState()
+            val currentDestination = navBackStackEntry?.destination
 
-                topLevelRoutes.forEach { topLevelRoute ->
-                    val selected = currentDestination?.hierarchy?.any {
-                        it.hasRoute(topLevelRoute.route::class)
-                    } == true
+            val selectedTopLevelRoute = topLevelRouteInfos.find { topLevelRouteInfo ->
+                currentDestination?.hierarchy?.any {
+                    it.hasRoute(topLevelRouteInfo.route::class)
+                } == true
+            }?.route
 
-                    NavigationBarItem(
-                        icon = {
-                            Icon(
-                                if (selected) topLevelRoute.selectedIcon.getImageVector()
-                                else topLevelRoute.notSelectedIcon.getImageVector(),
-                                contentDescription = null
-                            )
-                        },
-                        label = {
-                            Text(stringResource(topLevelRoute.nameResourceId))
-                        },
-                        selected = selected,
-                        onClick = {
-                            navController.navigate(topLevelRoute.route) {
-                                popUpTo(navController.graph.findStartDestination().id) {
-                                    saveState = true
-                                }
-
-                                launchSingleTop = true
-                                restoreState = true
-                            }
+            MyNavigationBar(
+                selectedTopLevelRoute = selectedTopLevelRoute,
+                navigate = {
+                    navController.navigate(it) {
+                        popUpTo(navController.graph.findStartDestination().id) {
+                            saveState = true
                         }
-                    )
+
+                        launchSingleTop = true
+                        restoreState = true
+                    }
                 }
-            }
+            )
         }
     ) { innerPadding ->
         NavHost(
