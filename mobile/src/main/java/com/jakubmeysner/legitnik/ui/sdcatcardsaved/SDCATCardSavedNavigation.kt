@@ -4,6 +4,7 @@ import androidx.compose.material3.SnackbarResult
 import androidx.compose.material3.SnackbarVisuals
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.navigation
+import com.jakubmeysner.legitnik.ui.Route
 import com.jakubmeysner.legitnik.ui.sdcatcardsaved.details.sdcatCardSavedDetailsDestination
 import com.jakubmeysner.legitnik.ui.sdcatcardsaved.list.SDCATCardSavedListRoute
 import com.jakubmeysner.legitnik.ui.sdcatcardsaved.list.sdcatCardSavedListDestination
@@ -11,7 +12,7 @@ import kotlinx.serialization.Serializable
 import java.util.UUID
 
 @Serializable
-object SDCATCardSavedRoute
+object SDCATCardSavedRoute : Route
 
 fun NavGraphBuilder.sdcatCardSavedDestination(
     navigateToSDCATCardList: () -> Unit,

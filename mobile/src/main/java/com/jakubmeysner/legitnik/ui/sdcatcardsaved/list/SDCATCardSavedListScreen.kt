@@ -25,6 +25,18 @@ fun SDCATCardSavedListScreen(
     navigateToSDCATCardSavedDetails: (id: UUID) -> Unit,
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+
+    SDCATCardSavedListScreen(
+        uiState = uiState,
+        navigateToSDCATCardSavedDetails = navigateToSDCATCardSavedDetails,
+    )
+}
+
+@Composable
+fun SDCATCardSavedListScreen(
+    uiState: SDCATCardSavedListUiState,
+    navigateToSDCATCardSavedDetails: (id: UUID) -> Unit,
+) {
     val cards = uiState.cards
 
     if (cards != null) {

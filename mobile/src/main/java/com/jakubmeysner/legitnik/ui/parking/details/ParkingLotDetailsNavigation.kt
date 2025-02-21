@@ -5,10 +5,11 @@ import androidx.compose.material3.SnackbarVisuals
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
+import com.jakubmeysner.legitnik.ui.Route
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class ParkingLotDetailsRoute(val id: String)
+data class ParkingLotDetailsRoute(val id: String) : Route
 
 fun NavGraphBuilder.parkingLotDetailsDestination(onShowSnackbar: suspend (visuals: SnackbarVisuals) -> SnackbarResult) {
     composable<ParkingLotDetailsRoute> {
