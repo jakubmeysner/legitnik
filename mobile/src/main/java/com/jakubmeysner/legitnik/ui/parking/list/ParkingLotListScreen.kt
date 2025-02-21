@@ -47,7 +47,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -56,8 +55,6 @@ import com.google.android.gms.common.ConnectionResult
 import com.google.android.gms.common.GoogleApiAvailability
 import com.jakubmeysner.legitnik.R
 import com.jakubmeysner.legitnik.data.parking.ParkingLot
-import com.jakubmeysner.legitnik.ui.ScreenPreviewScaffold
-import com.jakubmeysner.legitnik.ui.parking.ParkingRoute
 import com.jakubmeysner.legitnik.util.SnackbarVisualsData
 import com.jakubmeysner.legitnik.util.TestTags
 
@@ -264,49 +261,3 @@ fun ErrorIndicator(
         }
     }
 }
-
-@Composable
-@Preview(showBackground = true)
-fun ParkingLotListScreenPreview() {
-    ScreenPreviewScaffold(
-        selectedTopLevelRoute = ParkingRoute,
-    ) {
-        ParkingLotListScreen(
-            uiState = PREVIEW_UI_STATE,
-            loadParkingLots = {},
-            navigateToParkingLotMap = {},
-            onNavigateToParkingLotDetails = {},
-            onShowSnackbar = {
-                SnackbarResult.Dismissed
-            },
-        )
-    }
-}
-
-private val PREVIEW_UI_STATE = ParkingLotListUiState(
-    parkingLots = listOf(
-        ParkingLot(
-            id = "4",
-            freePlaces = 176,
-            name = "Parking Wrońskiego",
-            symbol = "WRO",
-            photo = "/images/photos/wro.jpg",
-            address = "Hoene-Wrońskiego 10, 50-376 Wroclaw",
-            latitude = 51.108964,
-            longitude = 17.055564,
-            freePlacesHistory = null,
-        ),
-        ParkingLot(
-            id = "2",
-            freePlaces = 47,
-            name = "Polinka",
-            symbol = "C13",
-            photo = "/images/photos/c13.jpg",
-            address = "wybrzeże Stanisława Wyspiańskiego 25, 50-370 Wrocław",
-            latitude = 51.107393,
-            longitude = 17.058468,
-            freePlacesHistory = null,
-        )
-    ),
-    loading = false,
-)
