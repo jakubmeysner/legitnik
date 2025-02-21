@@ -124,6 +124,8 @@ dependencies {
     implementation(libs.accompanist.permissions)
     implementation(libs.androidx.room.runtime)
     implementation(libs.androidx.room.ktx)
+    debugImplementation(libs.mockk.android)
+    debugImplementation(libs.mockk.agent)
     androidTestImplementation(libs.androidx.junit.ktx)
     androidTestImplementation(libs.androidx.ui.test.junit4.android)
     ksp(libs.androidx.room.compiler)

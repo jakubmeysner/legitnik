@@ -1,5 +1,7 @@
 package com.jakubmeysner.legitnik.ui.sdcatcardreader
 
+import android.app.Activity
+import android.hardware.usb.UsbDevice
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -29,6 +31,36 @@ fun SDCATCardReaderScreen(
     onShowSnackbar: suspend (visuals: SnackbarVisuals) -> SnackbarResult,
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+
+    SDCATCardReaderScreen(
+        uiState = uiState,
+        selectInterface = viewModel::selectInterface,
+        enableNfcAdapterReaderMode = viewModel::enableNfcAdapterReaderMode,
+        disableNfcAdapterReaderMode = viewModel::disableNfcAdapterReaderMode,
+        selectUsbDevice = viewModel::selectUsbDevice,
+        saveCard = viewModel::saveCard,
+        removeCard = viewModel::removeCard,
+        openCardValidationDetailsDialog = viewModel::openCardValidationDetailsDialog,
+        closeCardValidationDetailsDialog = viewModel::closeCardValidationDetailsDialog,
+        onShownSnackbar = viewModel::onShownSnackbar,
+        onShowSnackbar = onShowSnackbar,
+    )
+}
+
+@Composable
+fun SDCATCardReaderScreen(
+    uiState: SDCATCardReaderUiState,
+    selectInterface: (inter: SDCATCardReaderInterface) -> Unit,
+    enableNfcAdapterReaderMode: (activity: Activity) -> Unit,
+    disableNfcAdapterReaderMode: (activity: Activity) -> Unit,
+    selectUsbDevice: (usbDevice: UsbDevice?) -> Unit,
+    saveCard: () -> Unit,
+    removeCard: () -> Unit,
+    openCardValidationDetailsDialog: () -> Unit,
+    closeCardValidationDetailsDialog: () -> Unit,
+    onShownSnackbar: () -> Unit,
+    onShowSnackbar: suspend (visuals: SnackbarVisuals) -> SnackbarResult,
+) {
     val cardData = uiState.cardData
     val validationResult = uiState.cardValidationResult
     val showPrompt = !uiState.reading && cardData == null
@@ -40,7 +72,7 @@ fun SDCATCardReaderScreen(
     ) {
         SDCATCardReaderInterfaceSelect(
             selectedInterface = uiState.selectedInterface,
-            onSelectInterface = viewModel::selectInterface,
+            onSelectInterface = selectInterface,
             enabled = !uiState.reading,
         )
 
@@ -49,8 +81,8 @@ fun SDCATCardReaderScreen(
                 SDCATCardReaderInterfaceNfc(
                     hasNfcFeature = uiState.hasNfcFeature,
                     showPrompt = showPrompt,
-                    enableNfcAdapterReaderMode = viewModel::enableNfcAdapterReaderMode,
-                    disableNfcAdapterReaderMode = viewModel::disableNfcAdapterReaderMode,
+                    enableNfcAdapterReaderMode = enableNfcAdapterReaderMode,
+                    disableNfcAdapterReaderMode = disableNfcAdapterReaderMode,
                 )
             }
 
@@ -60,7 +92,7 @@ fun SDCATCardReaderScreen(
                     showPrompt = showPrompt,
                     deviceSelectEnabled = !uiState.reading,
                     selectedUsbDeviceName = uiState.selectedUsbDeviceName,
-                    selectUsbDevice = viewModel::selectUsbDevice,
+                    selectUsbDevice = selectUsbDevice,
                 )
             }
         }
@@ -83,9 +115,9 @@ fun SDCATCardReaderScreen(
                     content = cardData.parsedData.content,
                     valid = validationResult?.valid,
                     isSaved = isSaved,
-                    saveCard = viewModel::saveCard,
-                    removeCard = viewModel::removeCard,
-                    onShowValidationDetails = viewModel::openCardValidationDetailsDialog,
+                    saveCard = saveCard,
+                    removeCard = removeCard,
+                    onShowValidationDetails = openCardValidationDetailsDialog,
                 )
             }
 
@@ -93,7 +125,7 @@ fun SDCATCardReaderScreen(
                 SDCATCardValidationDetailsDialog(
                     certificate = cardData.parsedData.certificate,
                     validationResult = validationResult,
-                    onClose = viewModel::closeCardValidationDetailsDialog,
+                    onClose = closeCardValidationDetailsDialog,
                 )
             }
         }
@@ -102,6 +134,6 @@ fun SDCATCardReaderScreen(
     SDCATCardReaderSnackbar(
         onShowSnackbar = onShowSnackbar,
         snackbar = uiState.snackbar,
-        onShownSnackbar = { viewModel.onShownSnackbar() },
+        onShownSnackbar = { onShownSnackbar() },
     )
 }
