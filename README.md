@@ -1,6 +1,31 @@
 # Legitnik
 
+An Android app for reading and verifying Polish student/doctoral candidate/academic teacher cards
+and viewing parking lot information for the WUST.
+
+## Features
+
+### Polish Student/Doctoral Candidate/Academic Teacher Cards
+
+- Read cards using phone's NFC module or using a smart card reader connected via USB
+- Verify the contents (including the Qualified Electronic Signature)
+- Emulate the data, making it readable by other users of the app
+
+### WUST Parking Lots
+
+- View the list of parking lots alongside the number of free spaces
+- Check the historical availability of the lot
+- View the parking lots on a map
+
+## Screenshots
+
+|                                                     |                                                      |                                                       |                                                               |                                                   |
+|-----------------------------------------------------|------------------------------------------------------|-------------------------------------------------------|---------------------------------------------------------------|---------------------------------------------------|
+| ![](./docs/screenshots/parking-lot-list-screen.png) | ![](./docs/screenshots/sdcat-card-reader-prompt.png) | ![](./docs/screenshots/sdcat-card-reader-scanned.png) | ![](./docs/screenshots/sdcat-card-reader-scanned-invalid.png) | ![](./docs/screenshots/sdcat-card-saved-list.png) |
+
 ## Building
+
+### GitHub Signerry Maven Repository
 
 In order to obtain the required dependencies from the GitHub Maven repository used you'll need to
 configure credentials for it in Gradle. In order to do that you'll need to:
@@ -17,3 +42,9 @@ configure credentials for it in Gradle. In order to do that you'll need to:
        (`githubUsername=YOUR_USERNAME`)
     3. Set the `githubSignerryPassword` property to the generated PAT
        (`githubPassword=GENERATED_PAT`)
+
+### Google Maps API Key
+
+For the features relying on the Maps SDK to work correctly, you'll need to set the API key for the
+Maps API (see [local.defaults.properties](./local.defaults.properties)
+and [local.properties](./local.properties)).
