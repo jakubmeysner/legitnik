@@ -297,6 +297,3 @@ google-services.json
 
 # Android Profiling
 *.hprof
-
-### Custom
-secrets.properties

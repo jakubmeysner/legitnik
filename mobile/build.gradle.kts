@@ -5,7 +5,6 @@ plugins {
     alias(libs.plugins.kotlin.kapt)
     alias(libs.plugins.hilt)
     alias(libs.plugins.kotlin.serialization)
-    alias(libs.plugins.secrets.gradle.plugin)
     alias(libs.plugins.google.gms.google.services)
     alias(libs.plugins.ksp)
     alias(libs.plugins.room)
@@ -167,12 +166,6 @@ dependencies {
 
 kapt {
     correctErrorTypes = true
-}
-
-secrets {
-    propertiesFileName = "secrets.properties"
-    defaultPropertiesFileName = "local.defaults.properties"
-    ignoreList.add("sdk.*")
 }
 
 protobuf {
