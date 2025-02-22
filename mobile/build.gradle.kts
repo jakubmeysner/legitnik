@@ -5,7 +5,6 @@ plugins {
     alias(libs.plugins.kotlin.kapt)
     alias(libs.plugins.hilt)
     alias(libs.plugins.kotlin.serialization)
-    alias(libs.plugins.secrets.gradle.plugin)
     alias(libs.plugins.google.gms.google.services)
     alias(libs.plugins.ksp)
     alias(libs.plugins.room)
@@ -22,7 +21,7 @@ android {
         minSdk = 29
         targetSdk = 35
         versionCode = 1
-        versionName = "1.0"
+        versionName = "0.1.0"
 
         testInstrumentationRunner = "com.jakubmeysner.legitnik.HiltTestRunner"
     }
@@ -31,13 +30,29 @@ android {
         buildConfig = true
     }
 
+    signingConfigs {
+        if (properties.containsKey("storeFile")) {
+            create("release") {
+                storeFile = properties["storeFile"]?.let { file(it) }
+                storePassword = properties["storePassword"].toString()
+                keyAlias = properties["keyAlias"].toString()
+                keyPassword = properties["keyPassword"].toString()
+            }
+        }
+    }
+
     buildTypes {
         release {
             isMinifyEnabled = false
+
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
+
+            if (properties.containsKey("storeFile")) {
+                signingConfig = signingConfigs.getByName("release")
+            }
         }
     }
 
@@ -146,18 +161,11 @@ dependencies {
     debugImplementation(libs.androidx.ui.test.manifest)
     implementation(libs.datastore.protobuf)
     implementation(libs.protobuf.lite)
-    androidTestImplementation(libs.hilt.android.testing)
     kaptAndroidTest(libs.hilt.compiler)
 }
 
 kapt {
     correctErrorTypes = true
-}
-
-secrets {
-    propertiesFileName = "secrets.properties"
-    defaultPropertiesFileName = "local.defaults.properties"
-    ignoreList.add("sdk.*")
 }
 
 protobuf {

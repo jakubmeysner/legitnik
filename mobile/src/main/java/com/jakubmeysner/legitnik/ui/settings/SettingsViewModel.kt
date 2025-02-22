@@ -3,19 +3,26 @@ package com.jakubmeysner.legitnik.ui.settings
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.jakubmeysner.legitnik.data.parking.ParkingLotRepository
+import com.jakubmeysner.legitnik.data.settings.CategoryType
+import com.jakubmeysner.legitnik.data.settings.SettingsRepository
 import com.jakubmeysner.legitnik.ui.parking.list.ParkingLotListUiState
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.firstOrNull
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
-import com.jakubmeysner.legitnik.data.parking.ParkingLotRepository
-import com.jakubmeysner.legitnik.data.settings.*
 
 @HiltViewModel
 class SettingsViewModel @Inject constructor(
     private val savedStateHandle: SavedStateHandle,
     private val parkingLotRepository: ParkingLotRepository,
-    private val settingsRepository: SettingsRepository
+    private val settingsRepository: SettingsRepository,
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(ParkingLotListUiState())
@@ -31,7 +38,13 @@ class SettingsViewModel @Inject constructor(
             try {
                 _uiState.update { it.copy(loading = true, error = false) }
                 val parkingLots = parkingLotRepository.getParkingLots(forceRefresh)
-                _uiState.update { it.copy(loading = false, parkingLots = parkingLots, error = false) }
+                _uiState.update {
+                    it.copy(
+                        loading = false,
+                        parkingLots = parkingLots,
+                        error = false
+                    )
+                }
                 settingsRepository.cacheParkingLotSymbols(parkingLots)
             } catch (e: Exception) {
                 _uiState.update { it.copy(loading = false, error = true) }
@@ -70,7 +83,10 @@ class SettingsViewModel @Inject constructor(
         }
     }
 
-    fun getSettingsStateForCategory(category: CategoryType, ids: List<String>): Flow<Map<String, Boolean>> {
+    fun getSettingsStateForCategory(
+        category: CategoryType,
+        ids: List<String>,
+    ): Flow<Map<String, Boolean>> {
         return combine(
             ids.map { id ->
                 isSettingEnabled(id, category).map { state -> id to state }
