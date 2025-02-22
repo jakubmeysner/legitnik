@@ -22,7 +22,7 @@ android {
         minSdk = 29
         targetSdk = 35
         versionCode = 1
-        versionName = "1.0"
+        versionName = "0.1.0"
 
         testInstrumentationRunner = "com.jakubmeysner.legitnik.HiltTestRunner"
     }
@@ -31,13 +31,29 @@ android {
         buildConfig = true
     }
 
+    signingConfigs {
+        if (properties.containsKey("storeFile")) {
+            create("release") {
+                storeFile = properties["storeFile"]?.let { file(it) }
+                storePassword = properties["storePassword"].toString()
+                keyAlias = properties["keyAlias"].toString()
+                keyPassword = properties["keyPassword"].toString()
+            }
+        }
+    }
+
     buildTypes {
         release {
             isMinifyEnabled = false
+
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
+
+            if (properties.containsKey("storeFile")) {
+                signingConfig = signingConfigs.getByName("release")
+            }
         }
     }
 
