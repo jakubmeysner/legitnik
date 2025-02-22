@@ -19,7 +19,7 @@ enum class CategoryType {
 
 class SettingsRepository @Inject constructor(
     @ApplicationContext private val context: Context,
-    private val firebaseMessaging: FirebaseMessaging
+    private val firebaseMessaging: FirebaseMessaging,
 ) : ClassSimpleNameLoggingTag {
     val settingsFlow: Flow<Settings> = context.settingsDataStore.data
 
@@ -92,7 +92,11 @@ class SettingsRepository @Inject constructor(
         }
     }
 
-    private fun manageFcmSubscriptionForSetting(id: String, category: CategoryType, isEnabled: Boolean) {
+    private fun manageFcmSubscriptionForSetting(
+        id: String,
+        category: CategoryType,
+        isEnabled: Boolean,
+    ) {
         val topic = when (category) {
             CategoryType.NOTIFICATION -> "parking-lots-non-zero-$id"
             CategoryType.ONGOING -> "parking-lots-free-places-changed-$id"
@@ -107,11 +111,13 @@ class SettingsRepository @Inject constructor(
     }
 
     suspend fun subscribeToFcmTopicsOnTokenRefresh() {
-        val isNotificationEnabled = getCategoryState(CategoryType.NOTIFICATION).firstOrNull() ?: false
+        val isNotificationEnabled =
+            getCategoryState(CategoryType.NOTIFICATION).firstOrNull() ?: false
         val isOngoingEnabled = getCategoryState(CategoryType.ONGOING).firstOrNull() ?: false
 
         if (isNotificationEnabled) {
-            val notificationIds = getSavedIdsForCategory(CategoryType.NOTIFICATION).firstOrNull() ?: emptyList()
+            val notificationIds =
+                getSavedIdsForCategory(CategoryType.NOTIFICATION).firstOrNull() ?: emptyList()
             notificationIds.forEach { id ->
                 isSettingEnabled(id, CategoryType.NOTIFICATION).firstOrNull()?.let { isEnabled ->
                     toggleSetting(id, CategoryType.NOTIFICATION, isEnabled)
@@ -120,7 +126,8 @@ class SettingsRepository @Inject constructor(
         }
 
         if (isOngoingEnabled) {
-            val ongoingIds = getSavedIdsForCategory(CategoryType.ONGOING).firstOrNull() ?: emptyList()
+            val ongoingIds =
+                getSavedIdsForCategory(CategoryType.ONGOING).firstOrNull() ?: emptyList()
             ongoingIds.forEach { id ->
                 isSettingEnabled(id, CategoryType.ONGOING).firstOrNull()?.let { isEnabled ->
                     toggleSetting(id, CategoryType.ONGOING, isEnabled)

@@ -12,14 +12,12 @@ import javax.inject.Singleton
 abstract class ParkingLotModule {
     @Binds
     abstract fun bindParkingDataSource(
-        parkingLotRemoteDataSource: ParkingLotRemoteDataSource
+        parkingLotRemoteDataSource: ParkingLotRemoteDataSource,
     ): ParkingLotDataSource
 
     @Singleton
     @Binds
     abstract fun bindParkingRepository(
-        parkingRepositoryImpl: ParkingLotRepositoryImpl
+        parkingRepositoryImpl: ParkingLotRepositoryImpl,
     ): ParkingLotRepository
 }
-
-

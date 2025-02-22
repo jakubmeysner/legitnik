@@ -20,7 +20,7 @@ interface ParkingLotRepository {
 
 class ParkingLotRepositoryImpl @Inject constructor(
     private val parkingLotRemoteDataSource: ParkingLotDataSource,
-    private val externalScope: CoroutineScope
+    private val externalScope: CoroutineScope,
 ) :
     ParkingLotRepository, ClassSimpleNameLoggingTag {
     private val cachedParkingLotsMutex = Mutex()
