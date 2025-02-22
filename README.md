@@ -47,4 +47,4 @@ configure credentials for it in Gradle. In order to do that you'll need to:
 
 For the features relying on the Maps SDK to work correctly, you'll need to set the API key for the
 Maps API (see [local.defaults.properties](./local.defaults.properties)
-and [local.properties](./local.properties)).
+and [secrets.properties](./secrets.properties)).
