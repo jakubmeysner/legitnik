@@ -32,4 +32,3 @@ dependencyResolutionManagement {
 rootProject.name = "Legitnik"
 
 include(":mobile")
-include(":wear")

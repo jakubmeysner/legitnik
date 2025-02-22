@@ -162,7 +162,6 @@ dependencies {
     debugImplementation(libs.androidx.ui.test.manifest)
     implementation(libs.datastore.protobuf)
     implementation(libs.protobuf.lite)
-    androidTestImplementation(libs.hilt.android.testing)
     kaptAndroidTest(libs.hilt.compiler)
 }
 
